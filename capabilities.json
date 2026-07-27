@@ -48,7 +48,7 @@
       "id": "daily-rollup",
       "tier": "orchestrator",
       "name": "Daily rollup",
-      "description": "Use when reviewing a time window of vault activity \u2014 a daily, weekly, or periodic review of what changed, what was decided, and what is still open in that period. For tasks across the whole vault with no time bound, use task-harvester.",
+      "description": "Use when summarizing or recapping recent vault activity \u2014 a daily, weekly, or periodic review of what changed, what was decided, and what is still open in a time window. For every open task across the whole vault with no time bound, use task-harvester.",
       "surfaces": {
         "skill": true,
         "command": "[days, default 7]",
@@ -279,7 +279,7 @@
       "id": "task-harvester",
       "tier": "orchestrator",
       "name": "Harvest open tasks",
-      "description": "Use when collecting every open task across the whole vault into one consolidated action list, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
+      "description": "Use when collecting open tasks or todos scattered across notes into one consolidated action list \u2014 unchecked checkboxes and #task/#todo-tagged items across the whole vault, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
       "surfaces": {
         "skill": true,
         "command": "[optional folder/tag/topic focus]",

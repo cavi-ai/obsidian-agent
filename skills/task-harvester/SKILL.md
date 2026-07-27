@@ -1,6 +1,6 @@
 ---
 name: task-harvester
-description: Use when collecting every open task across the whole vault into one consolidated action list, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.
+description: Use when collecting open tasks or todos scattered across notes into one consolidated action list — unchecked checkboxes and #task/#todo-tagged items across the whole vault, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.
 ---
 
 # Task harvester
