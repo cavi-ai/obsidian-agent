@@ -17,11 +17,16 @@ the only way your work reaches them**, so land it where Companion looks.
 1. **Ground the work in the repo.** The task arrives as free text in the run
    context. Read the actual notes before you assert anything (cite their paths);
    the vault is the source of truth, not memory.
-2. **Write one reply note** under `Claude/Replies/`, named in kebab-case from the
-   task (e.g. `weekly-decisions-rollup.md`), with YAML frontmatter: `title`,
-   `created` (YYYY-MM-DD), `source: claude-cloud`, and `tags` (reuse the vault's
-   existing tags). Keep the body skimmable: what you did, key findings (with
-   `[[wikilinks]]` to the notes), and any follow-ups.
+2. **Write one reply note into the configured reply folder.** Companion polls a
+   folder the user configures (`cloudReplyFolder`); its default is
+   `Claude/Replies/`, but do not assume it. Look in the repo first — if a folder
+   already holds reply notes, use that one. Only fall back to `Claude/Replies/`
+   when the repo has none, and say in the PR body which folder you chose. A reply
+   written to the wrong folder is invisible to the user.
+   Name it in kebab-case from the task (e.g. `weekly-decisions-rollup.md`), with
+   YAML frontmatter: `title`, `created` (YYYY-MM-DD), `source: claude-cloud`, and
+   `tags` (reuse the vault's existing tags). Keep the body skimmable: what you
+   did, key findings (with `[[wikilinks]]` to the notes), and any follow-ups.
 3. **Keep all changes in one commit on a reply branch.** If the task also
    created or edited other notes, include them. Commit to a new branch
    `claude/reply-<slug>` — never push to `main`.
@@ -33,7 +38,8 @@ the only way your work reaches them**, so land it where Companion looks.
 
 ## Hard requirements
 
-- The reply note lives in `Claude/Replies/` with valid frontmatter.
+- The reply note lives in the repo's existing reply folder (default
+  `Claude/Replies/`) with valid frontmatter, and the PR body names the folder used.
 - Work reaches the user as a **PR**, not a direct push to `main`.
 - Every claim about the vault traces to a note you actually read.
 
@@ -43,3 +49,5 @@ the only way your work reaches them**, so land it where Companion looks.
 - Pushing to `main` instead of a `claude/reply-<slug>` branch + PR.
 - Inventing vault facts from memory instead of reading the notes.
 - A reply note with no frontmatter (it won't index cleanly in the vault).
+- Hardcoding `Claude/Replies/` when the user configured a different reply folder —
+  the reply lands where Companion isn't looking and the user sees nothing.
