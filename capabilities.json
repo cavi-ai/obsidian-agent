@@ -15,7 +15,7 @@
       "id": "cloud-reply",
       "tier": "harness",
       "name": "Cloud reply",
-      "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo — do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
+      "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo \u2014 do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
       "surfaces": {
         "skill": true,
         "command": false,
@@ -190,8 +190,8 @@
     {
       "id": "note-to-artifact",
       "tier": "technique",
-      "name": "Note → artifact",
-      "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style — especially for Obsidian notes rendered in a ```claude-html``` block.",
+      "name": "Note \u2192 artifact",
+      "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style \u2014 especially for Obsidian notes rendered in a ```claude-html``` block.",
       "surfaces": {
         "skill": true,
         "command": "<note path or topic>",
@@ -201,7 +201,7 @@
     {
       "id": "outline-to-draft",
       "tier": "worker",
-      "name": "Outline → draft",
+      "name": "Outline \u2192 draft",
       "description": "Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.",
       "surfaces": {
         "skill": true,
@@ -212,7 +212,7 @@
     {
       "id": "plan-to-spec",
       "tier": "pipeline",
-      "name": "Plan → spec",
+      "name": "Plan \u2192 spec",
       "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a Claude Code build, or creating a spec and tracker from a plan.",
       "surfaces": {
         "skill": true,
@@ -234,7 +234,7 @@
     {
       "id": "session-to-note",
       "tier": "worker",
-      "name": "Session → note",
+      "name": "Session \u2192 note",
       "description": "Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.",
       "surfaces": {
         "skill": true,
@@ -290,7 +290,7 @@
       "id": "vault-grounding",
       "tier": "policy",
       "name": "Vault grounding",
-      "description": "Use when reading, citing, writing, or editing notes in an Obsidian vault over the MCP bridge — any time output references vault content, links notes, or modifies the vault.",
+      "description": "Use when reading, citing, writing, or editing notes in an Obsidian vault over the MCP bridge \u2014 any time output references vault content, links notes, or modifies the vault.",
       "surfaces": {
         "skill": true,
         "command": false,
@@ -301,7 +301,7 @@
       "id": "vault-routines",
       "tier": "harness",
       "name": "Vault routines",
-      "description": "Use when a vault task produces recurring value, when the user asks to automate or repeat a vault workflow on a schedule, or after delivering a result the user will want regularly.",
+      "description": "Use when a vault result has recurring value and the user wants it repeated on a schedule. Registers a scheduled cloud agent in Claude Code; in Companion it can only fire a routine the user already created.",
       "surfaces": {
         "skill": true,
         "command": false,

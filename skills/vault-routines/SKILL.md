@@ -1,13 +1,12 @@
 ---
 name: vault-routines
-description: Use when a vault task produces recurring value, when the user asks to automate or repeat a vault workflow on a schedule, or after delivering a result the user will want regularly.
+description: Use when a vault result has recurring value and the user wants it repeated on a schedule. Registers a scheduled cloud agent in Claude Code; in Companion it can only fire a routine the user already created.
 ---
 
 # Vault routines
 
-Turn a one-off vault result into an editable, scheduled routine. Claude Code can
-already run scheduled remote agents (cron-based, editable, cloud-dispatched) —
-you leverage that machinery; you do not build scheduling yourself.
+Turn a one-off vault result into an editable, scheduled routine. You leverage
+existing scheduling machinery; you never build scheduling yourself.
 
 ## When a result has recurring value
 
@@ -28,9 +27,23 @@ routine. Phrase it as a concrete, editable proposal — never schedule silently.
 4. **Scope the routine.** A routine re-runs the same skill against the live
    vault. State exactly what it will do each run and where output lands.
 
-## Wiring it
+## Wiring it — branch on where you are running
 
-Use Claude Code's scheduled-remote-agent / routine mechanism (the `/schedule`
-machinery) to register the agreed cadence with the command or skill invocation
-that produced the result. Confirm back the schedule, its next run, and how to
-edit it.
+You are in exactly one of two runtimes. Establish which before promising anything.
+
+**Claude Code (desktop CLI).** Use the `/schedule` machinery to register a
+scheduled cloud agent against the command or skill invocation that produced the
+result. Confirm back the cadence, the next run time, and how to edit or cancel it.
+
+**Companion (in Obsidian).** Companion cannot create a routine. It can only
+*fire* a routine the user already created in the Claude Code web UI and whose
+"fire" URL they pasted into Companion's settings. If none is configured, say so
+plainly and give the two steps — create the routine in the web UI, paste its fire
+URL into Companion settings — instead of implying a schedule was set.
+
+## What you cannot do
+
+- You cannot create a schedule from inside Companion.
+- You cannot schedule anything without the user agreeing to a specific cadence.
+- Never report a routine as scheduled unless you registered it and can state its
+  next run.
