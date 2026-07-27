@@ -1,6 +1,6 @@
 ---
 name: daily-rollup
-description: Use when summarizing recent or daily notes, creating a weekly or periodic review, or pulling decisions and open tasks out of recent vault activity.
+description: Use when reviewing a time window of vault activity — a daily, weekly, or periodic review of what changed, what was decided, and what is still open in that period. For tasks across the whole vault with no time bound, use task-harvester.
 ---
 
 # Daily rollup

@@ -1,6 +1,6 @@
 ---
 name: wikilink-weaver
-description: Use when connecting notes, finding missing links between notes, surfacing orphan notes, or strengthening the link graph in an Obsidian vault.
+description: Use when a note's body mentions other notes by title without linking them, when applying or repairing wikilinks, or when listing orphan notes. This is the skill that edits notes to add links. For conceptual discovery instead, use connection-finder.
 ---
 
 # Wikilink weaver

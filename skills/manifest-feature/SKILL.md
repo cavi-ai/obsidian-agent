@@ -1,6 +1,6 @@
 ---
 name: manifest-feature
-description: Use when proposing product features from idea, feedback, or spec notes, deciding what to build from user feedback, or prioritizing a feature backlog from vault notes.
+description: Use when proposing new product scope from idea, feedback, or interview notes — deciding what to build that is not yet committed, or building a feature backlog from user signal. For sequencing work already scoped, use manifest-pm.
 ---
 
 # Manifest: product lead

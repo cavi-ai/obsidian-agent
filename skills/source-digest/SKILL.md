@@ -1,6 +1,6 @@
 ---
 name: source-digest
-description: Use when digesting research sources or papers, extracting claims from notes tagged as sources, or building an evidence or comparison table from reference notes.
+description: Use when comparing notes that are typed or tagged as sources or papers, building an evidence or comparison table across them. Operates on existing plain source notes; for provenance-tracked research records use research-workbench.
 ---
 
 # Source digest

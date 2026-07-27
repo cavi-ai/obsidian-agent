@@ -1,6 +1,6 @@
 ---
 name: vault-grounding
-description: Use when reading, citing, writing, or editing notes in an Obsidian vault over the MCP bridge — any time output references vault content, links notes, or modifies the vault.
+description: Use when another claude-obsidian skill declares it as a required sub-skill — the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.
 ---
 
 # Vault grounding

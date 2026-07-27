@@ -1,6 +1,6 @@
 ---
 name: connection-finder
-description: Use when looking for non-obvious connections between notes, surfacing related-but-unlinked notes, or finding serendipitous links across an Obsidian vault.
+description: Use when looking for non-obvious conceptual relationships between notes that are not linked yet. Read-only discovery that ranks and explains candidate connections; it proposes, it does not edit. To write the links, use wikilink-weaver.
 ---
 
 # Connection finder

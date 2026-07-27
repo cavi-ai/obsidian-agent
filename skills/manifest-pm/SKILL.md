@@ -1,6 +1,6 @@
 ---
 name: manifest-pm
-description: Use when prioritizing project work from vault notes, deciding what to build next, planning client-facing deliverables, or producing a roadmap or status from project notes.
+description: Use when prioritizing already-scoped project work, producing a roadmap or client status from project notes, or deciding the next move on work that is already committed. For proposing new features from feedback, use manifest-feature.
 ---
 
 # Manifest: project manager

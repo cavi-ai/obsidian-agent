@@ -26,7 +26,7 @@
       "id": "connection-finder",
       "tier": "worker",
       "name": "Connection finder",
-      "description": "Use when looking for non-obvious connections between notes, surfacing related-but-unlinked notes, or finding serendipitous links across an Obsidian vault.",
+      "description": "Use when looking for non-obvious conceptual relationships between notes that are not linked yet. Read-only discovery that ranks and explains candidate connections; it proposes, it does not edit. To write the links, use wikilink-weaver.",
       "surfaces": {
         "skill": true,
         "command": "<note path or topic>",
@@ -48,7 +48,7 @@
       "id": "daily-rollup",
       "tier": "orchestrator",
       "name": "Daily rollup",
-      "description": "Use when summarizing recent or daily notes, creating a weekly or periodic review, or pulling decisions and open tasks out of recent vault activity.",
+      "description": "Use when reviewing a time window of vault activity \u2014 a daily, weekly, or periodic review of what changed, what was decided, and what is still open in that period. For tasks across the whole vault with no time bound, use task-harvester.",
       "surfaces": {
         "skill": true,
         "command": "[days, default 7]",
@@ -92,7 +92,7 @@
       "id": "manifest-core",
       "tier": "worker",
       "name": "Manifest core",
-      "description": "Use when running any manifest-* advisor skill — the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
+      "description": "Use when running any manifest-* advisor skill \u2014 the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
       "surfaces": {
         "skill": true,
         "command": false,
@@ -103,7 +103,7 @@
       "id": "manifest-feature",
       "tier": "orchestrator",
       "name": "Manifest: Feature backlog",
-      "description": "Use when proposing product features from idea, feedback, or spec notes, deciding what to build from user feedback, or prioritizing a feature backlog from vault notes.",
+      "description": "Use when proposing new product scope from idea, feedback, or interview notes \u2014 deciding what to build that is not yet committed, or building a feature backlog from user signal. For sequencing work already scoped, use manifest-pm.",
       "surfaces": {
         "skill": true,
         "command": "[optional product/area focus]",
@@ -125,7 +125,7 @@
       "id": "manifest-pm",
       "tier": "orchestrator",
       "name": "Manifest: Product roadmap",
-      "description": "Use when prioritizing project work from vault notes, deciding what to build next, planning client-facing deliverables, or producing a roadmap or status from project notes.",
+      "description": "Use when prioritizing already-scoped project work, producing a roadmap or client status from project notes, or deciding the next move on work that is already committed. For proposing new features from feedback, use manifest-feature.",
       "surfaces": {
         "skill": true,
         "command": "[optional project/topic focus]",
@@ -235,7 +235,7 @@
       "id": "research-workbench",
       "tier": "orchestrator",
       "name": "Research workbench",
-      "description": "Use when framing a serious research project, capturing sources and evidence, building supported claims, auditing provenance, or producing an evidence-backed outline.",
+      "description": "Use when running a formal research project on typed research records \u2014 creating a project, importing sources, capturing evidence with locators, building supported claims, auditing provenance, and generating an evidence-backed outline via the research_* tools.",
       "surfaces": {
         "skill": true,
         "command": "[project, source, question, or desired stage]",
@@ -257,7 +257,7 @@
       "id": "source-digest",
       "tier": "orchestrator",
       "name": "Source digest",
-      "description": "Use when digesting research sources or papers, extracting claims from notes tagged as sources, or building an evidence or comparison table from reference notes.",
+      "description": "Use when comparing notes that are typed or tagged as sources or papers, building an evidence or comparison table across them. Operates on existing plain source notes; for provenance-tracked research records use research-workbench.",
       "surfaces": {
         "skill": true,
         "command": "[source type/tag or topic]",
@@ -279,7 +279,7 @@
       "id": "task-harvester",
       "tier": "orchestrator",
       "name": "Harvest open tasks",
-      "description": "Use when collecting open tasks or todos scattered across notes, building a consolidated action list, or surfacing all unchecked checkbox or task-tagged items in an Obsidian vault.",
+      "description": "Use when collecting every open task across the whole vault into one consolidated action list, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
       "surfaces": {
         "skill": true,
         "command": "[optional folder/tag/topic focus]",
@@ -301,7 +301,7 @@
       "id": "vault-grounding",
       "tier": "policy",
       "name": "Vault grounding",
-      "description": "Use when reading, citing, writing, or editing notes in an Obsidian vault over the MCP bridge \u2014 any time output references vault content, links notes, or modifies the vault.",
+      "description": "Use when another claude-obsidian skill declares it as a required sub-skill \u2014 the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.",
       "surfaces": {
         "skill": true,
         "command": false,
@@ -323,7 +323,7 @@
       "id": "vault-synthesis",
       "tier": "orchestrator",
       "name": "Vault synthesis",
-      "description": "Use when answering \"what do I know about X\", synthesizing across many notes, producing a grounded topic summary, or building a literature/research digest from an Obsidian vault.",
+      "description": "Use when answering \"what do I know about X\" from the whole vault \u2014 a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.",
       "surfaces": {
         "skill": true,
         "command": "<topic>",
@@ -334,7 +334,7 @@
       "id": "wikilink-weaver",
       "tier": "worker",
       "name": "Wikilink weaver",
-      "description": "Use when connecting notes, finding missing links between notes, surfacing orphan notes, or strengthening the link graph in an Obsidian vault.",
+      "description": "Use when a note's body mentions other notes by title without linking them, when applying or repairing wikilinks, or when listing orphan notes. This is the skill that edits notes to add links. For conceptual discovery instead, use connection-finder.",
       "surfaces": {
         "skill": true,
         "command": "<note path>",
