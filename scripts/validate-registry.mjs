@@ -9,6 +9,8 @@ const TIERS = new Set(["policy", "worker", "orchestrator", "pipeline", "techniqu
 const NO_COMMAND_TIERS = new Set(["policy", "harness"]);
 // Orchestrators needing CLI-only state or stateful write tools cannot run in Companion.
 const COMPANION_INELIGIBLE = new Set(["research-workbench"]);
+// Pipeline entry points with a command file but no skill.
+const COMMAND_ONLY = new Set(["build-from-spec"]);
 
 export function validate(root) {
   const errors = [];
@@ -45,6 +47,7 @@ export function validate(root) {
     : [];
 
   for (const id of commandIds) {
+    if (COMMAND_ONLY.has(id)) continue;
     const cap = byId.get(id);
     if (!cap) { errors.push(`command '${id}' has no registry entry in capabilities.json`); continue; }
     if (!cap.surfaces.command) errors.push(`command '${id}' exists but the registry sets surfaces.command to false`);

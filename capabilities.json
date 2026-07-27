@@ -1,0 +1,334 @@
+{
+  "capabilities": [
+    {
+      "id": "build-retrospective",
+      "tier": "pipeline",
+      "name": "Build retrospective",
+      "description": "Use when a spec-based build or tracker is complete and a retrospective is needed, or when closing out a build against its spec.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "cloud-reply",
+      "tier": "harness",
+      "name": "Cloud reply",
+      "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo — do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "connection-finder",
+      "tier": "worker",
+      "name": "Connection finder",
+      "description": "Use when looking for non-obvious connections between notes, surfacing related-but-unlinked notes, or finding serendipitous links across an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "consistent-tagging",
+      "tier": "worker",
+      "name": "Consistent tagging",
+      "description": "Use when tagging notes, applying tags to new or untagged notes, or cleaning up tag sprawl and inconsistency in an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "daily-rollup",
+      "tier": "orchestrator",
+      "name": "Daily rollup",
+      "description": "Use when summarizing recent or daily notes, creating a weekly or periodic review, or pulling decisions and open tasks out of recent vault activity.",
+      "surfaces": {
+        "skill": true,
+        "command": "[days, default 7]",
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "dedup-merge",
+      "tier": "worker",
+      "name": "Dedup & merge",
+      "description": "Use when finding and merging duplicate or near-duplicate notes, consolidating notes that cover the same thing, or cleaning up redundant notes in an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "frontmatter-normalizer",
+      "tier": "orchestrator",
+      "name": "Frontmatter audit",
+      "description": "Use when enforcing a consistent frontmatter schema across notes, auditing or normalizing note metadata, or fixing inconsistent frontmatter fields in a folder.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional folder or scope, e.g. Projects/]",
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "manifest-content",
+      "tier": "orchestrator",
+      "name": "Manifest: Content plan",
+      "description": "Use when turning vault knowledge into publishable content, planning a content calendar from your notes, or deciding what to write as a blog post, doc, or thread.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional topic/audience focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-feature",
+      "tier": "orchestrator",
+      "name": "Manifest: Feature backlog",
+      "description": "Use when proposing product features from idea, feedback, or spec notes, deciding what to build from user feedback, or prioritizing a feature backlog from vault notes.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional product/area focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-infra",
+      "tier": "orchestrator",
+      "name": "Manifest: Infra design",
+      "description": "Use when proposing infrastructure or system designs from architecture notes, reviewing a system's design, or planning infra and scaling moves from vault notes.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional system/area focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-pm",
+      "tier": "orchestrator",
+      "name": "Manifest: Product roadmap",
+      "description": "Use when prioritizing project work from vault notes, deciding what to build next, planning client-facing deliverables, or producing a roadmap or status from project notes.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional project/topic focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-research",
+      "tier": "orchestrator",
+      "name": "Manifest: Research agenda",
+      "description": "Use when identifying knowledge gaps, deciding what to research next, or planning a research agenda from what an Obsidian vault already covers.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional topic/area focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-risk",
+      "tier": "orchestrator",
+      "name": "Manifest: Risk register",
+      "description": "Use when surfacing risks, blockers, contradictions, or single points of failure across project notes, or building a risk register from the vault.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional project/area focus]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "manifest-vault",
+      "tier": "orchestrator",
+      "name": "Manifest: Vault audit",
+      "description": "Use when asked to optimize, clean up, audit, or improve an Obsidian vault, assess vault health, or find structural problems in a vault.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional focus: tags | links | orphans | stale]",
+        "companion": "Manifest"
+      }
+    },
+    {
+      "id": "meeting-cleanup",
+      "tier": "worker",
+      "name": "Meeting cleanup",
+      "description": "Use when turning raw meeting notes, voice memos, or messy capture into a structured note with decisions, action items, and attendees.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "moc-builder",
+      "tier": "orchestrator",
+      "name": "Map of Content",
+      "description": "Use when building or refreshing a Map of Content (MOC), creating an index or hub note for a topic or folder, or organizing related notes under one navigational note.",
+      "surfaces": {
+        "skill": true,
+        "command": "<topic or folder>",
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "note-splitter",
+      "tier": "worker",
+      "name": "Note splitter",
+      "description": "Use when a note covers too many topics and should be split into atomic notes, breaking up a bloated note, or extracting sections into their own linked notes.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "note-to-artifact",
+      "tier": "technique",
+      "name": "Note → artifact",
+      "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style — especially for Obsidian notes rendered in a ```claude-html``` block.",
+      "surfaces": {
+        "skill": true,
+        "command": "<note path or topic>",
+        "companion": false
+      }
+    },
+    {
+      "id": "outline-to-draft",
+      "tier": "worker",
+      "name": "Outline → draft",
+      "description": "Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "plan-to-spec",
+      "tier": "pipeline",
+      "name": "Plan → spec",
+      "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a Claude Code build, or creating a spec and tracker from a plan.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "research-workbench",
+      "tier": "orchestrator",
+      "name": "Research workbench",
+      "description": "Use when framing a serious research project, capturing sources and evidence, building supported claims, auditing provenance, or producing an evidence-backed outline.",
+      "surfaces": {
+        "skill": true,
+        "command": "[project, source, question, or desired stage]",
+        "companion": false
+      }
+    },
+    {
+      "id": "session-to-note",
+      "tier": "worker",
+      "name": "Session → note",
+      "description": "Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional note title]",
+        "companion": false
+      }
+    },
+    {
+      "id": "source-digest",
+      "tier": "orchestrator",
+      "name": "Source digest",
+      "description": "Use when digesting research sources or papers, extracting claims from notes tagged as sources, or building an evidence or comparison table from reference notes.",
+      "surfaces": {
+        "skill": true,
+        "command": "[source type/tag or topic]",
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "summarize-and-link",
+      "tier": "worker",
+      "name": "Summarize and link",
+      "description": "Use when adding a TL;DR or summary to a long note, condensing a note, or surfacing and linking the key concepts inside a note.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "task-harvester",
+      "tier": "orchestrator",
+      "name": "Harvest open tasks",
+      "description": "Use when collecting open tasks or todos scattered across notes, building a consolidated action list, or surfacing all unchecked checkbox or task-tagged items in an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": "[optional folder/tag/topic focus]",
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "tracker-driver",
+      "tier": "pipeline",
+      "name": "Tracker driver",
+      "description": "Use when driving a spec-based build against the vault and updating its tracker note, or reporting build progress honestly to a tracker as tasks complete.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "vault-grounding",
+      "tier": "policy",
+      "name": "Vault grounding",
+      "description": "Use when reading, citing, writing, or editing notes in an Obsidian vault over the MCP bridge — any time output references vault content, links notes, or modifies the vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "vault-routines",
+      "tier": "harness",
+      "name": "Vault routines",
+      "description": "Use when a vault task produces recurring value, when the user asks to automate or repeat a vault workflow on a schedule, or after delivering a result the user will want regularly.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
+      "id": "vault-synthesis",
+      "tier": "orchestrator",
+      "name": "Vault synthesis",
+      "description": "Use when answering \"what do I know about X\", synthesizing across many notes, producing a grounded topic summary, or building a literature/research digest from an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": "Knowledge & synthesis"
+      }
+    },
+    {
+      "id": "wikilink-weaver",
+      "tier": "worker",
+      "name": "Wikilink weaver",
+      "description": "Use when connecting notes, finding missing links between notes, surfacing orphan notes, or strengthening the link graph in an Obsidian vault.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    }
+  ]
+}
