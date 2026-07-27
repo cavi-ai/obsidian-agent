@@ -70,7 +70,7 @@
       "id": "frontmatter-normalizer",
       "tier": "orchestrator",
       "name": "Frontmatter audit",
-      "description": "Use when enforcing a consistent frontmatter schema across notes, auditing or normalizing note metadata, or fixing inconsistent frontmatter fields in a folder.",
+      "description": "Use when auditing or normalizing note frontmatter to a consistent schema across a folder or the vault. Defers to the vault's declared ontology types where they exist and proposes a schema only where they are silent.",
       "surfaces": {
         "skill": true,
         "command": "[optional folder or scope, e.g. Projects/]",
