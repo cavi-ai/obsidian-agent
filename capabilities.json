@@ -89,6 +89,17 @@
       }
     },
     {
+      "id": "manifest-core",
+      "tier": "worker",
+      "name": "Manifest core",
+      "description": "Use when running any manifest-* advisor skill — the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
+      "surfaces": {
+        "skill": true,
+        "command": false,
+        "companion": false
+      }
+    },
+    {
       "id": "manifest-feature",
       "tier": "orchestrator",
       "name": "Manifest: Feature backlog",
