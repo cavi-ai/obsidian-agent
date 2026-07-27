@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 
-def stage_skills(skills_dir: Path) -> Path:
+def stage_skills(skills_dir: Path, vault_dir: Path | None = None) -> Path:
     """Copy skill dirs into a fresh temp project's .claude/skills/ once for the whole run."""
     staging = Path(tempfile.mkdtemp(prefix="routing-eval-"))
     dest = staging / ".claude" / "skills"
@@ -31,6 +31,12 @@ def stage_skills(skills_dir: Path) -> Path:
     for entry in sorted(skills_dir.iterdir()):
         if entry.is_dir():
             shutil.copytree(entry, dest / entry.name)
+    # Without notes to act on, the model answers from whatever else it can reach and
+    # never invokes a skill; the fixture makes vault queries contextually sensible.
+    if vault_dir is not None:
+        for entry in sorted(vault_dir.iterdir()):
+            target = staging / entry.name
+            shutil.copytree(entry, target) if entry.is_dir() else shutil.copy2(entry, target)
     return staging
 
 
@@ -230,6 +236,7 @@ def main():
     parser = argparse.ArgumentParser(description="Measure which skill wins a contested query")
     parser.add_argument("--queries", required=True, help="Path to queries.json")
     parser.add_argument("--skills", required=True, help="Path to the skills/ directory")
+    parser.add_argument("--vault", default=None, help="Fixture vault copied into the staged project")
     parser.add_argument("--runs-per-query", type=int, default=3)
     parser.add_argument("--num-workers", type=int, default=10)
     parser.add_argument("--timeout", type=int, default=60, help="Seconds per invocation")
@@ -239,7 +246,7 @@ def main():
 
     queries = json.loads(Path(args.queries).read_text())
     skills_dir = Path(args.skills)
-    staging = stage_skills(skills_dir)
+    staging = stage_skills(skills_dir, Path(args.vault) if args.vault else None)
 
     try:
         observed_by_query = run_all(queries, staging, args.runs_per_query, args.num_workers, args.timeout, args.model)
