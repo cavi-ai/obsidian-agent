@@ -7,7 +7,7 @@
       "description": "Use when a spec-based build or tracker is complete and a retrospective is needed, or when closing out a build against its spec.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<tracker note path>",
         "companion": false
       }
     },
@@ -29,7 +29,7 @@
       "description": "Use when looking for non-obvious connections between notes, surfacing related-but-unlinked notes, or finding serendipitous links across an Obsidian vault.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<note path or topic>",
         "companion": false
       }
     },
@@ -40,7 +40,7 @@
       "description": "Use when tagging notes, applying tags to new or untagged notes, or cleaning up tag sprawl and inconsistency in an Obsidian vault.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<note path or scope>",
         "companion": false
       }
     },
@@ -62,7 +62,7 @@
       "description": "Use when finding and merging duplicate or near-duplicate notes, consolidating notes that cover the same thing, or cleaning up redundant notes in an Obsidian vault.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "[optional scope]",
         "companion": false
       }
     },
@@ -161,7 +161,7 @@
       "description": "Use when turning raw meeting notes, voice memos, or messy capture into a structured note with decisions, action items, and attendees.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<raw note path>",
         "companion": false
       }
     },
@@ -183,7 +183,7 @@
       "description": "Use when a note covers too many topics and should be split into atomic notes, breaking up a bloated note, or extracting sections into their own linked notes.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<note path>",
         "companion": false
       }
     },
@@ -205,7 +205,7 @@
       "description": "Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<outline note path>",
         "companion": false
       }
     },
@@ -216,7 +216,7 @@
       "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a Claude Code build, or creating a spec and tracker from a plan.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<planning note path>",
         "companion": false
       }
     },
@@ -260,7 +260,7 @@
       "description": "Use when adding a TL;DR or summary to a long note, condensing a note, or surfacing and linking the key concepts inside a note.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<note path>",
         "companion": false
       }
     },
@@ -315,7 +315,7 @@
       "description": "Use when answering \"what do I know about X\", synthesizing across many notes, producing a grounded topic summary, or building a literature/research digest from an Obsidian vault.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<topic>",
         "companion": "Knowledge & synthesis"
       }
     },
@@ -326,7 +326,7 @@
       "description": "Use when connecting notes, finding missing links between notes, surfacing orphan notes, or strengthening the link graph in an Obsidian vault.",
       "surfaces": {
         "skill": true,
-        "command": false,
+        "command": "<note path>",
         "companion": false
       }
     }
