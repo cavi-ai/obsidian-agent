@@ -1,0 +1,14 @@
+[
+  { "query": "Everything scattered across my notes about circadian rhythm — synthesize it and don't hide where it's thin.", "should_trigger": true },
+  { "query": "Based purely on what I've actually written, where do I land on hybrid work?", "should_trigger": true },
+  { "query": "I've got a mountain of notes on this and somehow no idea what I actually think.", "should_trigger": true },
+  { "query": "Write me something on inflation hedging that only uses what I've actually noted down, with sources.", "should_trigger": true },
+  { "query": "Where do things actually stand in my thinking on habit formation?", "should_trigger": true },
+  { "query": "Do I ever flat-out contradict myself across my notes on diet and training?", "should_trigger": true },
+  { "query": "Of everything I've written about client retention, what's actually settled and what's still a question mark?", "should_trigger": true },
+  { "query": "My notes on distributed systems are a mix of stuff I read and stuff I worked out myself — give me the combined picture.", "should_trigger": true },
+  { "query": "Compare the papers I've clipped on the ketogenic diet against each other.", "should_trigger": false },
+  { "query": "I've saved a dozen articles on this and never once lined them up side by side.", "should_trigger": false },
+  { "query": "For every reference note I've tagged as a source, pull out what it actually found.", "should_trigger": false },
+  { "query": "Do the studies I've filed under 'source' on vitamin D actually agree with each other?", "should_trigger": false }
+]

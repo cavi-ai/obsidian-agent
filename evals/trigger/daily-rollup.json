@@ -1,0 +1,14 @@
+[
+  { "query": "Turn the last week's worth of notes into one readable summary of what actually happened.", "should_trigger": true },
+  { "query": "What did we actually decide during that stretch after the offsite?", "should_trigger": true },
+  { "query": "By the end of the week I genuinely can't tell you what I got through.", "should_trigger": true },
+  { "query": "I want a digest waiting for me Monday that covers everything from the week before.", "should_trigger": true },
+  { "query": "Bring me up to speed on whatever's been happening in my notes.", "should_trigger": true },
+  { "query": "Give me the last fortnight in review — decisions made, things finished, things still dangling.", "should_trigger": true },
+  { "query": "I was heads-down elsewhere for a few days — anything in my notes I should know about from that stretch?", "should_trigger": true },
+  { "query": "I want a review note summarizing everything that changed since Monday.", "should_trigger": true },
+  { "query": "Pull every unfinished checkbox in my entire vault into one place, doesn't matter how old.", "should_trigger": false },
+  { "query": "How many open todos am I actually carrying across everything I've ever written?", "should_trigger": false },
+  { "query": "Gather every loose action item scattered across all my notes, not just recent ones.", "should_trigger": false },
+  { "query": "Some of my tasks are checkboxes and some are #todo tags — round up every single one regardless of when it was written.", "should_trigger": false }
+]

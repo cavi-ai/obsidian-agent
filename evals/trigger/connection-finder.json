@@ -1,0 +1,14 @@
+[
+  { "query": "Beyond the obvious, what in here is actually engaging with the same idea as this note?", "should_trigger": true },
+  { "query": "Is there a note buried somewhere that actually argues against this one?", "should_trigger": true },
+  { "query": "Everything I write feels sealed off from everything else, like nothing ever talks to anything.", "should_trigger": true },
+  { "query": "Find me two or three notes that don't obviously belong together but actually should, and explain why.", "should_trigger": true },
+  { "query": "Point out a link between notes that a plain search would never surface.", "should_trigger": true },
+  { "query": "Before I touch anything, walk me through which notes are conceptually near this one and why.", "should_trigger": true },
+  { "query": "Is there any overlap between my urban planning notes and the behavioral psychology stuff?", "should_trigger": true },
+  { "query": "I've got a note that feels important but I can't place why — help me see what it's quietly connected to.", "should_trigger": true },
+  { "query": "There are titles of other notes just sitting as plain text in this one — go make them real links.", "should_trigger": false },
+  { "query": "Go through my meeting notes and turn the plain-text project names into real links.", "should_trigger": false },
+  { "query": "I keep typing my collaborator's name instead of linking to her note — sort that out in this file.", "should_trigger": false },
+  { "query": "This note references three other topics by name but none of them are wired up — fix it.", "should_trigger": false }
+]
