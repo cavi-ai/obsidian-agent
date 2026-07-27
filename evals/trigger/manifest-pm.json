@@ -1,0 +1,14 @@
+[
+  { "query": "Sort the open client engagements by what should get done first this week.", "should_trigger": true },
+  { "query": "Where do we stand with the Meridian account right now?", "should_trigger": true },
+  { "query": "I'm juggling three commitments and I don't know which one to push forward first.", "should_trigger": true },
+  { "query": "Put together a status update I can hand to the account lead.", "should_trigger": true },
+  { "query": "Given all the commitments already on the books, tell me what actually needs to happen next.", "should_trigger": true },
+  { "query": "Line up the remaining milestones for the migration project in priority order.", "should_trigger": true },
+  { "query": "What's actually left before we can call the onboarding project done?", "should_trigger": true },
+  { "query": "I need a one-pager summarizing where the contracted work stands for the quarterly review.", "should_trigger": true },
+  { "query": "Look through the customer interview notes and tell me what capabilities we should add.", "should_trigger": false },
+  { "query": "I've got a stack of feature requests from users — which ones are worth building?", "should_trigger": false },
+  { "query": "Turn the brainstorm notes into an actual list of features to build.", "should_trigger": false },
+  { "query": "Read what customers said in the survey responses and propose new things worth adding.", "should_trigger": false }
+]

@@ -1,0 +1,14 @@
+[
+  { "query": "Give me a side-by-side table of the papers I've saved on inflammation.", "should_trigger": true },
+  { "query": "Do the sleep studies I've bookmarked actually support each other, or are they in tension?", "should_trigger": true },
+  { "query": "There's a stack of clipped studies in here that I've genuinely never set side by side.", "should_trigger": true },
+  { "query": "I want a chart where each row is one of my saved sources on cognitive load and what it actually found.", "should_trigger": true },
+  { "query": "There's a folder of clipped articles I keep meaning to actually use for something.", "should_trigger": true },
+  { "query": "For every note I've tagged as a source about magnesium, tell me what it found and how they got there.", "should_trigger": true },
+  { "query": "Which of the papers I've saved on caffeine and focus has the shakiest evidence behind it?", "should_trigger": true },
+  { "query": "Instead of another prose summary, give me the papers on this laid out side by side.", "should_trigger": true },
+  { "query": "What do I actually think about minimalism, pulling from everything I've ever written, not just sources I've saved?", "should_trigger": false },
+  { "query": "Give me my honest overall take on remote-first hiring based on my whole vault.", "should_trigger": false },
+  { "query": "I'm kicking off a real investigation into microplastics — set it up so every claim traces to an exact quote.", "should_trigger": false },
+  { "query": "Check whether the evidence under my argument about this has gone stale before I publish.", "should_trigger": false }
+]

@@ -1,0 +1,14 @@
+[
+  { "query": "I don't care how old it is — collect every unchecked box in the entire vault.", "should_trigger": true },
+  { "query": "What's my actual total open commitment count across everything I've written?", "should_trigger": true },
+  { "query": "There are checklists rotting in notes I haven't touched in ages, still half done.", "should_trigger": true },
+  { "query": "Consolidate every unfinished item into a single note, each one pointing back to where it lives.", "should_trigger": true },
+  { "query": "Find everything I still owe someone or myself.", "should_trigger": true },
+  { "query": "Whether it's a checkbox or a hashtag, track down every marked task and put them all in one spot.", "should_trigger": true },
+  { "query": "What's actually still open across every project, regardless of how old it is?", "should_trigger": true },
+  { "query": "I want a single master list of everything pending, with the most overdue stuff surfaced first.", "should_trigger": true },
+  { "query": "What actually happened in my notes this past week?", "should_trigger": false },
+  { "query": "Summarize what changed and what got decided over the last few days.", "should_trigger": false },
+  { "query": "Give me something to read Monday morning covering what I did last week.", "should_trigger": false },
+  { "query": "What's the story with my notes since I got back from vacation?", "should_trigger": false }
+]

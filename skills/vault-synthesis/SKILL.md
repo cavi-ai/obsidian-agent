@@ -1,6 +1,6 @@
 ---
 name: vault-synthesis
-description: Use when answering "what do I know about X", synthesizing across many notes, producing a grounded topic summary, or building a literature/research digest from an Obsidian vault.
+description: Use when answering "what do I know about X" from the whole vault — a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.
 ---
 
 # Vault synthesis

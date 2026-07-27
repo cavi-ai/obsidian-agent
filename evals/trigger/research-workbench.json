@@ -1,0 +1,14 @@
+[
+  { "query": "Get this deep-dive into rental market data on proper footing — question, sources, everything tracked from the start.", "should_trigger": true },
+  { "query": "In this project, are there claims sitting there with nothing actually proving them?", "should_trigger": true },
+  { "query": "By the time I sit down to write, I've completely forgotten which snippet justified which point.", "should_trigger": true },
+  { "query": "When you build the outline, only let it lean on evidence that's actually been checked.", "should_trigger": true },
+  { "query": "This whole research thread has been messy — put some real structure under it.", "should_trigger": true },
+  { "query": "Pull the exact line from this article into the project and link it to whatever point it backs.", "should_trigger": true },
+  { "query": "Before I publish, can you confirm the sources under my argument haven't shifted or vanished?", "should_trigger": true },
+  { "query": "Save this as a tracked source in the project, not just another note floating in the vault.", "should_trigger": true },
+  { "query": "Tell me what each of the reference notes I've clipped on this actually found, one by one.", "should_trigger": false },
+  { "query": "Line up my saved studies on this so I can tell which one has the sturdiest evidence.", "should_trigger": false },
+  { "query": "I've got a folder of papers I've never actually stacked up against each other.", "should_trigger": false },
+  { "query": "For everything I've tagged as a source on this, give me the finding and the method behind it.", "should_trigger": false }
+]

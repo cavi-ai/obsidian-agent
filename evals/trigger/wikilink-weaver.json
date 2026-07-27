@@ -1,0 +1,14 @@
+[
+  { "query": "This file name-drops things I've written about elsewhere but doesn't actually point to them — make it point.", "should_trigger": true },
+  { "query": "Show me every note that's completely isolated — no links coming in, none going out.", "should_trigger": true },
+  { "query": "Instead of linking to it properly, I just keep typing the client's name as plain text — sort that out.", "should_trigger": true },
+  { "query": "Which notes have basically fallen out of the network entirely?", "should_trigger": true },
+  { "query": "This note talks about half a dozen things I've documented elsewhere but doesn't point to any of them — connect it up.", "should_trigger": true },
+  { "query": "Go through my client notes and link every person's name to their contact note where it's just plain text right now.", "should_trigger": true },
+  { "query": "Some of the things mentioned in here are genuine callouts to other notes — turn the real ones into links.", "should_trigger": true },
+  { "query": "Clean up this note so every genuine mention becomes a proper link, and show me the diff first.", "should_trigger": true },
+  { "query": "What ideas in my notes secretly relate to this one, even though nothing points to it explicitly?", "should_trigger": false },
+  { "query": "I don't want anything changed yet — just tell me what in the vault connects to this topic and why.", "should_trigger": false },
+  { "query": "Surface some non-obvious relationships between my scattered notes for me to think about.", "should_trigger": false },
+  { "query": "Does my old writing on classical music actually connect to what I've been writing about crowd behavior?", "should_trigger": false }
+]

@@ -1,0 +1,3 @@
+*.pyc
+.quarantine/
+__pycache__/

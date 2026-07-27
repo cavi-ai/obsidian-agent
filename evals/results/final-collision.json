@@ -1,0 +1,683 @@
+{
+  "overall_accuracy": 0.9166666666666666,
+  "per_skill": {
+    "manifest-pm": {
+      "recall": 0.875
+    },
+    "manifest-feature": {
+      "recall": 1.0
+    },
+    "connection-finder": {
+      "recall": 1.0
+    },
+    "wikilink-weaver": {
+      "recall": 0.875
+    },
+    "vault-synthesis": {
+      "recall": 0.875
+    },
+    "source-digest": {
+      "recall": 0.875
+    },
+    "research-workbench": {
+      "recall": 0.75
+    },
+    "daily-rollup": {
+      "recall": 1.0
+    },
+    "task-harvester": {
+      "recall": 1.0
+    }
+  },
+  "results": [
+    {
+      "query": "look at my project notes and tell me the one thing worth doing first this month",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "where does the client work actually stand right now?",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i have five half-finished projects and no idea which one deserves my time",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "put together a roadmap i can show a stakeholder on monday",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "help me work out what to do next based on everything i've written down about this project",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "we need to decide what to build next quarter and the notes are mostly delivery timelines and client commitments",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 0.0
+    },
+    {
+      "query": "rank everything on my plate by what actually moves the project forward, then get the top one ready to build",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "write me something i can send the client about where things stand",
+      "expected": "manifest-pm",
+      "observed": [
+        "manifest-pm"
+      ],
+      "modal": "manifest-pm",
+      "accuracy": 1.0
+    },
+    {
+      "query": "go through the feedback notes and tell me which features to add",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "which of my product ideas are actually worth building?",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "my ideas folder is a graveyard and none of it ever turns into anything shippable",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me a shortlist of what to build next with the feedback that justifies each one",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i have a pile of user feedback sitting in the vault, do something useful with it",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "customers keep asking for things and i can't tell what to prioritize",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "read the idea and spec notes, pick the next thing to build, and get it ready for a build",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what do people keep asking for in my notes that i still haven't built?",
+      "expected": "manifest-feature",
+      "observed": [
+        "manifest-feature"
+      ],
+      "modal": "manifest-feature",
+      "accuracy": 1.0
+    },
+    {
+      "query": "this note on attention mechanisms \u2014 what else in my vault is secretly about the same thing?",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "are there ideas in my notes that talk to each other without me having noticed?",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "my notes feel like isolated islands, nothing ever cross-pollinates",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me a ranked list of surprising pairings between my notes with a reason for each",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "show me something interesting about how my notes hang together",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i want to know which notes relate to this one before i decide whether to link any of them",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "find relationships between my notes that i'd never spot with a keyword search",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "does anything i wrote about supply chains overlap with the machine learning material?",
+      "expected": "connection-finder",
+      "observed": [
+        "connection-finder"
+      ],
+      "modal": "connection-finder",
+      "accuracy": 1.0
+    },
+    {
+      "query": "this note mentions a bunch of other notes by name but none of them are linked \u2014 fix that",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "which notes in here have nothing pointing at them and nothing pointing out?",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "none"
+      ],
+      "modal": "none",
+      "accuracy": 0.0
+    },
+    {
+      "query": "my graph view is basically dust, nothing is connected to anything",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me a list of every note that's floating unattached from everything else",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "wire this note into the rest of the vault",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "go through this note and add links wherever it references something i've already written about",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "there are real references in this note sitting as plain text \u2014 turn the genuine ones into brackets",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i keep typing project names in plain text instead of linking them, can you clean that up across my meeting notes",
+      "expected": "wikilink-weaver",
+      "observed": [
+        "wikilink-weaver"
+      ],
+      "modal": "wikilink-weaver",
+      "accuracy": 1.0
+    },
+    {
+      "query": "pull together everything my notes say about retrieval augmented generation and be honest about where they're thin",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what's my current position on remote-first hiring, going only by what i've written down?",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i've been writing about this topic for two years and still can't state my own view of it",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me a grounded brief on prompt caching, cited back to the notes it came from",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what's the story with my onboarding notes",
+      "expected": "vault-synthesis",
+      "observed": [
+        "none"
+      ],
+      "modal": "none",
+      "accuracy": 0.0
+    },
+    {
+      "query": "some of my notes on sleep and metabolism are from papers and some are my own thinking \u2014 give me the whole picture",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "do my notes disagree with each other about pricing? show me both sides",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what have i established about vector databases and what have i clearly never resolved?",
+      "expected": "vault-synthesis",
+      "observed": [
+        "vault-synthesis"
+      ],
+      "modal": "vault-synthesis",
+      "accuracy": 1.0
+    },
+    {
+      "query": "take the papers i've clipped on gut microbiome and lay out what each one actually claims",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "put the studies i saved side by side so i can see which has the strongest backing",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i've saved forty papers and never once compared them against each other",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "do the sources i've collected on intermittent fasting actually agree?",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "do something useful with my reference notes on this",
+      "expected": "source-digest",
+      "observed": [
+        "none"
+      ],
+      "modal": "none",
+      "accuracy": 0.0
+    },
+    {
+      "query": "what do the papers in my vault say about creatine and cognition, paper by paper?",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "for everything i've filed as a source, pull out the finding and the method behind it",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "line up my saved articles on remote work and show me where the backing is weak",
+      "expected": "source-digest",
+      "observed": [
+        "source-digest"
+      ],
+      "modal": "source-digest",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i'm starting a proper investigation into water pricing \u2014 set it up so every claim traces back to an excerpt",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "which of my claims don't have anything backing them up yet?",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i can never remember which quote a claim came from six months later",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me an outline for the piece where every section rests on material i've actually verified",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "help me run this investigation properly instead of ad hoc",
+      "expected": "research-workbench",
+      "observed": [
+        "systematic-debugging"
+      ],
+      "modal": "systematic-debugging",
+      "accuracy": 0.0
+    },
+    {
+      "query": "i want to save the exact passage from this paper and attach it to the argument it supports",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "before i write this up, check that the material underneath my argument still holds \u2014 some sources may have moved",
+      "expected": "research-workbench",
+      "observed": [
+        "none"
+      ],
+      "modal": "none",
+      "accuracy": 0.0
+    },
+    {
+      "query": "pin down the question i'm actually investigating and start logging sources against it",
+      "expected": "research-workbench",
+      "observed": [
+        "research-workbench"
+      ],
+      "modal": "research-workbench",
+      "accuracy": 1.0
+    },
+    {
+      "query": "write up what happened in my vault over the last week",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what did i decide this week?",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i get to friday with no idea what i actually accomplished",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "make me something i can read on monday morning that covers the last seven days",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "catch me up on my vault",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "what got decided and what's still hanging from the last two weeks?",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "recap the notes i touched recently \u2014 what shipped, what changed, what's still open",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "did anything important happen in my notes while i was on holiday?",
+      "expected": "daily-rollup",
+      "observed": [
+        "daily-rollup"
+      ],
+      "modal": "daily-rollup",
+      "accuracy": 1.0
+    },
+    {
+      "query": "pull every open todo into one list",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "how many unfinished things am i actually carrying right now?",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "there are half-finished checklists buried in notes i haven't opened in months",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "give me one page with every outstanding item and the note it came from",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "find all my loose ends",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "i want everything still unfinished across the whole vault, not just the recent stuff",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "gather the action items scattered across all my meeting notes into one place, overdue first",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    },
+    {
+      "query": "sometimes i mark things with a #todo tag and sometimes with a checkbox \u2014 round them all up",
+      "expected": "task-harvester",
+      "observed": [
+        "task-harvester"
+      ],
+      "modal": "task-harvester",
+      "accuracy": 1.0
+    }
+  ],
+  "note": "spliced: post-rewrite run for 7 unchanged skills + retest for daily-rollup/task-harvester"
+}
