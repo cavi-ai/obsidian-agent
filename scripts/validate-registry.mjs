@@ -5,6 +5,11 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseFrontmatter } from "./lib/frontmatter.mjs";
 
+const TIERS = new Set(["policy", "worker", "orchestrator", "pipeline", "technique", "harness"]);
+const NO_COMMAND_TIERS = new Set(["policy", "harness"]);
+// Orchestrators needing CLI-only state or stateful write tools cannot run in Companion.
+const COMPANION_INELIGIBLE = new Set(["research-workbench"]);
+
 export function validate(root) {
   const errors = [];
   const registry = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"));
@@ -32,6 +37,36 @@ export function validate(root) {
 
   for (const cap of registry.capabilities) {
     if (!skillIds.includes(cap.id)) errors.push(`registry entry '${cap.id}' has no skill directory`);
+  }
+
+  const commandsDir = join(root, "commands");
+  const commandIds = existsSync(commandsDir)
+    ? readdirSync(commandsDir).filter((f) => f.endsWith(".md")).map((f) => f.slice(0, -3))
+    : [];
+
+  for (const id of commandIds) {
+    const cap = byId.get(id);
+    if (!cap) { errors.push(`command '${id}' has no registry entry in capabilities.json`); continue; }
+    if (!cap.surfaces.command) errors.push(`command '${id}' exists but the registry sets surfaces.command to false`);
+  }
+
+  for (const cap of registry.capabilities) {
+    if (!TIERS.has(cap.tier)) errors.push(`'${cap.id}': unknown tier '${cap.tier}'`);
+
+    const cmd = cap.surfaces.command;
+    if (cmd !== false) {
+      if (typeof cmd !== "string" || cmd.trim() === "") {
+        errors.push(`'${cap.id}': surfaces.command must be false or a non-empty argument hint string`);
+      }
+      if (NO_COMMAND_TIERS.has(cap.tier)) errors.push(`'${cap.id}': tier '${cap.tier}' may not have a command`);
+      if (!commandIds.includes(cap.id)) errors.push(`'${cap.id}' declares a command but there is no file commands/${cap.id}.md`);
+    }
+
+    const comp = cap.surfaces.companion;
+    if (comp !== false) {
+      if (cap.tier !== "orchestrator") errors.push(`'${cap.id}': only orchestrator tier may have a companion workflow (tier is '${cap.tier}')`);
+      if (COMPANION_INELIGIBLE.has(cap.id)) errors.push(`'${cap.id}' is on the companion-ineligible list and may not have a workflow`);
+    }
   }
 
   return errors;
