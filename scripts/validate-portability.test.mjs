@@ -14,40 +14,48 @@ function fixture(files = {}) {
   return root;
 }
 
-test("allows portable skills and explicitly declared provider adapters", () => {
+const CLI_HELPER = "export const buildObsidianArgs = () => [];\n";
+
+test("allows provider terminology in canonical prose", () => {
   const root = fixture({
-    "plugin.json": '{"name":"obsidian-agent"}',
-    "skills/portable/SKILL.md": "# Portable\n\nUse the Obsidian CLI. A claude is a generic name; anthropic is an adjective here.\n",
-    "skills/provider/SKILL.md": "\uFEFF---\nportability: provider-adapter\n---\n\nClaude Code adapter instructions.\n",
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "skills/portable/SKILL.md": [
+      "# Portable",
+      "",
+      "Claude and Anthropic are discussed in prose.",
+      "Examples may mention Claude Code, ANTHROPIC_API_KEY, or `claude --version`.",
+      "",
+    ].join("\n"),
   });
 
   assert.deepEqual(validatePortability(root), []);
 });
 
-test("allows leading provider-adapter declarations in canonical support text files", () => {
-  const root = fixture({
-    "skills/provider/references/adapter.md": "---\nportability: provider-adapter\n---\n\nClaude Code adapter instructions.\n",
-  });
-
-  assert.deepEqual(validatePortability(root), []);
-});
-
-test("only allows a provider adapter declared in leading canonical text frontmatter", () => {
-  const root = fixture({
-    "skills/body/SKILL.md": "# Skill\n\n---\nportability: provider-adapter\n---\n\nClaude Code instructions.\n",
-    "skills/fenced/SKILL.md": "```yaml\n---\nportability: provider-adapter\n---\n```\n\nClaude Code instructions.\n",
-    "skills/script/adapter.mjs": "---\nportability: provider-adapter\n---\nClaude Code instructions.\n",
-  });
+test("requires the official CLI helper when canonical skills exist", () => {
+  const root = fixture({ "skills/portable/SKILL.md": "# Portable\n" });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/body/SKILL.md: Claude-only instruction is not portable",
-    "skills/fenced/SKILL.md: Claude-only instruction is not portable",
-    "skills/script/adapter.mjs: Claude-only instruction is not portable",
+    "scripts/obsidian-cli.mjs: official Obsidian CLI helper is required by canonical skills",
+  ]);
+});
+
+test("rejects an official CLI helper symlink outside the repository", () => {
+  const root = fixture({ "skills/portable/SKILL.md": "# Portable\n" });
+  const outside = mkdtempSync(join(tmpdir(), "portable-helper-outside-"));
+  writeFileSync(join(outside, "obsidian-cli.mjs"), CLI_HELPER);
+  mkdirSync(join(root, "scripts"), { recursive: true });
+  symlinkSync(join(outside, "obsidian-cli.mjs"), join(root, "scripts", "obsidian-cli.mjs"));
+
+  assert.deepEqual(validatePortability(root), [
+    "scripts/obsidian-cli.mjs: official Obsidian CLI helper must be a real repository file",
   ]);
 });
 
 test("rejects in-tree symbolic links in canonical skills", () => {
-  const root = fixture({ "skills/source/SKILL.md": "# Portable\n" });
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "skills/source/SKILL.md": "# Portable\n",
+  });
   mkdirSync(join(root, "skills", "linked"));
   symlinkSync("../source/SKILL.md", join(root, "skills", "linked", "SKILL.md"));
 
@@ -57,14 +65,25 @@ test("rejects in-tree symbolic links in canonical skills", () => {
 });
 
 test("rejects out-of-tree symbolic links in canonical skills", () => {
-  const root = fixture();
+  const root = fixture({ "scripts/obsidian-cli.mjs": CLI_HELPER });
   const outside = mkdtempSync(join(tmpdir(), "portable-outside-"));
-  writeFileSync(join(outside, "provider.md"), "Claude Code instructions.\n");
+  writeFileSync(join(outside, "provider.md"), "provider instructions\n");
   mkdirSync(join(root, "skills", "linked"), { recursive: true });
   symlinkSync(join(outside, "provider.md"), join(root, "skills", "linked", "SKILL.md"));
 
   assert.deepEqual(validatePortability(root), [
     "skills/linked/SKILL.md: symbolic links are not allowed in canonical skills",
+  ]);
+});
+
+test("rejects a canonical skills root symlink outside the repository", () => {
+  const root = fixture({ "scripts/obsidian-cli.mjs": CLI_HELPER });
+  const outside = mkdtempSync(join(tmpdir(), "portable-skills-outside-"));
+  writeFileSync(join(outside, "SKILL.md"), "# Outside\n");
+  symlinkSync(outside, join(root, "skills"));
+
+  assert.deepEqual(validatePortability(root), [
+    "skills: canonical skills root must be a real directory inside the repository",
   ]);
 });
 
@@ -80,189 +99,238 @@ test("reports mcpServers in root configuration", () => {
   assert.deepEqual(validatePortability(root), ["plugin.json: mcpServers is not portable"]);
 });
 
+test("reports quoted mcpServers keys in YAML and TOML configuration", () => {
+  const root = fixture({
+    "config.toml": "'mcpServers' = {}\n",
+    "dotted.toml": "mcpServers.command = 'obsidian'\n",
+    "flow.yaml": "{ mcpServers: {} }\n",
+    "settings.yaml": '\"mcpServers\": {}\n',
+    "table.toml": "[mcpServers]\ncommand = 'obsidian'\n",
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "config.toml: mcpServers is not portable",
+    "dotted.toml: mcpServers is not portable",
+    "flow.yaml: mcpServers is not portable",
+    "settings.yaml: mcpServers is not portable",
+    "table.toml: mcpServers is not portable",
+  ]);
+});
+
 test("does not treat root documentation as configuration", () => {
   const root = fixture({ "README.md": "The old mcpServers configuration is gone.\n" });
 
   assert.deepEqual(validatePortability(root), []);
 });
 
-test("reports legacy dependencies in canonical skill text with deterministic paths", () => {
+test("does not treat a JSON string mentioning mcpServers as configuration", () => {
+  const root = fixture({ "metadata.json": '{"description":"The old mcpServers setting is gone."}' });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("allows declared provider directories and owned manifest paths", () => {
   const root = fixture({
-    "skills/zeta/SKILL.md": "Configure the Anthropic API with ANTHROPIC_API_KEY.\n",
-    "skills/alpha/SKILL.md": "Use Companion for Claude to access the vault.\n",
-    "skills/mid/SKILL.md": "Run this with Claude Code using CLAUDE_PLUGIN_ROOT.\n",
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "plugin.json": JSON.stringify({
+      providers: {
+        claude: {
+          source: "providers/claude/source",
+          artifact: "providers/claude/dist/plugin.json",
+        },
+      },
+    }),
+    "providers/claude/source/adapter.md": "Claude-specific adapter instructions.\n",
+    "providers/claude/dist/plugin.json": "{}",
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("allows an in-root manifest path whose name begins with two dots", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({
+      providers: { claude: { artifact: "providers/claude/..artifact" } },
+    }),
+    "providers/claude/..artifact": "{}",
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("reports provider directories not declared by the root manifest", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({ providers: { claude: {} } }),
+    "providers/claude/adapter.md": "declared\n",
+    "providers/codex/adapter.md": "undeclared\n",
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/alpha/SKILL.md: Companion dependency is not portable",
-    "skills/mid/SKILL.md: Claude-only instruction is not portable",
-    "skills/zeta/SKILL.md: Anthropic API instruction is not portable",
+    "providers/codex: provider directory is not declared in plugin.json",
   ]);
 });
 
-test("reports Anthropic API and SDK variants plus provider paths and environment variables", () => {
+test("does not mistake inherited object names for declared providers", () => {
   const root = fixture({
-    "skills/anthropic/SKILL.md": "Use Anthropic's API, the Anthropic SDK, @anthropic-ai/sdk, and ANTHROPIC_BASE_URL.\n",
-    "skills/paths/SKILL.md": "Read ${HOME}/.claude, /Users/agent/.claude/settings.json, and C:\\Users\\agent\\.claude\\settings.json.\n",
+    "plugin.json": JSON.stringify({ providers: {} }),
+    "providers/toString/adapter.md": "undeclared\n",
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/anthropic/SKILL.md: Anthropic API instruction is not portable",
-    "skills/paths/SKILL.md: Claude-only instruction is not portable",
+    "providers/toString: provider directory is not declared in plugin.json",
   ]);
 });
 
-test("reports standalone Anthropic SDK package and environment variable references", () => {
+test("rejects a provider root symlink that escapes the repository", () => {
+  const root = fixture({ "plugin.json": JSON.stringify({ providers: { claude: {} } }) });
+  const outside = mkdtempSync(join(tmpdir(), "portable-providers-outside-"));
+  mkdirSync(join(outside, "claude"));
+  symlinkSync(outside, join(root, "providers"));
+
+  assert.deepEqual(validatePortability(root), [
+    "providers: provider root must be a real directory inside the repository",
+  ]);
+});
+
+test("reports loose files outside declared provider directories", () => {
   const root = fixture({
-    "skills/sdk/SKILL.md": "Import @anthropic-ai/sdk.\n",
-    "skills/env/SKILL.md": "Set ANTHROPIC_BASE_URL before running.\n",
+    "plugin.json": JSON.stringify({ providers: {} }),
+    "providers/claude.md": "not owned by a provider directory\n",
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/env/SKILL.md: Anthropic API instruction is not portable",
-    "skills/sdk/SKILL.md: Anthropic API instruction is not portable",
+    "providers/claude.md: provider files must be inside a declared provider directory",
   ]);
 });
 
-test("reports ordinary Claude desktop, client, and configuration path variants", () => {
+test("reports unsupported provider keys and missing declared roots deterministically", () => {
   const root = fixture({
-    "skills/variants/SKILL.md": "Use Claude Desktop and the claude CLI. Install the anthropic Python client and Anthropic SDK-client. Read ~/.config/claude/settings.json, ${HOME}/.config/claude/settings.json, and C:\\Users\\agent\\.config\\claude\\settings.json.\n",
+    "plugin.json": JSON.stringify({ providers: { custom: {}, gemini: {} } }),
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/variants/SKILL.md: Anthropic API instruction is not portable",
-    "skills/variants/SKILL.md: Claude-only instruction is not portable",
+    'plugin.json: provider "custom" is unsupported',
+    "providers/gemini: declared provider directory does not exist",
   ]);
 });
 
-const PROVIDER_VARIANTS = [
-  ["Anthropic language-qualified SDK", "Install the Anthropic Python SDK.", ["Anthropic API instruction is not portable"]],
-  ["Anthropic punctuated API client", "Use Anthropic's official, TypeScript API client.", ["Anthropic API instruction is not portable"]],
-  ["Claude command-line interface", "Use the Claude command-line interface.", ["Claude-only instruction is not portable"]],
-  ["XDG configuration path", "Read $XDG_CONFIG_HOME/claude/settings.json.", ["Claude-only instruction is not portable"]],
-  ["braced XDG configuration path", "Read ${XDG_CONFIG_HOME}/claude/settings.json.", ["Claude-only instruction is not portable"]],
-  ["HOME configuration path", "Read ${HOME}/.config/claude/settings.json.", ["Claude-only instruction is not portable"]],
-  ["absolute user configuration path", "Read /Users/agent/.config/claude/settings.json.", ["Claude-only instruction is not portable"]],
-  ["Windows configuration path", "Read C:\\Users\\agent\\.config\\claude\\settings.json.", ["Claude-only instruction is not portable"]],
-  ["generic provider words", "A claude is a generic name and anthropic is an adjective.", []],
-  ["generic command line and project path", "Use a command-line interface in /projects/claude/readme.", []],
-];
-
-for (const [name, text, messages] of PROVIDER_VARIANTS) {
-  test(`handles ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), messages.map((message) => `skills/case/SKILL.md: ${message}`));
+test("reports provider manifest paths outside their declared adapter roots", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "plugin.json": JSON.stringify({
+      providers: {
+        claude: {
+          source: "skills/provider-leak.md",
+          artifact: "../portable-outside.json",
+        },
+      },
+    }),
+    "providers/claude/adapter.md": "declared\n",
+    "skills/provider-leak.md": "provider file in a canonical root\n",
   });
-}
 
-const STRUCTURED_PROVIDER_INDICATORS = [
-  ["provider-owned SDK", "Use the SDK maintained by Anthropic.", "Anthropic API instruction is not portable"],
-  ["expanded provider SDK name", "Use Anthropic software development kit.", "Anthropic API instruction is not portable"],
-  ["direct Claude executable invocation", "Run claude --version from a terminal.", "Claude-only instruction is not portable"],
-  ["HOME Claude configuration file", "Read ${HOME}/.claude.json.", "Claude-only instruction is not portable"],
-  ["absolute POSIX Claude configuration file", "Read /Users/agent/.claude.json.", "Claude-only instruction is not portable"],
-  ["Windows Claude configuration file", "Read C:\\Users\\agent\\.claude.json.", "Claude-only instruction is not portable"],
-];
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider \"claude\" artifact path must stay inside providers/claude: ../portable-outside.json",
+    "plugin.json: provider \"claude\" source path must stay inside providers/claude: skills/provider-leak.md",
+  ]);
+});
 
-for (const [name, text, message] of STRUCTURED_PROVIDER_INDICATORS) {
-  test(`reports ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+test("reports missing provider manifest paths", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({
+      providers: {
+        codex: {
+          source: "providers/codex/source",
+          artifact: "providers/codex/dist/plugin.json",
+        },
+      },
+    }),
+    "providers/codex/adapter.md": "declared\n",
   });
-}
 
-const BENIGN_PROVIDER_WORDS = [
-  ["Claude Shannon source code", "Claude Shannon source code is discussed."],
-  ["Claude Monet desktop wallpaper", "Use a Claude Monet desktop wallpaper."],
-  ["anthropic principle and API ethics", "The anthropic principle informs API ethics."],
-  ["anthropic principle in an ownership sentence", "The API client is maintained by anthropic principle researchers."],
-  ["English import verb with anthropic adjective", "We import anthropic principles into the API ethics discussion."],
-];
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider \"codex\" artifact path does not exist: providers/codex/dist/plugin.json",
+    "plugin.json: provider \"codex\" source path does not exist: providers/codex/source",
+  ]);
+});
 
-for (const [name, text] of BENIGN_PROVIDER_WORDS) {
-  test(`allows benign ${name} prose`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), []);
+test("reports manifest symlinks that escape their provider root", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({ providers: { opencode: { source: "providers/opencode/source" } } }),
   });
-}
+  const outside = mkdtempSync(join(tmpdir(), "portable-provider-outside-"));
+  writeFileSync(join(outside, "adapter.md"), "outside\n");
+  mkdirSync(join(root, "providers", "opencode"), { recursive: true });
+  symlinkSync(outside, join(root, "providers", "opencode", "source"));
 
-const PROVIDER_GRAMMAR_CASES = [
-  ["provider-owned API client", "Use the API client provided by Anthropic.", "Anthropic API instruction is not portable"],
-  ["provider-maintained language SDK", "Anthropic maintains the Python SDK.", "Anthropic API instruction is not portable"],
-  ["first-party client library", "Use Anthropic's first-party Go client library.", "Anthropic API instruction is not portable"],
-  ["Python package installation", "Run python -m pip install anthropic.", "Anthropic API instruction is not portable"],
-  ["Python package import", "Use `from anthropic import Anthropic`.", "Anthropic API instruction is not portable"],
-  ["Claude subcommand invocation", "Run claude mcp list.", "Claude-only instruction is not portable"],
-  ["quoted Claude executable", "Run `claude`.", "Claude-only instruction is not portable"],
-  ["Claude Code package", "Install @anthropic-ai/claude-code.", "Claude-only instruction is not portable"],
-  ["XDG Claude Code config directory", "Read ${XDG_CONFIG_HOME}/claude-code/settings.json.", "Claude-only instruction is not portable"],
-  ["macOS Claude config directory", "Read ~/Library/Application Support/Claude/settings.json.", "Claude-only instruction is not portable"],
-  ["Windows APPDATA Claude config directory", "Read %APPDATA%\\Claude\\settings.json.", "Claude-only instruction is not portable"],
-  ["Claude Desktop config filename", "Read claude_desktop_config.json.", "Claude-only instruction is not portable"],
-  ["Claude project instructions filename", "Read CLAUDE.md.", "Claude-only instruction is not portable"],
-];
+  assert.deepEqual(validatePortability(root), [
+    "providers/opencode/source: symbolic links are not allowed in provider adapters",
+  ]);
+});
 
-for (const [name, text, message] of PROVIDER_GRAMMAR_CASES) {
-  test(`reports structured ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+test("rejects unreferenced provider symlinks that escape their adapter root", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({ providers: { codex: {} } }),
   });
-}
+  const outside = mkdtempSync(join(tmpdir(), "portable-provider-file-outside-"));
+  writeFileSync(join(outside, "secret"), "outside\n");
+  mkdirSync(join(root, "providers", "codex"), { recursive: true });
+  symlinkSync(join(outside, "secret"), join(root, "providers", "codex", "secret"));
 
-const QUALIFIED_PROVIDER_INSTRUCTIONS = [
-  ["latest Anthropic Python SDK", "Install Anthropic's latest Python SDK.", "Anthropic API instruction is not portable"],
-  ["official Claude CLI", "Use Claude's official CLI.", "Claude-only instruction is not portable"],
-  ["qualified Anthropic software development kit", "Use Anthropic’s newest async Python software development kit.", "Anthropic API instruction is not portable"],
-  ["qualified SDK with reversed ownership", "Use the current async Python SDK maintained by Anthropic.", "Anthropic API instruction is not portable"],
-  ["qualified client library with forward ownership", "Anthropic publishes its recommended async Python client library.", "Anthropic API instruction is not portable"],
-  ["qualified Claude command-line interface", "Launch Claude's latest supported command-line interface.", "Claude-only instruction is not portable"],
-];
+  assert.deepEqual(validatePortability(root), [
+    "providers/codex/secret: symbolic links are not allowed in provider adapters",
+  ]);
+});
 
-for (const [name, text, message] of QUALIFIED_PROVIDER_INSTRUCTIONS) {
-  test(`reports ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+test("requires provider entries and paths to have structural types", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({
+      providers: {
+        agentskills: "providers/agentskills",
+        codex: { source: ["providers/codex/source"] },
+      },
+    }),
+    "providers/agentskills/adapter.md": "declared\n",
+    "providers/codex/adapter.md": "declared\n",
   });
-}
 
-const PYTHON_IMPORT_CONTEXTS = [
-  ["official async import in inline code", "Use `from anthropic import AsyncAnthropic`.", true],
-  ["official async import in a Python fence", "```python\nfrom anthropic import AsyncAnthropic\n```\n", true],
-  ["submodule import on a standalone code line", "from anthropic.types import Message\n", true],
-  ["aliased package import in inline code", "Use `import anthropic as provider_sdk`.", true],
-  ["parenthesized import with a trailing comma", "Use `from anthropic import (AsyncAnthropic,)`.", true],
-  ["punctuated English import list", "We import anthropic, cosmological, and teleological principles from the source dataset.", false],
-  ["invalid Python-shaped English inline code", "The phrase `import anthropic, cosmological, and teleological principles` describes the taxonomy.", false],
-  ["invalid unparenthesized trailing comma", "The fragment `from anthropic import AsyncAnthropic,` is incomplete Python.", false],
-  ["ordinary English import sentence", "To compare theories, we import anthropic principles into the discussion.", false],
-];
+  assert.deepEqual(validatePortability(root), [
+    'plugin.json: provider "agentskills" declaration must be an object',
+    'plugin.json: provider "codex" source path must be a string',
+  ]);
+});
 
-for (const [name, text, rejected] of PYTHON_IMPORT_CONTEXTS) {
-  test(`${rejected ? "reports" : "allows"} ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), rejected
-      ? ["skills/case/SKILL.md: Anthropic API instruction is not portable"]
-      : []);
-  });
-}
+test("requires the root provider map to be an object", () => {
+  const root = fixture({ "plugin.json": JSON.stringify({ providers: ["claude"] }) });
 
-const SHELL_COMMAND_CONTEXTS = [
-  ["bare Claude command in a shell fence", "```sh\nclaude\n```\n", true],
-  ["prompted Claude command in a shell fence", "```bash\nclaude \"explain this project\"\n```\n", true],
-  ["Claude command after a shell connector", "```zsh\nnpm test && claude \"explain the failure\"\n```\n", true],
-  ["prompt-prefixed Claude command in a console fence", "```console\n$ claude\n```\n", true],
-  ["contextual inline Claude command", "Execute `claude \"explain this project\"`.", true],
-  ["generic backticked variable", "The variable `claude` contains a generic name.", false],
-  ["non-executed shell literals", "```sh\n# claude\nprintf '%s\\n' claude\nprovider_name=claude\n```\n", false],
-  ["bare literal in a non-shell fence", "```text\nclaude\n```\n", false],
-  ["command-shaped literal in a non-shell fence", "```text\nclaude --version\n```\n", false],
-];
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: providers must be an object",
+  ]);
+});
 
-for (const [name, text, rejected] of SHELL_COMMAND_CONTEXTS) {
-  test(`${rejected ? "reports" : "allows"} ${name}`, () => {
-    const root = fixture({ "skills/case/SKILL.md": text });
-    assert.deepEqual(validatePortability(root), rejected
-      ? ["skills/case/SKILL.md: Claude-only instruction is not portable"]
-      : []);
-  });
-}
+test("reports an invalid root provider manifest", () => {
+  const root = fixture({ "plugin.json": "{not json" });
+
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider manifest must contain valid JSON",
+  ]);
+});
+
+test("requires the root provider manifest to be an object", () => {
+  const root = fixture({ "plugin.json": "null" });
+
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider manifest must be an object",
+  ]);
+});
+
+test("rejects a root provider manifest symlink outside the repository", () => {
+  const root = fixture();
+  const outside = mkdtempSync(join(tmpdir(), "portable-manifest-outside-"));
+  writeFileSync(join(outside, "plugin.json"), '{"mcpServers":{},"providers":{}}');
+  symlinkSync(join(outside, "plugin.json"), join(root, "plugin.json"));
+
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider manifest must be a real repository file",
+  ]);
+});
