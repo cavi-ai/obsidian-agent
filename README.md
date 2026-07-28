@@ -25,7 +25,7 @@ Obsidian, enables its CLI setting, or changes a vault.
 | Host | Package | Invocation |
 | --- | --- | --- |
 | Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
-| Codex | Native Codex plugin metadata | Ask Codex to use an `obsidian-agent` skill |
+| Codex | Native marketplace plugin with 26 portable skills | Ask Codex to use an `obsidian-agent` skill |
 | Gemini CLI | Native extension or user/workspace skills | Ask Gemini to activate an `obsidian-agent` skill |
 | OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | Use the host's normal skill invocation |
@@ -51,10 +51,10 @@ official extension loader discovers the root `skills/` directory:
 gemini extensions install https://github.com/cavi-ai/obsidian-agent
 ```
 
-For Codex, OpenCode, AgentSkills-compatible hosts, or a direct Gemini
-user/workspace skill installation, clone this repository and preview the
-host-specific installation. Project scope defaults to the current directory;
-pass `--project /absolute/path` to target another project.
+For OpenCode, AgentSkills-compatible hosts, a direct Gemini user/workspace
+skill installation, or Codex package staging, clone this repository and preview
+the host-specific installation. Project scope defaults to the current
+directory; pass `--project /absolute/path` to target another project.
 
 ```sh
 node scripts/install.mjs --host codex --scope user
@@ -62,6 +62,13 @@ node scripts/install.mjs --host gemini --scope project --project /path/to/projec
 node scripts/install.mjs --host opencode --scope user
 node scripts/install.mjs --host agentskills --scope project
 ```
+
+For Codex, the installer creates a self-contained marketplace package at
+`~/plugins/obsidian-agent` for user scope or
+`<project>/plugins/obsidian-agent` for project staging. It includes a canonical
+`.codex-plugin/plugin.json`, `./skills/`, and exactly the 26 portable skills.
+Staging does not activate the plugin or edit marketplace state; install it
+through the CAVI marketplace or an explicitly configured Codex marketplace.
 
 The same installer can preview Claude's filesystem package when marketplace
 installation is not appropriate:

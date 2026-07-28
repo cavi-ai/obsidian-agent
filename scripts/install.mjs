@@ -19,7 +19,7 @@ const OWNERSHIP_FILE = ".obsidian-agent-install.json";
 
 const USER_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
-  codex: [".codex", "plugins", "obsidian-agent"],
+  codex: ["plugins", "obsidian-agent"],
   gemini: [".gemini"],
   opencode: [".config", "opencode"],
   agentskills: [".agents"],
@@ -27,7 +27,7 @@ const USER_ROOTS = {
 
 const PROJECT_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
-  codex: [".codex", "plugins", "obsidian-agent"],
+  codex: ["plugins", "obsidian-agent"],
   gemini: [".gemini"],
   opencode: [".opencode"],
   agentskills: [".agents"],

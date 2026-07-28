@@ -5,7 +5,12 @@
   "transport": "cli",
   "providers": {
     "claude": { "native": true, "artifact": "providers/claude" },
-    "codex": { "native": true, "artifact": "providers/codex" },
+    "codex": {
+      "native": true,
+      "artifact": "providers/codex",
+      "distribution": "marketplace",
+      "direct_install": false
+    },
     "gemini": { "native": true, "artifact": "providers/gemini" },
     "opencode": { "native": true, "artifact": "providers/opencode" },
     "agentskills": { "native": false, "artifact": "providers/agentskills" }

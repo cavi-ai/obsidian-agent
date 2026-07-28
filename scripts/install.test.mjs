@@ -19,6 +19,10 @@ test("all provider manifests use the universal identity and no MCP configuration
   const rootManifest = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
   assert.equal(rootManifest.identity, "obsidian-agent");
   assert.deepEqual(Object.keys(rootManifest.providers), expectedHosts);
+  assert.deepEqual(
+    { distribution: rootManifest.providers.codex.distribution, direct_install: rootManifest.providers.codex.direct_install },
+    { distribution: "marketplace", direct_install: false },
+  );
 
   for (const path of [
     ".claude-plugin/plugin.json",
@@ -31,10 +35,32 @@ test("all provider manifests use the universal identity and no MCP configuration
     assert.match(text, /obsidian-agent/);
     assert.doesNotMatch(text, /mcpServers|\.mcp\.json|Companion MCP/i);
   }
-  assert.equal(JSON.parse(readFileSync(join(root, ".codex-plugin/plugin.json"), "utf8")).skills, "../skills");
   assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(root, "gemini-extension.json"), "utf8"))).sort(), [
     "description", "name", "version",
   ]);
+});
+
+test("Codex manifest follows the canonical plugin ingestion contract", () => {
+  // Contract: openai/codex plugin-creator references/plugin-json-spec.md and
+  // scripts/validate_plugin.py (current main branch).
+  const manifest = JSON.parse(readFileSync(join(root, ".codex-plugin/plugin.json"), "utf8"));
+  const allowed = new Set([
+    "id", "name", "version", "description", "skills", "apps", "mcpServers",
+    "interface", "author", "homepage", "repository", "license", "keywords",
+  ]);
+  assert.deepEqual(Object.keys(manifest).filter((key) => !allowed.has(key)), []);
+  assert.equal(manifest.name, "obsidian-agent");
+  assert.match(manifest.version, /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/);
+  assert.ok(manifest.description.trim());
+  assert.ok(manifest.author.name.trim());
+  assert.equal(manifest.skills, "./skills/");
+  for (const field of [
+    "displayName", "shortDescription", "longDescription", "developerName", "category",
+  ]) assert.ok(manifest.interface[field].trim());
+  assert.ok(Array.isArray(manifest.interface.capabilities));
+  assert.ok(manifest.interface.capabilities.every((value) => typeof value === "string" && value.trim()));
+  assert.ok(Array.isArray(manifest.interface.defaultPrompt));
+  assert.ok(manifest.interface.defaultPrompt.length > 0 && manifest.interface.defaultPrompt.length <= 3);
 });
 
 test("installer exposes exactly the supported host matrix", () => {
@@ -94,6 +120,24 @@ test("OpenCode and Gemini plans use their exact native skill discovery roots", (
     assert.ok(plan.files.filter(({ source }) => source.includes("/skills/")).every(({ destination }) =>
       destination.startsWith(join(expectedRoot, "skills") + "/")));
     assert.ok(plan.files.every(({ destination }) => !destination.includes("/plugins/obsidian-agent/")));
+  }
+});
+
+test("Codex preview creates a self-contained 26-skill marketplace package without activating it", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-codex-package-"));
+  for (const scope of ["user", "project"]) {
+    const plan = buildInstallPlan(root, {
+      host: "codex",
+      scope,
+      home: join(sandbox, "home"),
+      project: join(sandbox, "project"),
+    });
+    const expected = join(sandbox, scope === "user" ? "home" : "project", "plugins", "obsidian-agent");
+    assert.equal(plan.destinationRoot, expected);
+    assert.equal(plan.files.filter(({ path }) => path.startsWith("skills/")).length, 26);
+    assert.ok(plan.files.some(({ path }) => path === ".codex-plugin/plugin.json"));
+    assert.ok(plan.files.every(({ destination }) => destination.startsWith(expected + "/")));
+    assert.ok(plan.files.every(({ path }) => !path.startsWith(".agents/plugins/")));
   }
 });
 
