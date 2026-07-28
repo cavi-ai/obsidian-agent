@@ -26,12 +26,36 @@ test("parses an Obsidian semantic version", () => {
   assert.deepEqual(parseObsidianVersion("Obsidian 1.12.7"), { major: 1, minor: 12, patch: 7 });
 });
 
+test("parses an exact bare version result", () => {
+  assert.deepEqual(parseObsidianVersion("  v1.12.7\n"), { major: 1, minor: 12, patch: 7 });
+});
+
+test("rejects ambiguous version output", () => {
+  assert.throws(() => parseObsidianVersion("launcher 9.9.9; Obsidian 1.12.7"), /ambiguous|expected/i);
+});
+
+test("rejects prerelease version output", () => {
+  assert.throws(() => parseObsidianVersion("Obsidian 1.12.7-beta.1"), /stable/i);
+});
+
 test("rejects versions below the CLI minimum", () => {
   assert.throws(() => assertSupportedVersion({ major: 1, minor: 12, patch: 6 }), /1\.12\.7 or newer/);
 });
 
 test("accepts the minimum supported CLI version", () => {
   assert.doesNotThrow(() => assertSupportedVersion({ major: 1, minor: 12, patch: 7 }));
+});
+
+test("rejects an older major version", () => {
+  assert.throws(() => assertSupportedVersion({ major: 0, minor: 99, patch: 99 }), /1\.12\.7 or newer/);
+});
+
+test("accepts a newer major version", () => {
+  assert.doesNotThrow(() => assertSupportedVersion({ major: 2, minor: 0, patch: 0 }));
+});
+
+test("rejects malformed version objects", () => {
+  assert.throws(() => assertSupportedVersion({ major: 1, minor: 12 }), /version\.major.*version\.minor.*version\.patch/);
 });
 
 test("doctor checks obsidian version and explains activation", () => {

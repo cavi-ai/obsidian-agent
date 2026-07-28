@@ -37,13 +37,21 @@ export function buildObsidianArgs(operation) {
 }
 
 export function parseObsidianVersion(text) {
-  const match = String(text).match(/\b(\d+)\.(\d+)\.(\d+)\b/);
-  if (!match) throw new Error(`Could not parse an Obsidian version from: ${text}`);
+  const output = String(text).replace(/^\uFEFF/, "").trim();
+  const versions = output.match(/(?<![\d.])\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?\b/g) ?? [];
+  if (versions.length !== 1) throw new Error("Expected exactly one Obsidian version in CLI output.");
+
+  const match = output.match(/^(?:Obsidian(?:\s+(?:CLI|version))?\s+)?v?(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?$/i);
+  if (!match) throw new Error(`Could not parse expected Obsidian version output: ${text}`);
+  if (match[4]) throw new Error("Obsidian CLI requires a stable release, not a prerelease.");
   const [, major, minor, patch] = match;
   return { major: Number(major), minor: Number(minor), patch: Number(patch) };
 }
 
 export function assertSupportedVersion(version) {
+  if (!version || ![version.major, version.minor, version.patch].every((value) => Number.isInteger(value) && value >= 0)) {
+    throw new TypeError("version.major, version.minor, and version.patch must be non-negative integers");
+  }
   const actual = [version.major, version.minor, version.patch];
   const minimum = [MINIMUM_VERSION.major, MINIMUM_VERSION.minor, MINIMUM_VERSION.patch];
   for (let index = 0; index < minimum.length; index += 1) {

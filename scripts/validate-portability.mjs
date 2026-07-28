@@ -1,20 +1,25 @@
 #!/usr/bin/env node
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { dirname, extname, join, relative } from "node:path";
+import { basename, dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 const CONFIGURATION_EXTENSIONS = new Set([".json", ".toml", ".yaml", ".yml"]);
 
 function walkFiles(directory) {
-  if (!existsSync(directory)) return [];
+  if (!existsSync(directory)) return { files: [], symlinks: [] };
   return readdirSync(directory, { withFileTypes: true })
     .sort((a, b) => a.name.localeCompare(b.name))
-    .flatMap((entry) => {
+    .reduce((result, entry) => {
       const path = join(directory, entry.name);
-      if (entry.isDirectory()) return walkFiles(path);
-      return entry.isFile() ? [path] : [];
-    });
+      if (entry.isSymbolicLink()) result.symlinks.push(path);
+      else if (entry.isDirectory()) {
+        const nested = walkFiles(path);
+        result.files.push(...nested.files);
+        result.symlinks.push(...nested.symlinks);
+      } else if (entry.isFile()) result.files.push(path);
+      return result;
+    }, { files: [], symlinks: [] });
 }
 
 function rootConfigurationFiles(root) {
@@ -24,12 +29,14 @@ function rootConfigurationFiles(root) {
       const path = join(root, entry.name);
       if (entry.isFile()) return CONFIGURATION_EXTENSIONS.has(extname(entry.name)) ? [path] : [];
       if (!entry.isDirectory() || !ROOT_CONFIGURATION_DIRECTORIES.has(entry.name)) return [];
-      return walkFiles(path).filter((file) => CONFIGURATION_EXTENSIONS.has(extname(file)));
+      return walkFiles(path).files.filter((file) => CONFIGURATION_EXTENSIONS.has(extname(file)));
     });
 }
 
-function isProviderAdapter(text) {
-  return /^---\s*$[\s\S]*?^portability:\s*provider-adapter\s*$[\s\S]*?^---\s*$/m.test(text);
+function isProviderAdapter(path, text) {
+  if (basename(path) !== "SKILL.md") return false;
+  const leadingFrontmatter = text.replace(/^\uFEFF/, "").match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  return leadingFrontmatter?.[1].split(/\r?\n/).some((line) => /^portability:\s*provider-adapter\s*$/.test(line)) ?? false;
 }
 
 function textContains(pattern, text) {
@@ -48,14 +55,17 @@ export function validatePortability(root) {
     if (textContains(/\bmcpServers\b/, text)) add(path, "mcpServers is not portable");
   }
 
-  for (const path of walkFiles(join(root, "skills"))) {
+  const skillFiles = walkFiles(join(root, "skills"));
+  for (const path of skillFiles.symlinks) add(path, "symbolic links are not allowed in canonical skills");
+
+  for (const path of skillFiles.files) {
     const text = readFileSync(path, "utf8");
-    if (isProviderAdapter(text)) continue;
+    if (isProviderAdapter(path, text)) continue;
     if (textContains(/\bcompanion\b/i, text)) add(path, "Companion dependency is not portable");
-    if (textContains(/\b(?:Anthropic API|ANTHROPIC_API_KEY|api\.anthropic\.com)\b/i, text)) {
+    if (textContains(/(?:\bAnthropic(?:['’]s)?\s+(?:API|SDK)\b|@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b)/i, text)) {
       add(path, "Anthropic API instruction is not portable");
     }
-    if (textContains(/\b(?:Claude Code|CLAUDE_PLUGIN_ROOT|claude-obsidian)\b|~\/.claude(?:\/|$)/i, text)) {
+    if (textContains(/\b(?:Claude Code|CLAUDE_[A-Z0-9_]+|claude-obsidian)\b|(?:^|[\\/])\.claude(?:[\\/]|$)/i, text)) {
       add(path, "Claude-only instruction is not portable");
     }
   }
