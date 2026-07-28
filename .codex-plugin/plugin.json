@@ -1,0 +1,6 @@
+{
+  "name": "obsidian-agent",
+  "description": "Portable, CLI-powered Obsidian vault workflows for Codex.",
+  "skills": "../skills",
+  "requires": { "obsidian": ">=1.12.7" }
+}

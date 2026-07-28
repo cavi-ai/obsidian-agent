@@ -1,136 +1,114 @@
-# claude-obsidian (Claude Code plugin)
+# obsidian-agent
 
-Cowork with Claude **inside your Obsidian vault**. This Claude Code plugin pairs
-with the **Companion for Claude** Obsidian plugin: Companion runs a local MCP
-bridge exposing your vault over 15 read/write tools, and this plugin gives
-Claude Code the commands and skills to use it well.
+`obsidian-agent` gives agent hosts a shared set of grounded Obsidian workflows:
+vault synthesis, connection finding, note hygiene, drafting, project tracking,
+and evidence-backed advisor passes. One canonical set of AgentSkills-compatible
+skills powers every host adapter.
 
-## What you get
+The portable package uses the official `obsidian` CLI exclusively. It does not
+require MCP, Companion for Claude, an Anthropic API, or direct vault-file access.
 
-**Commands** (you invoke with `/claude-obsidian:<name>`):
+## Requirement
 
-- **`note-to-artifact`** — turn a note (or topic) into a beautiful,
-  self-contained HTML artifact saved back into the vault as a `claude-html` block.
-- **`session-to-note`** — distill the current Claude session into one
-  consolidated, tagged, linked knowledge note (turns session memory into vault
-  knowledge).
-- **`daily-rollup`** — summarize recent vault activity into a skimmable review
-  (decisions, changes, open tasks).
-- **`manifest-vault`** — audit and optimize the vault: orphans, tag sprawl,
-  missing links, stale notes — then fix with your consent.
-- **`frontmatter`** — audit and normalize note frontmatter to a consistent
-  schema: survey first, confirm the schema, then apply additively with consent.
-- **`manifest-pm`** — a prioritized, client-facing product roadmap from your
-  project notes, routed into the build pipeline.
-- **`manifest-infra`** — grounded infrastructure/system designs (with diagrams)
-  from your architecture notes, routed into the build pipeline.
-- **`manifest-feature`** — a prioritized, evidence-backed feature backlog from
-  your idea/feedback notes, routed into the build pipeline.
-- **`manifest-content`** — a prioritized content plan from your vault knowledge,
-  routed into grounded drafting.
-- **`manifest-risk`** — a grounded, ranked risk register (blockers,
-  contradictions, SPOFs) from your project notes.
-- **`manifest-research`** — vault coverage map, specific knowledge gaps, and a
-  prioritized research agenda.
-- **`moc-builder`** — build or refresh a Map of Content hub note that groups and
-  annotates the notes on a topic or folder.
-- **`source-digest`** — digest research source notes into a cited evidence /
-  comparison table artifact with conflicts and gaps.
-- **`research-workbench`** — frame a research project, capture and review
-  provenance-linked evidence, build claims, audit support, and generate an
-  evidence-backed outline.
-- **`task-harvester`** — collect open tasks scattered across the vault into one
-  consolidated, source-linked, prioritized action list.
-- **`build-from-spec`** — read an Obsidian "build spec" note, implement its task
-  checklist, and report progress to a tracker note.
+Install Obsidian 1.12.7 or newer, enable the official command-line interface in
+Obsidian settings, and make sure `obsidian` is on `PATH`. Verify the setup:
 
-**Skills** (Claude invokes automatically when relevant):
+```sh
+node scripts/obsidian-cli.mjs doctor
+```
 
-- **Foundations** — `vault-grounding` (cite real notes, never fabricate,
-  write-safe) and `vault-routines` (offer editable scheduled routines).
-- **Knowledge** — `vault-synthesis` (grounded, cited "what do I know about X"),
-  `connection-finder` (surface non-obvious, unlinked relationships),
-  `source-digest` (cited evidence table from source notes), and
-  `research-workbench` (the canonical evidence-backed research workflow).
-- **Hygiene** — `consistent-tagging`, `wikilink-weaver`, `moc-builder`,
-  `frontmatter-normalizer` (consistent metadata schema), `note-splitter` (break
-  up bloated notes), `dedup-merge` (consolidate duplicates).
-- **Writing** — `outline-to-draft`, `daily-rollup`, `session-to-note`,
-  `meeting-cleanup`, `summarize-and-link`.
-- **Build** — `plan-to-spec` (planning note → build spec, feeding
-  `build-from-spec`), `task-harvester` (consolidate open tasks),
-  `tracker-driver` (honest live progress), and `build-retrospective` (close-out:
-  shipped / left / lessons).
-- **Cloud** — `cloud-reply` (a dispatched cloud session writes its result back
-  as a reply note + PR so Companion can pull it into the vault on any device).
-- **Advisor personas** — `manifest-vault`, `manifest-pm`, `manifest-infra`,
-  `manifest-feature`, `manifest-content`, `manifest-risk`, `manifest-research`
-  (orchestrators that survey the vault and delegate to the worker skills above).
-- **`note-to-artifact`** — the design system Claude uses for artifacts.
+The doctor only checks the installed CLI. This repository never installs
+Obsidian, enables its CLI setting, or changes a vault.
 
-**`obsidian-vault` MCP server** — pre-wired HTTP connection to the Companion
-bridge. Its 10 always-available reads/audits are `vault_search`, `note_read`,
-`list_recent`, `vault_tags`, `list_titles`, `get_backlinks`,
-`get_outgoing_links`, `frontmatter_query`, `research_project_read`, and
-`research_audit`. Enabling Companion's *Allow MCP writes* adds 14 advertised
-mutations: `note_create`, `note_append`, `note_update`, `update_frontmatter`,
-`note_move`, `base_create`, `canvas_create`, `research_project_create`,
-`research_source_import`, `research_evidence_capture`,
-`research_evidence_review`, `research_claim_create`, `research_claim_link`, and
-`research_outline_generate`.
+## Host support
 
-Research Workbench reads and audits are always available. Project, source,
-evidence, evidence-review, claim, link, and outline mutations require writes to
-be enabled and retain confirmation gating in Companion agent mode. Evidence
-review applies only to evidence records and accepts `reviewed` or `rejected`.
-Permanent legacy aliases remain callable for compatibility, but are
-intentionally not listed as user-facing commands. The bridge remains bound to
-loopback and protected by its required bearer token.
+| Host | Package | Invocation |
+| --- | --- | --- |
+| Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
+| Codex | Native Codex plugin metadata | Ask Codex to use an `obsidian-agent` skill |
+| Gemini CLI | Native Gemini extension metadata | Ask Gemini to use an `obsidian-agent` skill |
+| OpenCode | Isolated OpenCode adapter | Ask OpenCode to use an `obsidian-agent` skill |
+| AgentSkills hosts | Portable `SKILL.md` files | Use the host's normal skill invocation |
 
-## Setup
+All hosts receive the 26 capabilities marked `portable: true` in
+`capabilities.json`. Claude additionally retains thin compatibility commands
+for five explicitly Claude-adapter-only workflows; those workflows are not
+advertised as portable.
 
-1. Install the **Companion for Claude** Obsidian plugin and enable the MCP bridge in
-   its settings. Note the **port** (default `22360`) and copy the **bearer
-   token**.
-2. Make them available to Claude Code (e.g. in your shell or project env):
-   ```bash
-   export OBSIDIAN_MCP_PORT=22360
-   export OBSIDIAN_MCP_TOKEN=<token from Companion settings>
-   ```
-3. Add this marketplace and install the plugin:
-   ```bash
-   /plugin marketplace add cavi-ai/claude-obsidian
-   /plugin install claude-obsidian@claude-obsidian
-   ```
-4. Open Obsidian (the bridge only runs while Obsidian is open).
-5. Try the research workflow with
-   `/claude-obsidian:research-workbench "Investigate this project's sources"`.
+## Install
 
-The bridge binds to `127.0.0.1` only — your vault is never exposed to the
-network.
+Claude can install the native package from its marketplace:
 
-## Pairs well with kepano's Obsidian Skills
+```text
+/plugin marketplace add cavi-ai/obsidian-agent
+/plugin install obsidian-agent@obsidian-agent
+```
 
-Steph Ango (@kepano, Obsidian's CEO) publishes
-[obsidian-skills](https://github.com/kepano/obsidian-skills) — agent skills for
-Obsidian Flavored Markdown, Bases, JSON Canvas, `obsidian-cli`, and Defuddle web
-clipping. The two packs are complementary, and we recommend installing both:
+For Codex, Gemini CLI, OpenCode, and AgentSkills-compatible hosts, clone this
+repository and preview the host-specific installation. Project scope defaults
+to the current directory; pass `--project /absolute/path` to target another
+project.
 
-- **His skills** teach Claude the *file formats* and work on vault files
-  directly — even when Obsidian is closed — via plain file access or
-  `obsidian-cli`.
-- **This plugin** drives the *live, running* vault through Companion's MCP
-  bridge: search (semantic when indexed), backlinks, frontmatter queries,
-  research workflows, and reviewed writes, with Obsidian's metadata cache and
-  the plugin's safety gating in the loop.
+```sh
+node scripts/install.mjs --host codex --scope user
+node scripts/install.mjs --host gemini --scope project --project /path/to/project
+node scripts/install.mjs --host opencode --scope user
+node scripts/install.mjs --host agentskills --scope project
+```
 
-Our `.base` / `.canvas` / markdown emitters are validated against his format
-skills (vendored as the pinned submodule `upstream/obsidian-skills/`).
+The same installer can preview Claude's filesystem package when marketplace
+installation is not appropriate:
+
+```sh
+node scripts/install.mjs --host claude --scope project
+```
+
+Each command above is a dry run. It prints every destination and a content-bound
+preview hash. Nothing is written until you repeat the command with the exact
+hash:
+
+```sh
+node scripts/install.mjs --host codex --scope user --confirm <preview-hash>
+```
+
+The installer copies only the selected provider metadata, Claude command shims
+when applicable, and canonical portable skills. It refuses to overwrite files
+that are not listed in its `.obsidian-agent-install.json` ownership record.
+
+To recover or uninstall, inspect that ownership record under the printed
+destination root and remove only its listed files. Keep the record until the
+last owned file is removed. Vault content and Obsidian settings are never part
+of an install plan.
+
+## CLI and write safety
+
+When a vault must be selected, workflows use the official global-option order:
+
+```sh
+obsidian vault=Work search query="agent systems" format=json
+obsidian vault=Work read path="Projects/CAVI.md"
+```
+
+Writes remain preview-and-confirm, avoid silent overwrites, and reread changed
+notes. Exact vault-root targets use `path=`. The portable core does not use
+`obsidian eval` as an escape hatch.
+
+## Contributing and validation
+
+Keep workflow logic in `skills/`; provider adapters should only package or
+delegate to those canonical files. Run the complete gate before proposing a
+change:
+
+```sh
+node --test 'scripts/**/*.test.mjs'
+node scripts/validate-registry.mjs
+node scripts/validate-portability.mjs
+git diff --check
+```
+
+Versions in native manifests move only for an intentional release. Refactors
+and host-packaging changes do not imply a version bump or release.
 
 ## Credits
 
-The artifact design system is inspired by **Thariq Shihipar's** "HTML is all you
-need to make effective reports/dashboards." Obsidian format references are
-vendored from **Steph Ango's** obsidian-skills (MIT), and web-source capture uses
-his Defuddle library. See the repository `NOTICE` for full attribution. This
-plugin is an original work, not a copy of those repos.
+The repository retains its existing third-party attributions in `NOTICE`.

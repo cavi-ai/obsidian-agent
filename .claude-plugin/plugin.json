@@ -1,12 +1,12 @@
 {
-  "name": "claude-obsidian",
-  "description": "Cowork with Claude inside your Obsidian vault: synthesize and link notes, keep tags clean, draft from outlines, capture sessions as knowledge, build self-contained HTML artifacts, drive spec-based builds, and get manifest-* advisor roadmaps — all over the Companion for Claude MCP bridge.",
+  "name": "obsidian-agent",
+  "description": "Portable, CLI-powered Obsidian vault workflows with Claude compatibility commands.",
   "version": "0.1.0",
   "author": {
     "name": "Sasan Sotoodehfar",
     "url": "https://github.com/cavi-ai"
   },
-  "homepage": "https://github.com/cavi-ai/claude-obsidian-plugin",
+  "homepage": "https://github.com/cavi-ai/obsidian-agent",
   "license": "MIT",
-  "keywords": ["obsidian", "artifacts", "html", "mcp", "notes", "cowork"]
+  "keywords": ["obsidian", "agent-skills", "notes", "cli", "knowledge"]
 }

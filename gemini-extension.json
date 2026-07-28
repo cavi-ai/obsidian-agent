@@ -1,0 +1,7 @@
+{
+  "name": "obsidian-agent",
+  "version": "0.1.0",
+  "description": "Portable, CLI-powered Obsidian vault workflows for Gemini CLI.",
+  "skills": "skills",
+  "requires": { "obsidian": ">=1.12.7" }
+}

@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "identity": "obsidian-agent",
+  "requirements": { "obsidian": ">=1.12.7" },
+  "transport": "cli",
+  "providers": {
+    "claude": { "native": true, "artifact": "providers/claude" },
+    "codex": { "native": true, "artifact": "providers/codex" },
+    "gemini": { "native": true, "artifact": "providers/gemini" },
+    "opencode": { "native": true, "artifact": "providers/opencode" },
+    "agentskills": { "native": false, "artifact": "providers/agentskills" }
+  }
+}

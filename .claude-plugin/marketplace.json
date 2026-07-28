@@ -1,18 +1,18 @@
 {
-  "name": "claude-obsidian",
+  "name": "obsidian-agent",
   "owner": {
     "name": "Sasan Sotoodehfar",
     "url": "https://github.com/cavi-ai"
   },
   "metadata": {
-    "description": "Claude + Obsidian coworking: vault-grounded synthesis, PKM hygiene, drafting, session capture, and advisor personas over a local MCP bridge.",
+    "description": "Portable, CLI-powered Obsidian vault workflows for agent hosts.",
     "version": "0.1.0"
   },
   "plugins": [
     {
-      "name": "claude-obsidian",
+      "name": "obsidian-agent",
       "source": ".",
-      "description": "Cowork with Claude in your Obsidian vault: synthesize notes, tag and link the graph, draft from outlines, capture sessions as notes, build HTML artifacts, run spec-based builds, and get manifest-* advisor roadmaps — all via the Companion for Claude MCP bridge."
+      "description": "Use canonical Obsidian CLI workflows with Claude compatibility commands."
     }
   ]
 }

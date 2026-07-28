@@ -1,44 +1,47 @@
 # CLAUDE.md
 
-## What this repo is
+## What this repository is
 
-**`claude-obsidian`** — a Claude Code plugin (commands + skills) that lets you cowork
-with Claude inside an Obsidian vault. Pure markdown/JSON: no build step, no bundler.
+`obsidian-agent` is a cross-host plugin for grounded Obsidian workflows. The
+canonical `skills/` use the official Obsidian CLI 1.12.7+ and are shared by
+Claude, Codex, Gemini CLI, OpenCode, and AgentSkills-compatible hosts.
 
-- `.claude-plugin/plugin.json` — the plugin manifest (name, version, metadata).
-- `.claude-plugin/marketplace.json` — makes this repo installable as its own
-  single-plugin marketplace (`source: "."`).
-- `commands/` — slash commands (`/claude-obsidian:<name>`).
-- `skills/` — the skills those commands and Claude draw on.
-- `.mcp.json` — wires Claude Code to the Companion MCP bridge (loopback HTTP,
-  bearer token via `${OBSIDIAN_MCP_TOKEN}`, port `${OBSIDIAN_MCP_PORT:-22360}`).
+The portable core has no MCP, Companion for Claude, Anthropic API, or direct
+vault-file dependency. Companion for Claude is a separate Obsidian community
+plugin and is not part of this repository's runtime topology.
 
-## The pairing
+## Source layout
 
-This plugin is one half of a paired system. The other half is **Companion for Claude**,
-an Obsidian community plugin that runs a loopback MCP server exposing the vault. This
-plugin gives Claude Code the commands/skills to drive that server well. The two meet
-only at the **MCP protocol** — there is no code or filesystem coupling. Adding a command
-or skill here never requires a Companion change unless it depends on a *new* MCP tool.
+- `skills/` — canonical workflow and safety instructions.
+- `capabilities.json` — capability registry and portability classification.
+- `commands/` — thin Claude compatibility delegates.
+- `.claude-plugin/`, `.codex-plugin/`, and `gemini-extension.json` — native host
+  metadata.
+- `providers/` — isolated provider adapters with no copied workflow logic.
+- `plugin.json` — cross-host provider map and runtime contract.
+- `scripts/obsidian-cli.mjs` — deterministic CLI argument and doctor contract.
+- `scripts/install.mjs` — preview-first provider installer.
 
-## Topology (this repo is the source of truth)
+## Contribution rules
 
-- **This repo** — source of truth for the plugin.
-- **`cavi-ai/claude-obsidian`** (mono) — consumes this repo as a git **submodule** at
-  `claude-plugin/` to co-develop the paired halves and test against the live MCP bridge.
-- **`cavi-ai/claude-plugins`** (catalog) — references this repo via a `github` source so
-  users discover/install it alongside other CAVI plugins from one marketplace.
+- Keep portable workflow logic in canonical skills, not provider adapters.
+- Select an ambiguous vault explicitly with `obsidian vault=<vault> <command>`.
+- Use `path=` for exact vault-root targets and structured output only where the
+  official CLI supports it.
+- Preserve cite-before-claim, verify-before-link, preview-before-write,
+  no-silent-overwrite, and post-write reread behavior.
+- Do not add MCP configuration or use `obsidian eval` as a general escape hatch.
+- Keep non-portable workflows explicitly marked and out of universal packages.
 
-## Install
+Run before committing:
 
+```sh
+node --test 'scripts/**/*.test.mjs'
+node scripts/validate-registry.mjs
+node scripts/validate-portability.mjs
+git diff --check
 ```
-/plugin marketplace add cavi-ai/claude-obsidian-plugin
-/plugin install claude-obsidian@claude-obsidian
-```
 
-## Conventions
-
-- **Versions:** `plugin.json` and `marketplace.json` versions move in lockstep. Do not
-  bump versions without an explicit go — a move/refactor is not a release.
-- **Git:** commit steps are gated on the maintainer. Don't push, tag, or open PRs
-  without explicit approval.
+Do not bump manifest versions, tag, release, push, or rename a remote without
+explicit maintainer approval. A refactor or provider-packaging change is not a
+release.
