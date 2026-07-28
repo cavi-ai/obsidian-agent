@@ -134,3 +134,23 @@ test("reports ordinary Claude desktop, client, and configuration path variants",
     "skills/variants/SKILL.md: Claude-only instruction is not portable",
   ]);
 });
+
+const PROVIDER_VARIANTS = [
+  ["Anthropic language-qualified SDK", "Install the Anthropic Python SDK.", ["Anthropic API instruction is not portable"]],
+  ["Anthropic punctuated API client", "Use Anthropic's official, TypeScript API client.", ["Anthropic API instruction is not portable"]],
+  ["Claude command-line interface", "Use the Claude command-line interface.", ["Claude-only instruction is not portable"]],
+  ["XDG configuration path", "Read $XDG_CONFIG_HOME/claude/settings.json.", ["Claude-only instruction is not portable"]],
+  ["braced XDG configuration path", "Read ${XDG_CONFIG_HOME}/claude/settings.json.", ["Claude-only instruction is not portable"]],
+  ["HOME configuration path", "Read ${HOME}/.config/claude/settings.json.", ["Claude-only instruction is not portable"]],
+  ["absolute user configuration path", "Read /Users/agent/.config/claude/settings.json.", ["Claude-only instruction is not portable"]],
+  ["Windows configuration path", "Read C:\\Users\\agent\\.config\\claude\\settings.json.", ["Claude-only instruction is not portable"]],
+  ["generic provider words", "A claude is a generic name and anthropic is an adjective.", []],
+  ["generic command line and project path", "Use a command-line interface in /projects/claude/readme.", []],
+];
+
+for (const [name, text, messages] of PROVIDER_VARIANTS) {
+  test(`handles ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), messages.map((message) => `skills/case/SKILL.md: ${message}`));
+  });
+}

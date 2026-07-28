@@ -6,6 +6,12 @@ import { fileURLToPath } from "node:url";
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 const CONFIGURATION_EXTENSIONS = new Set([".json", ".toml", ".yaml", ".yml"]);
 const ADAPTER_TEXT_EXTENSIONS = new Set([".md", ".mdx", ".txt"]);
+const ANTHROPIC_CONCEPT = /\banthropic\b(?:[\s\p{P}]+(?:[\p{L}\p{N}_+-]+[\s\p{P}]+){0,4})?(?:api|client|sdk)\b/iu;
+const CLAUDE_INTERFACE_CONCEPT = /\bclaude\b(?:[\s\p{P}]+(?:[\p{L}\p{N}_+-]+[\s\p{P}]+){0,3})?(?:code|cli|desktop|command(?:[\s\p{P}]+line)(?:[\s\p{P}]+interface)?)\b/iu;
+const CLAUDE_CONFIG_PATHS = [
+  /(?:^|[\\/])(?:\.claude|\.config[\\/]+claude|AppData[\\/]+Roaming[\\/]+Claude|Library[\\/]+Application Support[\\/]+Claude)(?:[\\/]|$)/i,
+  /(?:\$(?:\{)?(?:env:)?XDG_CONFIG_HOME(?:\})?|%XDG_CONFIG_HOME%)[\\/]+claude(?:[\\/]|$)/i,
+];
 
 function walkFiles(directory) {
   if (!existsSync(directory)) return { files: [], symlinks: [] };
@@ -44,6 +50,10 @@ function textContains(pattern, text) {
   return pattern.test(text);
 }
 
+function hasClaudeConfigPath(text) {
+  return CLAUDE_CONFIG_PATHS.some((pattern) => textContains(pattern, text));
+}
+
 export function validatePortability(root) {
   const errors = [];
   const add = (path, message) => errors.push(`${relative(root, path)}: ${message}`);
@@ -63,10 +73,10 @@ export function validatePortability(root) {
     const text = readFileSync(path, "utf8");
     if (isProviderAdapter(path, text)) continue;
     if (textContains(/\bcompanion\b/i, text)) add(path, "Companion dependency is not portable");
-    if (textContains(/(?:\bAnthropic(?:['’]s)?\s+(?:API|SDK|(?:Python\s+)?client)\b|@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b)/i, text)) {
+    if (textContains(ANTHROPIC_CONCEPT, text) || textContains(/@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b/i, text)) {
       add(path, "Anthropic API instruction is not portable");
     }
-    if (textContains(/\b(?:Claude\s+(?:Code|Desktop|CLI)|CLAUDE_[A-Z0-9_]+|claude-obsidian)\b|(?:^|[\\/])(?:\.claude|\.config[\\/]+claude|AppData[\\/]+Roaming[\\/]+Claude|Library[\\/]+Application Support[\\/]+Claude)(?:[\\/]|$)/i, text)) {
+    if (textContains(CLAUDE_INTERFACE_CONCEPT, text) || textContains(/\b(?:CLAUDE_[A-Z0-9_]+|claude-obsidian)\b/i, text) || hasClaudeConfigPath(text)) {
       add(path, "Claude-only instruction is not portable");
     }
   }
