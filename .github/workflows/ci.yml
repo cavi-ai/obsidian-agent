@@ -17,3 +17,5 @@ jobs:
         run: node --test 'scripts/**/*.test.mjs'
       - name: Validate capability registry
         run: node scripts/validate-registry.mjs
+      - name: Validate portability
+        run: node scripts/validate-portability.mjs
