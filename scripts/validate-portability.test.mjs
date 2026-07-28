@@ -154,3 +154,57 @@ for (const [name, text, messages] of PROVIDER_VARIANTS) {
     assert.deepEqual(validatePortability(root), messages.map((message) => `skills/case/SKILL.md: ${message}`));
   });
 }
+
+const STRUCTURED_PROVIDER_INDICATORS = [
+  ["provider-owned SDK", "Use the SDK maintained by Anthropic.", "Anthropic API instruction is not portable"],
+  ["expanded provider SDK name", "Use Anthropic software development kit.", "Anthropic API instruction is not portable"],
+  ["direct Claude executable invocation", "Run claude --version from a terminal.", "Claude-only instruction is not portable"],
+  ["HOME Claude configuration file", "Read ${HOME}/.claude.json.", "Claude-only instruction is not portable"],
+  ["absolute POSIX Claude configuration file", "Read /Users/agent/.claude.json.", "Claude-only instruction is not portable"],
+  ["Windows Claude configuration file", "Read C:\\Users\\agent\\.claude.json.", "Claude-only instruction is not portable"],
+];
+
+for (const [name, text, message] of STRUCTURED_PROVIDER_INDICATORS) {
+  test(`reports ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+  });
+}
+
+const BENIGN_PROVIDER_WORDS = [
+  ["Claude Shannon source code", "Claude Shannon source code is discussed."],
+  ["Claude Monet desktop wallpaper", "Use a Claude Monet desktop wallpaper."],
+  ["anthropic principle and API ethics", "The anthropic principle informs API ethics."],
+  ["anthropic principle in an ownership sentence", "The API client is maintained by anthropic principle researchers."],
+  ["English import verb with anthropic adjective", "We import anthropic principles into the API ethics discussion."],
+];
+
+for (const [name, text] of BENIGN_PROVIDER_WORDS) {
+  test(`allows benign ${name} prose`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), []);
+  });
+}
+
+const PROVIDER_GRAMMAR_CASES = [
+  ["provider-owned API client", "Use the API client provided by Anthropic.", "Anthropic API instruction is not portable"],
+  ["provider-maintained language SDK", "Anthropic maintains the Python SDK.", "Anthropic API instruction is not portable"],
+  ["first-party client library", "Use Anthropic's first-party Go client library.", "Anthropic API instruction is not portable"],
+  ["Python package installation", "Run python -m pip install anthropic.", "Anthropic API instruction is not portable"],
+  ["Python package import", "Use `from anthropic import Anthropic`.", "Anthropic API instruction is not portable"],
+  ["Claude subcommand invocation", "Run claude mcp list.", "Claude-only instruction is not portable"],
+  ["quoted Claude executable", "Run `claude`.", "Claude-only instruction is not portable"],
+  ["Claude Code package", "Install @anthropic-ai/claude-code.", "Claude-only instruction is not portable"],
+  ["XDG Claude Code config directory", "Read ${XDG_CONFIG_HOME}/claude-code/settings.json.", "Claude-only instruction is not portable"],
+  ["macOS Claude config directory", "Read ~/Library/Application Support/Claude/settings.json.", "Claude-only instruction is not portable"],
+  ["Windows APPDATA Claude config directory", "Read %APPDATA%\\Claude\\settings.json.", "Claude-only instruction is not portable"],
+  ["Claude Desktop config filename", "Read claude_desktop_config.json.", "Claude-only instruction is not portable"],
+  ["Claude project instructions filename", "Read CLAUDE.md.", "Claude-only instruction is not portable"],
+];
+
+for (const [name, text, message] of PROVIDER_GRAMMAR_CASES) {
+  test(`reports structured ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+  });
+}

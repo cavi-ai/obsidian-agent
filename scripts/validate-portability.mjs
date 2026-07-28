@@ -6,11 +6,53 @@ import { fileURLToPath } from "node:url";
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 const CONFIGURATION_EXTENSIONS = new Set([".json", ".toml", ".yaml", ".yml"]);
 const ADAPTER_TEXT_EXTENSIONS = new Set([".md", ".mdx", ".txt"]);
-const ANTHROPIC_CONCEPT = /\banthropic\b(?:[\s\p{P}]+(?:[\p{L}\p{N}_+-]+[\s\p{P}]+){0,4})?(?:api|client|sdk)\b/iu;
-const CLAUDE_INTERFACE_CONCEPT = /\bclaude\b(?:[\s\p{P}]+(?:[\p{L}\p{N}_+-]+[\s\p{P}]+){0,3})?(?:code|cli|desktop|command(?:[\s\p{P}]+line)(?:[\s\p{P}]+interface)?)\b/iu;
+const GRAMMAR_SEPARATOR = String.raw`(?:[\s,;:()/]|[-–—])+`;
+const ANTHROPIC_PROVIDER = String.raw`Anthropic(?!${GRAMMAR_SEPARATOR}principle\b)`;
+const ANTHROPIC_PRODUCT = String.raw`(?:API(?:${GRAMMAR_SEPARATOR}client)?|SDK(?:${GRAMMAR_SEPARATOR}client)?|software${GRAMMAR_SEPARATOR}development${GRAMMAR_SEPARATOR}kit|client(?:${GRAMMAR_SEPARATOR}(?:library|SDK))?)`;
+const ANTHROPIC_PRODUCT_MODIFIER = String.raw`(?:official|first${GRAMMAR_SEPARATOR}party|maintained|supported|C(?:\+\+|#)|\.NET|Go|Java|JavaScript|JS|Kotlin|PHP|Python|Ruby|Rust|Swift|TypeScript|TS)`;
+const ANTHROPIC_PRODUCT_REFERENCE = String.raw`(?:${ANTHROPIC_PRODUCT_MODIFIER}${GRAMMAR_SEPARATOR})*${ANTHROPIC_PRODUCT}`;
+const ANTHROPIC_OWNERSHIP_VERB = String.raw`(?:maintained|developed|made|owned|provided|published|released|supported)`;
+const ANTHROPIC_PRODUCT_GRAMMARS = [
+  new RegExp(String.raw`\b${ANTHROPIC_PROVIDER}(?:['’]s)?${GRAMMAR_SEPARATOR}${ANTHROPIC_PRODUCT_REFERENCE}\b`, "iu"),
+  new RegExp(String.raw`\b${ANTHROPIC_PRODUCT_REFERENCE}${GRAMMAR_SEPARATOR}(?:(?:is|was|officially)${GRAMMAR_SEPARATOR})*${ANTHROPIC_OWNERSHIP_VERB}${GRAMMAR_SEPARATOR}by${GRAMMAR_SEPARATOR}${ANTHROPIC_PROVIDER}\b`, "iu"),
+  new RegExp(String.raw`\b${ANTHROPIC_PRODUCT_REFERENCE}${GRAMMAR_SEPARATOR}(?:from|by)${GRAMMAR_SEPARATOR}${ANTHROPIC_PROVIDER}\b`, "iu"),
+  new RegExp(String.raw`\b${ANTHROPIC_PROVIDER}${GRAMMAR_SEPARATOR}(?:maintains|develops|makes|owns|provides|publishes|releases|supports)${GRAMMAR_SEPARATOR}(?:(?:an?|the|its|this)${GRAMMAR_SEPARATOR})?${ANTHROPIC_PRODUCT_REFERENCE}\b`, "iu"),
+  new RegExp(String.raw`\b${ANTHROPIC_PRODUCT_REFERENCE}${GRAMMAR_SEPARATOR}(?:that|which)${GRAMMAR_SEPARATOR}${ANTHROPIC_PROVIDER}${GRAMMAR_SEPARATOR}(?:maintains|develops|makes|owns|provides|publishes|releases|supports)\b`, "iu"),
+];
+const ANTHROPIC_PACKAGE_INDICATORS = [
+  /@anthropic-ai\/sdk\b/i,
+  /\b(?:python\s+-m\s+)?pip3?\s+install(?:\s+--?[\w-]+(?:=\S+)?)*\s+anthropic\b/i,
+  /\b(?:poetry|uv)\s+add(?:\s+--?[\w-]+(?:=\S+)?)*\s+anthropic\b/i,
+  /\b(?:from\s+anthropic(?:\.[A-Za-z_][\w.]*)?\s+import|import\s+anthropic(?:\s+as\s+[A-Za-z_]\w*)?)(?!\s+\p{L})/iu,
+  /\brequire\s*\(\s*["']anthropic["']\s*\)/i,
+];
+const ANTHROPIC_UNAMBIGUOUS_INDICATORS = [
+  /\bANTHROPIC_[A-Z0-9_]+\b/i,
+  /\bapi\.anthropic\.com\b/i,
+];
+const CLAUDE_INTERFACE_GRAMMARS = [
+  new RegExp(String.raw`\bClaude(?:['’]s)?${GRAMMAR_SEPARATOR}(?:Code|CLI|Desktop)\b`, "iu"),
+  new RegExp(String.raw`\bClaude(?:['’]s)?${GRAMMAR_SEPARATOR}command${GRAMMAR_SEPARATOR}line(?:${GRAMMAR_SEPARATOR}interface)?\b`, "iu"),
+];
+const CLAUDE_COMMAND_INDICATORS = [
+  /\bclaude(?:\.exe)?\s+--?[a-z0-9][\w-]*\b/i,
+  /\bclaude(?:\.exe)?\s+(?:auth|config|doctor|help|mcp|plugin|update|version)\b/i,
+  /(?:^|\r?\n)\s*(?:\$|>|PS>)\s*claude(?:\.exe)?(?:\s|$)/im,
+  /`claude(?:\.exe)?(?:\s+[^`\r\n]+)?`/i,
+];
+const CLAUDE_UNAMBIGUOUS_INDICATORS = [
+  /@anthropic-ai\/claude-code\b/i,
+  /\b(?:CLAUDE_[A-Z0-9_]+|claude-obsidian)\b/i,
+];
 const CLAUDE_CONFIG_PATHS = [
-  /(?:^|[\\/])(?:\.claude|\.config[\\/]+claude|AppData[\\/]+Roaming[\\/]+Claude|Library[\\/]+Application Support[\\/]+Claude)(?:[\\/]|$)/i,
-  /(?:\$(?:\{)?(?:env:)?XDG_CONFIG_HOME(?:\})?|%XDG_CONFIG_HOME%)[\\/]+claude(?:[\\/]|$)/i,
+  /(?:^|[\\/\s"'`(=])\.claude(?:\.json)?(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:^|[\\/\s"'`(=])\.config[\\/]+claude(?:-code)?(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:\$(?:\{)?(?:env:)?XDG_CONFIG_HOME(?:\})?|%XDG_CONFIG_HOME%)[\\/]+claude(?:-code)?(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:^|[\\/])AppData[\\/]+Roaming[\\/]+Claude(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:^|[\\/])Library[\\/]+Application Support[\\/]+Claude(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:\$(?:\{)?(?:env:)?APPDATA(?:\})?|%APPDATA%)[\\/]+Claude(?=$|[\\/\s"'`),.;:\]}])/i,
+  /(?:^|[\\/\s"'`(=])claude_desktop_config\.json(?=$|[\s"'`),.;:\]}])/i,
+  /(?:^|[\\/\s"'`(=])CLAUDE\.md(?=$|[\s"'`),.;:\]}])/,
 ];
 
 function walkFiles(directory) {
@@ -50,8 +92,12 @@ function textContains(pattern, text) {
   return pattern.test(text);
 }
 
+function textContainsAny(patterns, text) {
+  return patterns.some((pattern) => textContains(pattern, text));
+}
+
 function hasClaudeConfigPath(text) {
-  return CLAUDE_CONFIG_PATHS.some((pattern) => textContains(pattern, text));
+  return textContainsAny(CLAUDE_CONFIG_PATHS, text);
 }
 
 export function validatePortability(root) {
@@ -73,10 +119,15 @@ export function validatePortability(root) {
     const text = readFileSync(path, "utf8");
     if (isProviderAdapter(path, text)) continue;
     if (textContains(/\bcompanion\b/i, text)) add(path, "Companion dependency is not portable");
-    if (textContains(ANTHROPIC_CONCEPT, text) || textContains(/@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b/i, text)) {
+    if (textContainsAny(ANTHROPIC_PRODUCT_GRAMMARS, text)
+      || textContainsAny(ANTHROPIC_PACKAGE_INDICATORS, text)
+      || textContainsAny(ANTHROPIC_UNAMBIGUOUS_INDICATORS, text)) {
       add(path, "Anthropic API instruction is not portable");
     }
-    if (textContains(CLAUDE_INTERFACE_CONCEPT, text) || textContains(/\b(?:CLAUDE_[A-Z0-9_]+|claude-obsidian)\b/i, text) || hasClaudeConfigPath(text)) {
+    if (textContainsAny(CLAUDE_INTERFACE_GRAMMARS, text)
+      || textContainsAny(CLAUDE_COMMAND_INDICATORS, text)
+      || textContainsAny(CLAUDE_UNAMBIGUOUS_INDICATORS, text)
+      || hasClaudeConfigPath(text)) {
       add(path, "Claude-only instruction is not portable");
     }
   }
