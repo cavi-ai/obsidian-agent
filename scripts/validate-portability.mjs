@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { existsSync, readdirSync, readFileSync } from "node:fs";
-import { basename, dirname, extname, join, relative } from "node:path";
+import { dirname, extname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 const CONFIGURATION_EXTENSIONS = new Set([".json", ".toml", ".yaml", ".yml"]);
+const ADAPTER_TEXT_EXTENSIONS = new Set([".md", ".mdx", ".txt"]);
 
 function walkFiles(directory) {
   if (!existsSync(directory)) return { files: [], symlinks: [] };
@@ -34,7 +35,7 @@ function rootConfigurationFiles(root) {
 }
 
 function isProviderAdapter(path, text) {
-  if (basename(path) !== "SKILL.md") return false;
+  if (!ADAPTER_TEXT_EXTENSIONS.has(extname(path).toLowerCase())) return false;
   const leadingFrontmatter = text.replace(/^\uFEFF/, "").match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   return leadingFrontmatter?.[1].split(/\r?\n/).some((line) => /^portability:\s*provider-adapter\s*$/.test(line)) ?? false;
 }
@@ -62,10 +63,10 @@ export function validatePortability(root) {
     const text = readFileSync(path, "utf8");
     if (isProviderAdapter(path, text)) continue;
     if (textContains(/\bcompanion\b/i, text)) add(path, "Companion dependency is not portable");
-    if (textContains(/(?:\bAnthropic(?:['’]s)?\s+(?:API|SDK)\b|@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b)/i, text)) {
+    if (textContains(/(?:\bAnthropic(?:['’]s)?\s+(?:API|SDK|(?:Python\s+)?client)\b|@anthropic-ai\/sdk\b|\bANTHROPIC_[A-Z0-9_]+\b|\bapi\.anthropic\.com\b)/i, text)) {
       add(path, "Anthropic API instruction is not portable");
     }
-    if (textContains(/\b(?:Claude Code|CLAUDE_[A-Z0-9_]+|claude-obsidian)\b|(?:^|[\\/])\.claude(?:[\\/]|$)/i, text)) {
+    if (textContains(/\b(?:Claude\s+(?:Code|Desktop|CLI)|CLAUDE_[A-Z0-9_]+|claude-obsidian)\b|(?:^|[\\/])(?:\.claude|\.config[\\/]+claude|AppData[\\/]+Roaming[\\/]+Claude|Library[\\/]+Application Support[\\/]+Claude)(?:[\\/]|$)/i, text)) {
       add(path, "Claude-only instruction is not portable");
     }
   }

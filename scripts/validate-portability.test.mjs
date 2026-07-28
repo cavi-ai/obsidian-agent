@@ -17,14 +17,22 @@ function fixture(files = {}) {
 test("allows portable skills and explicitly declared provider adapters", () => {
   const root = fixture({
     "plugin.json": '{"name":"obsidian-agent"}',
-    "skills/portable/SKILL.md": "# Portable\n\nUse the Obsidian CLI.\n",
+    "skills/portable/SKILL.md": "# Portable\n\nUse the Obsidian CLI. A claude is a generic name; anthropic is an adjective here.\n",
     "skills/provider/SKILL.md": "\uFEFF---\nportability: provider-adapter\n---\n\nClaude Code adapter instructions.\n",
   });
 
   assert.deepEqual(validatePortability(root), []);
 });
 
-test("only allows a provider adapter declared in leading SKILL.md frontmatter", () => {
+test("allows leading provider-adapter declarations in canonical support text files", () => {
+  const root = fixture({
+    "skills/provider/references/adapter.md": "---\nportability: provider-adapter\n---\n\nClaude Code adapter instructions.\n",
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("only allows a provider adapter declared in leading canonical text frontmatter", () => {
   const root = fixture({
     "skills/body/SKILL.md": "# Skill\n\n---\nportability: provider-adapter\n---\n\nClaude Code instructions.\n",
     "skills/fenced/SKILL.md": "```yaml\n---\nportability: provider-adapter\n---\n```\n\nClaude Code instructions.\n",
@@ -113,5 +121,16 @@ test("reports standalone Anthropic SDK package and environment variable referenc
   assert.deepEqual(validatePortability(root), [
     "skills/env/SKILL.md: Anthropic API instruction is not portable",
     "skills/sdk/SKILL.md: Anthropic API instruction is not portable",
+  ]);
+});
+
+test("reports ordinary Claude desktop, client, and configuration path variants", () => {
+  const root = fixture({
+    "skills/variants/SKILL.md": "Use Claude Desktop and the claude CLI. Install the anthropic Python client and Anthropic SDK-client. Read ~/.config/claude/settings.json, ${HOME}/.config/claude/settings.json, and C:\\Users\\agent\\.config\\claude\\settings.json.\n",
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/variants/SKILL.md: Anthropic API instruction is not portable",
+    "skills/variants/SKILL.md: Claude-only instruction is not portable",
   ]);
 });
