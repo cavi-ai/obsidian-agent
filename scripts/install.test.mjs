@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdirSync, mkdtempSync, readFileSync, symlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -32,7 +32,9 @@ test("all provider manifests use the universal identity and no MCP configuration
     assert.doesNotMatch(text, /mcpServers|\.mcp\.json|Companion MCP/i);
   }
   assert.equal(JSON.parse(readFileSync(join(root, ".codex-plugin/plugin.json"), "utf8")).skills, "../skills");
-  assert.equal(JSON.parse(readFileSync(join(root, "gemini-extension.json"), "utf8")).skills, "skills");
+  assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(root, "gemini-extension.json"), "utf8"))).sort(), [
+    "description", "name", "version",
+  ]);
 });
 
 test("installer exposes exactly the supported host matrix", () => {
@@ -68,6 +70,30 @@ test("dry-run plans stay under the selected user or project host root", () => {
       assert.ok(plan.files.every(({ path }) => !path.startsWith("skills/vault-routines/")));
       assert.ok(plan.files.every(({ source }) => !source.endsWith("/.mcp.json")));
     }
+  }
+});
+
+test("OpenCode and Gemini plans use their exact native skill discovery roots", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-native-roots-"));
+  const cases = [
+    ["opencode", "user", join(sandbox, "home", ".config", "opencode")],
+    ["opencode", "project", join(sandbox, "project", ".opencode")],
+    ["gemini", "user", join(sandbox, "home", ".gemini")],
+    ["gemini", "project", join(sandbox, "project", ".gemini")],
+  ];
+  for (const [host, scope, expectedRoot] of cases) {
+    const plan = buildInstallPlan(root, {
+      host,
+      scope,
+      home: join(sandbox, "home"),
+      project: join(sandbox, "project"),
+    });
+    assert.equal(plan.destinationRoot, expectedRoot);
+    assert.ok(plan.files.some(({ destination }) =>
+      destination === join(expectedRoot, "skills", "vault-synthesis", "SKILL.md")));
+    assert.ok(plan.files.filter(({ source }) => source.includes("/skills/")).every(({ destination }) =>
+      destination.startsWith(join(expectedRoot, "skills") + "/")));
+    assert.ok(plan.files.every(({ destination }) => !destination.includes("/plugins/obsidian-agent/")));
   }
 });
 
@@ -107,4 +133,46 @@ test("installer refuses a destination path that traverses a symlink", () => {
     project: sandbox,
   });
   assert.throws(() => executeInstallPlan(plan, { confirm: hashInstallPlan(plan) }), /symbolic link/);
+});
+
+test("installer rejects an ownership marker symlink without changing its outside target", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-marker-"));
+  const outside = join(mkdtempSync(join(tmpdir(), "obsidian-agent-marker-outside-")), "record.json");
+  const plan = buildInstallPlan(root, { host: "agentskills", scope: "project", project: sandbox });
+  mkdirSync(plan.destinationRoot, { recursive: true });
+  const original = '{"identity":"outside"}\n';
+  writeFileSync(outside, original);
+  symlinkSync(outside, join(plan.destinationRoot, ".obsidian-agent-install.json"));
+  assert.throws(() => executeInstallPlan(plan, { confirm: hashInstallPlan(plan) }), /ownership marker.*symbolic link/);
+  assert.equal(readFileSync(outside, "utf8"), original);
+});
+
+test("installer rejects a dangling ownership marker symlink", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-dangling-marker-"));
+  const outside = join(mkdtempSync(join(tmpdir(), "obsidian-agent-dangling-outside-")), "missing.json");
+  const plan = buildInstallPlan(root, { host: "agentskills", scope: "project", project: sandbox });
+  mkdirSync(plan.destinationRoot, { recursive: true });
+  symlinkSync(outside, join(plan.destinationRoot, ".obsidian-agent-install.json"));
+  assert.throws(() => executeInstallPlan(plan, { confirm: hashInstallPlan(plan) }), /ownership marker.*symbolic link/);
+  assert.equal(existsSync(outside), false);
+});
+
+test("installer rejects a non-regular ownership marker", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-marker-directory-"));
+  const plan = buildInstallPlan(root, { host: "agentskills", scope: "project", project: sandbox });
+  mkdirSync(join(plan.destinationRoot, ".obsidian-agent-install.json"), { recursive: true });
+  assert.throws(() => executeInstallPlan(plan, { confirm: hashInstallPlan(plan) }), /ownership marker must be a regular file/);
+});
+
+test("late owned directory collision is rejected before any planned file changes", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-atomic-"));
+  const plan = buildInstallPlan(root, { host: "agentskills", scope: "project", project: sandbox });
+  executeInstallPlan(plan, { confirm: hashInstallPlan(plan) });
+  const first = plan.files[0].destination;
+  const late = plan.files.at(-1).destination;
+  writeFileSync(first, "sentinel");
+  rmSync(late);
+  mkdirSync(late);
+  assert.throws(() => executeInstallPlan(plan, { confirm: hashInstallPlan(plan) }), /destination must be a regular file/);
+  assert.equal(readFileSync(first, "utf8"), "sentinel");
 });

@@ -20,25 +20,32 @@ const OWNERSHIP_FILE = ".obsidian-agent-install.json";
 const USER_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: [".codex", "plugins", "obsidian-agent"],
-  gemini: [".gemini", "extensions", "obsidian-agent"],
-  opencode: [".config", "opencode", "plugins", "obsidian-agent"],
-  agentskills: [".agents", "skills", "obsidian-agent"],
+  gemini: [".gemini"],
+  opencode: [".config", "opencode"],
+  agentskills: [".agents"],
 };
 
 const PROJECT_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: [".codex", "plugins", "obsidian-agent"],
-  gemini: [".gemini", "extensions", "obsidian-agent"],
-  opencode: [".opencode", "plugins", "obsidian-agent"],
-  agentskills: [".agents", "skills", "obsidian-agent"],
+  gemini: [".gemini"],
+  opencode: [".opencode"],
+  agentskills: [".agents"],
 };
 
 const HOST_ARTIFACTS = {
-  claude: [".claude-plugin/plugin.json", ".claude-plugin/marketplace.json", "providers/claude/README.md"],
-  codex: [".codex-plugin/plugin.json", "providers/codex/README.md"],
-  gemini: ["gemini-extension.json", "providers/gemini/README.md"],
-  opencode: ["providers/opencode/README.md"],
-  agentskills: ["providers/agentskills/README.md"],
+  claude: [
+    [".claude-plugin/plugin.json", ".claude-plugin/plugin.json"],
+    [".claude-plugin/marketplace.json", ".claude-plugin/marketplace.json"],
+    ["providers/claude/README.md", "providers/claude/README.md"],
+  ],
+  codex: [
+    [".codex-plugin/plugin.json", ".codex-plugin/plugin.json"],
+    ["providers/codex/README.md", "providers/codex/README.md"],
+  ],
+  gemini: [["providers/gemini/README.md", "obsidian-agent/README.md"]],
+  opencode: [["providers/opencode/README.md", "obsidian-agent/README.md"]],
+  agentskills: [["providers/agentskills/README.md", "obsidian-agent/README.md"]],
 };
 
 function valueAfter(argv, index, option) {
@@ -97,19 +104,32 @@ function isWithin(root, candidate) {
   return path === "" || (path !== ".." && !path.startsWith(`..${sep}`));
 }
 
+function pathEntryExists(path) {
+  try {
+    lstatSync(path);
+    return true;
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return false;
+    throw error;
+  }
+}
+
 export function buildInstallPlan(sourceRoot, options) {
   if (!HOSTS.includes(options.host)) throw new Error(`Unsupported host: ${options.host}`);
   if (!SCOPES.includes(options.scope)) throw new Error("scope must be user or project");
   const source = resolve(sourceRoot);
   const { scopeRoot, destinationRoot: target } = installRoots(options);
-  const artifacts = [...HOST_ARTIFACTS[options.host], ...portableSkillFiles(source)];
-  if (options.host === "claude") artifacts.push(...collectFiles(source, "commands"));
+  const artifacts = [...HOST_ARTIFACTS[options.host]];
+  for (const skillPath of portableSkillFiles(source)) artifacts.push([skillPath, skillPath]);
+  if (options.host === "claude") {
+    for (const commandPath of collectFiles(source, "commands")) artifacts.push([commandPath, commandPath]);
+  }
 
-  const files = [...new Set(artifacts)].sort().map((path) => ({
-    source: join(source, path),
+  const files = artifacts.sort((left, right) => left[1].localeCompare(right[1])).map(([sourcePath, path]) => ({
+    source: join(source, sourcePath),
     destination: join(target, path),
     path,
-    sha256: createHash("sha256").update(readFileSync(join(source, path))).digest("hex"),
+    sha256: createHash("sha256").update(readFileSync(join(source, sourcePath))).digest("hex"),
   }));
   if (!files.every(({ destination }) => isWithin(target, destination))) {
     throw new Error("install plan escapes selected host root");
@@ -130,6 +150,9 @@ export function hashInstallPlan(plan) {
 function ownedPaths(plan) {
   const marker = join(plan.destinationRoot, OWNERSHIP_FILE);
   if (!existsSync(marker)) return new Set();
+  const markerEntry = lstatSync(marker);
+  if (markerEntry.isSymbolicLink()) throw new Error(`ownership marker must not be a symbolic link: ${marker}`);
+  if (!markerEntry.isFile()) throw new Error(`ownership marker must be a regular file: ${marker}`);
   const record = JSON.parse(readFileSync(marker, "utf8"));
   if (record.identity !== "obsidian-agent" || !Array.isArray(record.files)) {
     throw new Error(`invalid ownership record: ${marker}`);
@@ -137,26 +160,45 @@ function ownedPaths(plan) {
   return new Set(record.files);
 }
 
-function assertNoDestinationSymlinks(plan) {
+function assertSafeDestinationTree(plan) {
   const relativeRoot = relative(plan.scopeRoot, plan.destinationRoot);
   let current = plan.scopeRoot;
   for (const segment of relativeRoot.split(sep).filter(Boolean)) {
     current = join(current, segment);
-    if (existsSync(current) && lstatSync(current).isSymbolicLink()) {
-      throw new Error(`destination path traverses a symbolic link: ${current}`);
+    if (pathEntryExists(current)) {
+      const entry = lstatSync(current);
+      if (entry.isSymbolicLink()) throw new Error(`destination path traverses a symbolic link: ${current}`);
+      if (!entry.isDirectory()) throw new Error(`destination parent must be a directory: ${current}`);
     }
   }
   for (const file of plan.files) {
-    if (existsSync(file.destination) && lstatSync(file.destination).isSymbolicLink()) {
-      throw new Error(`destination file is a symbolic link: ${file.destination}`);
+    let parent = plan.destinationRoot;
+    for (const segment of dirname(file.path).split(sep).filter((part) => part && part !== ".")) {
+      parent = join(parent, segment);
+      if (pathEntryExists(parent)) {
+        const entry = lstatSync(parent);
+        if (entry.isSymbolicLink()) throw new Error(`destination path traverses a symbolic link: ${parent}`);
+        if (!entry.isDirectory()) throw new Error(`destination parent must be a directory: ${parent}`);
+      }
     }
+    if (pathEntryExists(file.destination)) {
+      const entry = lstatSync(file.destination);
+      if (entry.isSymbolicLink()) throw new Error(`destination file is a symbolic link: ${file.destination}`);
+      if (!entry.isFile()) throw new Error(`destination must be a regular file: ${file.destination}`);
+    }
+  }
+  const marker = join(plan.destinationRoot, OWNERSHIP_FILE);
+  if (pathEntryExists(marker)) {
+    const entry = lstatSync(marker);
+    if (entry.isSymbolicLink()) throw new Error(`ownership marker must not be a symbolic link: ${marker}`);
+    if (!entry.isFile()) throw new Error(`ownership marker must be a regular file: ${marker}`);
   }
 }
 
 export function executeInstallPlan(plan, { confirm } = {}) {
   const previewHash = hashInstallPlan(plan);
   if (confirm !== previewHash) throw new Error(`write requires exact preview hash: ${previewHash}`);
-  assertNoDestinationSymlinks(plan);
+  assertSafeDestinationTree(plan);
   const owned = ownedPaths(plan);
   for (const file of plan.files) {
     if (existsSync(file.destination) && !owned.has(file.path)) {

@@ -26,8 +26,8 @@ Obsidian, enables its CLI setting, or changes a vault.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
 | Codex | Native Codex plugin metadata | Ask Codex to use an `obsidian-agent` skill |
-| Gemini CLI | Native Gemini extension metadata | Ask Gemini to use an `obsidian-agent` skill |
-| OpenCode | Isolated OpenCode adapter | Ask OpenCode to use an `obsidian-agent` skill |
+| Gemini CLI | Native extension or user/workspace skills | Ask Gemini to activate an `obsidian-agent` skill |
+| OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | Use the host's normal skill invocation |
 
 All hosts receive the 26 capabilities marked `portable: true` in
@@ -44,10 +44,17 @@ Claude can install the native package from its marketplace:
 /plugin install obsidian-agent@obsidian-agent
 ```
 
-For Codex, Gemini CLI, OpenCode, and AgentSkills-compatible hosts, clone this
-repository and preview the host-specific installation. Project scope defaults
-to the current directory; pass `--project /absolute/path` to target another
-project.
+Gemini CLI can install the repository directly as a native extension. Its
+official extension loader discovers the root `skills/` directory:
+
+```sh
+gemini extensions install https://github.com/cavi-ai/obsidian-agent
+```
+
+For Codex, OpenCode, AgentSkills-compatible hosts, or a direct Gemini
+user/workspace skill installation, clone this repository and preview the
+host-specific installation. Project scope defaults to the current directory;
+pass `--project /absolute/path` to target another project.
 
 ```sh
 node scripts/install.mjs --host codex --scope user
@@ -74,6 +81,11 @@ node scripts/install.mjs --host codex --scope user --confirm <preview-hash>
 The installer copies only the selected provider metadata, Claude command shims
 when applicable, and canonical portable skills. It refuses to overwrite files
 that are not listed in its `.obsidian-agent-install.json` ownership record.
+
+OpenCode installs each skill at
+`~/.config/opencode/skills/<name>/SKILL.md` (user) or
+`.opencode/skills/<name>/SKILL.md` (project). Gemini direct installs use
+`~/.gemini/skills/<name>/SKILL.md` or `.gemini/skills/<name>/SKILL.md`.
 
 To recover or uninstall, inspect that ownership record under the printed
 destination root and remove only its listed files. Keep the record until the
