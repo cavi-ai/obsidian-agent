@@ -208,3 +208,61 @@ for (const [name, text, message] of PROVIDER_GRAMMAR_CASES) {
     assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
   });
 }
+
+const QUALIFIED_PROVIDER_INSTRUCTIONS = [
+  ["latest Anthropic Python SDK", "Install Anthropic's latest Python SDK.", "Anthropic API instruction is not portable"],
+  ["official Claude CLI", "Use Claude's official CLI.", "Claude-only instruction is not portable"],
+  ["qualified Anthropic software development kit", "Use Anthropic’s newest async Python software development kit.", "Anthropic API instruction is not portable"],
+  ["qualified SDK with reversed ownership", "Use the current async Python SDK maintained by Anthropic.", "Anthropic API instruction is not portable"],
+  ["qualified client library with forward ownership", "Anthropic publishes its recommended async Python client library.", "Anthropic API instruction is not portable"],
+  ["qualified Claude command-line interface", "Launch Claude's latest supported command-line interface.", "Claude-only instruction is not portable"],
+];
+
+for (const [name, text, message] of QUALIFIED_PROVIDER_INSTRUCTIONS) {
+  test(`reports ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), [`skills/case/SKILL.md: ${message}`]);
+  });
+}
+
+const PYTHON_IMPORT_CONTEXTS = [
+  ["official async import in inline code", "Use `from anthropic import AsyncAnthropic`.", true],
+  ["official async import in a Python fence", "```python\nfrom anthropic import AsyncAnthropic\n```\n", true],
+  ["submodule import on a standalone code line", "from anthropic.types import Message\n", true],
+  ["aliased package import in inline code", "Use `import anthropic as provider_sdk`.", true],
+  ["parenthesized import with a trailing comma", "Use `from anthropic import (AsyncAnthropic,)`.", true],
+  ["punctuated English import list", "We import anthropic, cosmological, and teleological principles from the source dataset.", false],
+  ["invalid Python-shaped English inline code", "The phrase `import anthropic, cosmological, and teleological principles` describes the taxonomy.", false],
+  ["invalid unparenthesized trailing comma", "The fragment `from anthropic import AsyncAnthropic,` is incomplete Python.", false],
+  ["ordinary English import sentence", "To compare theories, we import anthropic principles into the discussion.", false],
+];
+
+for (const [name, text, rejected] of PYTHON_IMPORT_CONTEXTS) {
+  test(`${rejected ? "reports" : "allows"} ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), rejected
+      ? ["skills/case/SKILL.md: Anthropic API instruction is not portable"]
+      : []);
+  });
+}
+
+const SHELL_COMMAND_CONTEXTS = [
+  ["bare Claude command in a shell fence", "```sh\nclaude\n```\n", true],
+  ["prompted Claude command in a shell fence", "```bash\nclaude \"explain this project\"\n```\n", true],
+  ["Claude command after a shell connector", "```zsh\nnpm test && claude \"explain the failure\"\n```\n", true],
+  ["prompt-prefixed Claude command in a console fence", "```console\n$ claude\n```\n", true],
+  ["contextual inline Claude command", "Execute `claude \"explain this project\"`.", true],
+  ["generic backticked variable", "The variable `claude` contains a generic name.", false],
+  ["non-executed shell literals", "```sh\n# claude\nprintf '%s\\n' claude\nprovider_name=claude\n```\n", false],
+  ["bare literal in a non-shell fence", "```text\nclaude\n```\n", false],
+  ["command-shaped literal in a non-shell fence", "```text\nclaude --version\n```\n", false],
+];
+
+for (const [name, text, rejected] of SHELL_COMMAND_CONTEXTS) {
+  test(`${rejected ? "reports" : "allows"} ${name}`, () => {
+    const root = fixture({ "skills/case/SKILL.md": text });
+    assert.deepEqual(validatePortability(root), rejected
+      ? ["skills/case/SKILL.md: Claude-only instruction is not portable"]
+      : []);
+  });
+}
