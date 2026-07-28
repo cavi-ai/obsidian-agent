@@ -10,18 +10,27 @@ import { dirname, extname, isAbsolute, join, relative, resolve } from "node:path
 import { fileURLToPath } from "node:url";
 
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
-const CONFIGURATION_EXTENSIONS = new Set([".json", ".toml", ".yaml", ".yml"]);
+// Portability scanning is intentionally limited to the repository's JSON manifests.
+// Host-owned YAML/TOML configuration belongs under a declared providers/<host> root.
+const CONFIGURATION_EXTENSIONS = new Set([".json"]);
 const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "gemini", "opencode"]);
 const PROVIDER_PATH_FIELDS = ["artifact", "source"];
 
-function pathEntryExists(path) {
+function inspectPathEntry(path) {
   try {
     lstatSync(path);
-    return true;
+    return { exists: true };
   } catch (error) {
-    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") return false;
+    if (error?.code === "ENOENT") return { exists: false, reason: "missing" };
+    if (error?.code === "ENOTDIR" || error?.code === "ELOOP") {
+      return { exists: false, reason: "unresolvable" };
+    }
     throw error;
   }
+}
+
+function pathEntryExists(path) {
+  return inspectPathEntry(path).exists;
 }
 
 function walkFiles(directory) {
@@ -72,203 +81,13 @@ function objectContainsKey(value, key) {
     || Object.values(value).some((item) => objectContainsKey(item, key));
 }
 
-function yamlContainsKey(text, target) {
-  let blockScalarIndent = null;
-  let quote = null;
-
-  for (const line of text.split(/\r?\n/)) {
-    const indentation = line.match(/^ */)[0].length;
-    if (blockScalarIndent !== null) {
-      if (!line.trim() || indentation > blockScalarIndent) continue;
-      blockScalarIndent = null;
-    }
-
-    const startsWithTargetKey = (start) => {
-      const source = line.slice(start);
-      return new RegExp(`^(?:"${target}"|'${target}'|${target})\\s*:`).test(source);
-    };
-
-    if (!quote) {
-      let keyStart = indentation;
-      while (/[-?]/.test(line[keyStart] ?? "") && /\s/.test(line[keyStart + 1] ?? "")) {
-        keyStart += 1;
-        while (/\s/.test(line[keyStart] ?? "")) keyStart += 1;
-      }
-      if (startsWithTargetKey(keyStart)) return true;
-    }
-
-    let significant = "";
-    for (let index = 0; index < line.length; index += 1) {
-      const character = line[index];
-      if (quote === "double") {
-        significant += " ";
-        if (character === "\\") {
-          significant += " ";
-          index += 1;
-        } else if (character === '"') quote = null;
-        continue;
-      }
-      if (quote === "single") {
-        significant += " ";
-        if (character === "'" && line[index + 1] === "'") {
-          significant += " ";
-          index += 1;
-        } else if (character === "'") quote = null;
-        continue;
-      }
-      if (character === "#" && (index === 0 || /\s|[{},\[\]]/.test(line[index - 1]))) break;
-      if (character === '"') {
-        quote = "double";
-        significant += " ";
-        continue;
-      }
-      if (character === "'") {
-        quote = "single";
-        significant += " ";
-        continue;
-      }
-      if ((character === "{" || character === ",") && startsWithTargetKey(index + 1 + (line.slice(index + 1).match(/^\s*/)?.[0].length ?? 0))) {
-        return true;
-      }
-      significant += character;
-    }
-
-    if (!quote && (/^\s*(?:-\s*)?[>|](?:(?:[+-][1-9]?)|(?:[1-9][+-]?))?\s*$/.test(significant)
-      || /:\s*[>|](?:(?:[+-][1-9]?)|(?:[1-9][+-]?))?\s*$/.test(significant))) {
-      blockScalarIndent = indentation;
-    }
-  }
-  return false;
-}
-
-function parseTomlKeySegment(text, start) {
-  if (text[start] === '"' || text[start] === "'") {
-    const delimiter = text[start];
-    let value = "";
-    for (let index = start + 1; index < text.length; index += 1) {
-      if (delimiter === '"' && text[index] === "\\" && index + 1 < text.length) {
-        value += text[index + 1];
-        index += 1;
-      } else if (text[index] === delimiter) {
-        return { value, end: index + 1 };
-      } else if (text[index] === "\n") {
-        return null;
-      } else {
-        value += text[index];
-      }
-    }
-    return null;
-  }
-
-  const match = text.slice(start).match(/^[A-Za-z0-9_-]+/);
-  return match ? { value: match[0], end: start + match[0].length } : null;
-}
-
-function parseTomlKeyPath(text, start, terminator) {
-  const segments = [];
-  let index = start;
-  while (index < text.length) {
-    while (/[ \t]/.test(text[index] ?? "")) index += 1;
-    const segment = parseTomlKeySegment(text, index);
-    if (!segment) return null;
-    segments.push(segment.value);
-    index = segment.end;
-    while (/[ \t]/.test(text[index] ?? "")) index += 1;
-    if (text[index] === ".") {
-      index += 1;
-      continue;
-    }
-    if (text.startsWith(terminator, index)) return { segments, end: index + terminator.length };
-    return null;
-  }
-  return null;
-}
-
-function skipTomlString(text, start) {
-  const delimiter = text.startsWith('"""', start) ? '"""'
-    : text.startsWith("'''", start) ? "'''"
-      : text[start];
-  let index = start + delimiter.length;
-  while (index < text.length) {
-    if ((delimiter === '"' || delimiter === '"""') && text[index] === "\\") {
-      index += 2;
-      continue;
-    }
-    if (text.startsWith(delimiter, index)) return index + delimiter.length;
-    if (delimiter.length === 1 && text[index] === "\n") return index;
-    index += 1;
-  }
-  return text.length;
-}
-
-function tomlContainsKey(text, target) {
-  let index = 0;
-  let candidate = true;
-  let inlineTableDepth = 0;
-  while (index < text.length) {
-    const character = text[index];
-    if (character === "\n") {
-      candidate = true;
-      index += 1;
-      continue;
-    }
-    if (/[ \t\r]/.test(character)) {
-      index += 1;
-      continue;
-    }
-    if (character === "#") {
-      index = text.indexOf("\n", index);
-      if (index === -1) return false;
-      continue;
-    }
-
-    if (candidate && character === "[") {
-      const arrayTable = text[index + 1] === "[";
-      const header = parseTomlKeyPath(text, index + (arrayTable ? 2 : 1), arrayTable ? "]]" : "]");
-      if (header?.segments.includes(target)) return true;
-      candidate = false;
-    } else if (candidate) {
-      const assignment = parseTomlKeyPath(text, index, "=");
-      if (assignment) {
-        if (assignment.segments.includes(target)) return true;
-        index = assignment.end;
-        candidate = false;
-        continue;
-      }
-      candidate = false;
-    }
-
-    if (character === '"' || character === "'") {
-      index = skipTomlString(text, index);
-      continue;
-    }
-    if (character === "{") {
-      inlineTableDepth += 1;
-      candidate = true;
-    } else if (character === "}") {
-      inlineTableDepth = Math.max(0, inlineTableDepth - 1);
-      candidate = false;
-    } else if (character === "," && inlineTableDepth > 0) {
-      candidate = true;
-    }
-    index += 1;
-  }
-  return false;
-}
-
 function containsMcpServers(path) {
   const text = readFileSync(path, "utf8").replace(/^\uFEFF/, "");
-  if (extname(path) === ".json") {
-    try {
-      return objectContainsKey(JSON.parse(text), "mcpServers");
-    } catch {
-      return false;
-    }
+  try {
+    return objectContainsKey(JSON.parse(text), "mcpServers");
+  } catch {
+    return false;
   }
-  if (extname(path) === ".toml") {
-    return tomlContainsKey(text, "mcpServers");
-  }
-  return yamlContainsKey(text, "mcpServers");
 }
 
 function isContainedBy(parent, child) {
@@ -352,7 +171,7 @@ function validateProviderDirectories(root, providers, add) {
           add(path, "dangling symbolic links are not allowed in provider adapters");
           continue;
         }
-        if (error?.code === "ELOOP") {
+        if (error?.code === "ENOTDIR" || error?.code === "ELOOP") {
           add(path, "unresolvable symbolic links are not allowed in provider adapters");
           continue;
         }
@@ -377,8 +196,10 @@ function validateProviderDirectories(root, providers, add) {
         add(join(root, "plugin.json"), `provider "${provider}" ${field} path must stay inside providers/${provider}: ${manifestPath}`);
         continue;
       }
-      if (!pathEntryExists(absolutePath)) {
-        add(join(root, "plugin.json"), `provider "${provider}" ${field} path does not exist: ${manifestPath}`);
+      const manifestEntry = inspectPathEntry(absolutePath);
+      if (!manifestEntry.exists) {
+        const message = manifestEntry.reason === "unresolvable" ? "path is unresolvable" : "path does not exist";
+        add(join(root, "plugin.json"), `provider "${provider}" ${field} ${message}: ${manifestPath}`);
         continue;
       }
       if (providerSymlinks.some((path) => isContainedBy(path, absolutePath))) continue;

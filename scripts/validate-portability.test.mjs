@@ -114,58 +114,22 @@ test("reports mcpServers in root configuration", () => {
   assert.deepEqual(validatePortability(root), ["plugin.json: mcpServers is not portable"]);
 });
 
-test("reports quoted mcpServers keys in YAML and TOML configuration", () => {
+test("reports nested and escaped mcpServers keys in supported JSON configuration", () => {
   const root = fixture({
-    "config.toml": "'mcpServers' = {}\n",
-    "dotted.toml": "mcpServers.command = 'obsidian'\n",
-    "flow.yaml": "{ mcpServers: {} }\n",
-    "settings.yaml": '\"mcpServers\": {}\n',
-    "table.toml": "[mcpServers]\ncommand = 'obsidian'\n",
+    "escaped.json": '{"mcp\\u0053ervers":{}}',
+    "nested.json": '{"plugin":{"configuration":[{"mcpServers":{}}]}}',
   });
 
   assert.deepEqual(validatePortability(root), [
-    "config.toml: mcpServers is not portable",
-    "dotted.toml: mcpServers is not portable",
-    "flow.yaml: mcpServers is not portable",
-    "settings.yaml: mcpServers is not portable",
-    "table.toml: mcpServers is not portable",
+    "escaped.json: mcpServers is not portable",
+    "nested.json: mcpServers is not portable",
   ]);
 });
 
-test("reports semantic mcpServers keys in nested YAML and TOML forms", () => {
+test("limits root MCP key scanning to supported JSON configuration", () => {
   const root = fixture({
-    "array-table.toml": "[[mcpServers]]\ncommand = 'obsidian'\n",
-    "dotted.toml": "settings.mcpServers.command = 'obsidian'\n",
-    "inline.toml": "settings = { mcpServers = { command = 'obsidian' } }\n",
-    "nested.yaml": "plugins:\n  - mcpServers:\n      obsidian: {}\n",
-    "table.toml": "[settings.mcpServers]\ncommand = 'obsidian'\n",
-  });
-
-  assert.deepEqual(validatePortability(root), [
-    "array-table.toml: mcpServers is not portable",
-    "dotted.toml: mcpServers is not portable",
-    "inline.toml: mcpServers is not portable",
-    "nested.yaml: mcpServers is not portable",
-    "table.toml: mcpServers is not portable",
-  ]);
-});
-
-test("allows mcpServers text in YAML and TOML comments and scalar strings", () => {
-  const root = fixture({
-    "block-scalar.yaml": "description: |\n  mcpServers: this is documentation\n",
-    "chomped-block-scalar.yaml": "description: |2-\n  mcpServers: this is documentation\n",
-    "comment.yaml": "# { mcpServers: {} }\nname: portable\n",
-    "document-scalar.yaml": "|\n  mcpServers: this entire document is scalar text\n",
-    "document-chomped-scalar.yaml": ">2+\n  mcpServers: this entire document is scalar text\n",
-    "escaped-delimiter.toml": [
-      'description = """',
-      String.raw`\"""`,
-      "mcpServers = {}",
-      '"""',
-      "",
-    ].join("\n"),
-    "multiline-string.toml": 'description = \"\"\"\nmcpServers = {}\n\"\"\"\n',
-    "quoted-scalar.yaml": 'description: \"first line\n  mcpServers: documentation\n  last line\"\n',
+    "config.toml": "mcpServers.command = 'provider-owned'\n",
+    "settings.yaml": "mcpServers: provider-owned\n",
   });
 
   assert.deepEqual(validatePortability(root), []);
@@ -174,16 +138,16 @@ test("allows mcpServers text in YAML and TOML comments and scalar strings", () =
 test("rejects live and dangling root configuration symlinks", () => {
   const root = fixture();
   const outside = mkdtempSync(join(tmpdir(), "portable-config-outside-"));
-  writeFileSync(join(outside, "config.yaml"), "mcpServers: {}\n");
-  symlinkSync(join(outside, "config.yaml"), join(root, "config.yaml"));
-  symlinkSync(join(root, "missing-settings.toml"), join(root, "settings.toml"));
+  writeFileSync(join(outside, "config.json"), '{"mcpServers":{}}');
+  symlinkSync(join(outside, "config.json"), join(root, "config.json"));
+  symlinkSync(join(root, "missing-settings.json"), join(root, "settings.json"));
   mkdirSync(join(root, ".github"));
   symlinkSync(outside, join(root, ".github", "workflows"));
 
   assert.deepEqual(validatePortability(root), [
     ".github/workflows: root configuration symbolic links are not allowed",
-    "config.yaml: root configuration symbolic links are not allowed",
-    "settings.toml: root configuration symbolic links are not allowed",
+    "config.json: root configuration symbolic links are not allowed",
+    "settings.json: root configuration symbolic links are not allowed",
   ]);
 });
 
@@ -360,6 +324,18 @@ test("rejects dangling provider symlinks", () => {
   ]);
 });
 
+test("rejects provider symlinks whose target traverses a regular file", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({ providers: { claude: {} } }),
+    "providers/claude/adapter.md": "declared\n",
+  });
+  symlinkSync("adapter.md/child", join(root, "providers", "claude", "broken"));
+
+  assert.deepEqual(validatePortability(root), [
+    "providers/claude/broken: unresolvable symbolic links are not allowed in provider adapters",
+  ]);
+});
+
 test("rejects cyclic provider symlinks without crashing", () => {
   const root = fixture({
     "plugin.json": JSON.stringify({ providers: { codex: {} } }),
@@ -368,6 +344,21 @@ test("rejects cyclic provider symlinks without crashing", () => {
   symlinkSync("loop", join(root, "providers", "codex", "loop"));
 
   assert.deepEqual(validatePortability(root), [
+    "providers/codex/loop: unresolvable symbolic links are not allowed in provider adapters",
+  ]);
+});
+
+test("reports a manifest reference below a cyclic provider symlink", () => {
+  const root = fixture({
+    "plugin.json": JSON.stringify({
+      providers: { codex: { source: "providers/codex/loop/adapter.md" } },
+    }),
+    "providers/codex/adapter.md": "declared\n",
+  });
+  symlinkSync("loop", join(root, "providers", "codex", "loop"));
+
+  assert.deepEqual(validatePortability(root), [
+    "plugin.json: provider \"codex\" source path is unresolvable: providers/codex/loop/adapter.md",
     "providers/codex/loop: unresolvable symbolic links are not allowed in provider adapters",
   ]);
 });
