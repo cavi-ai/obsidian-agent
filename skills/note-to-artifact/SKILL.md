@@ -1,9 +1,16 @@
 ---
 name: note-to-artifact
 description: Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored "HTML is all you need" style — especially for Obsidian notes rendered in a ```claude-html``` block.
+portable: false
 ---
 
 # Note → artifact
+
+> **Claude adapter only.** This workflow requires Anthropic-specific artifact
+> conventions and Companion's `claude-html` renderer. Portable workflows return
+> Markdown and Mermaid instead. Keep this skill out of universal capability
+> lists and move it into the dedicated Claude adapter when that provider
+> package lands.
 
 Turn source material into **one self-contained HTML document** that is
 beautiful, information-dense, and renders with no external resources.

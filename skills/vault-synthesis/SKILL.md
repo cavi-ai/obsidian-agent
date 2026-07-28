@@ -8,22 +8,24 @@ description: Use when answering "what do I know about X" from the whole vault �
 Answer a question from the vault itself — grounded, cited, honest about gaps and
 contradictions. Not a general-knowledge essay.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Gather.** `vault_search` the topic. For the most relevant hits, `note_read`
-   them in full, then follow `get_backlinks` / `get_outgoing_links` to pull in
-   connected notes the search missed. Breadth here determines quality.
+1. **Gather.** Run
+   `obsidian search vault=<vault> query=<topic> format=json`. Read the most
+   relevant hits in full with `obsidian read vault=<vault> file=<path>`, then
+   follow `obsidian backlinks vault=<vault> file=<path> format=json` and
+   `obsidian links vault=<vault> file=<path>` to find connected notes the
+   search missed. Read those notes before using them.
 2. **Extract claims, attributed.** As you read, collect each claim with its
    source note. Every claim carries a `[[Source Note]]` citation.
 3. **Dedupe and group.** Merge claims that repeat across notes; group by theme.
 4. **Surface contradictions.** When notes disagree, say so explicitly with both
    citations — don't silently pick one. Contradictions are signal.
 5. **Name the gaps.** State what the vault does *not* cover on this topic.
-6. **Output.** Lead with the single most important takeaway. For a rich
-   synthesis, render a self-contained `claude-html` artifact
-   (claude-obsidian:note-to-artifact). Every claim stays cited to its note.
+6. **Output.** Return portable Markdown, leading with the single most important
+   takeaway. Every claim stays cited to its note.
 
 ## Hard requirements
 

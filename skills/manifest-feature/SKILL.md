@@ -5,14 +5,15 @@ description: Use when proposing new product scope from idea, feedback, or interv
 
 # Manifest: product lead
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
 Idea, feedback, and spec notes. Rank candidate new features by user value against effort;
 tie each to the feedback that motivates it. Sequencing work that is already scoped belongs
-to claude-obsidian:manifest-pm.
+to `obsidian-agent:manifest-pm`.
 
 ## Operationalizer
 
-claude-obsidian:plan-to-spec, then `/claude-obsidian:build-from-spec`.
+`obsidian-agent:plan-to-spec`, then `obsidian-agent:tracker-driver` during the
+approved build.

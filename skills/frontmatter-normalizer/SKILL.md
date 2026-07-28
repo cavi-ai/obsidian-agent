@@ -8,14 +8,15 @@ description: Use when auditing or normalizing note frontmatter to a consistent s
 Bring a set of notes to a consistent frontmatter schema — surveying what's
 there before changing anything.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
 1. **Check for an ontology first — it outranks any schema you would invent.**
-   Run `frontmatter_query` with `field: ontology, value: type` to find the
-   vault's schema notes. Do not look in a folder by name: the ontology folder is
-   user-configurable. `note_read` each hit — the frontmatter carries `type_name`,
+   Run `obsidian search vault=<vault> query='[ontology:type]' format=json` to
+   find the vault's schema notes. Do not look in a folder by name: the ontology
+   folder is user-configurable. Read each hit with
+   `obsidian read vault=<vault> file=<path>` — the frontmatter carries `type_name`,
    and the body's first fenced `yaml` block holds that type's `extends`,
    `properties`, and `relations`.
 
@@ -28,18 +29,22 @@ there before changing anything.
      frontmatter convention the ontology will not know about.
    - **If there are no schema notes**, continue with the survey-and-propose flow
      below.
-2. **Survey.** Use `frontmatter_query` across the target notes to see which
-   fields exist and how values vary (e.g. `type` present on some, missing on
-   others; `status` values inconsistent).
+2. **Survey.** Enumerate the target with
+   `obsidian files vault=<vault> folder=<scope> ext=md`, then inspect each note
+   using `obsidian properties vault=<vault> file=<path> format=json`. Record
+   which fields exist and how values vary.
 3. **Agree the schema.** Propose the target schema (which fields, allowed
    values) and confirm it with the user — don't impose one silently.
 4. **Find the gaps.** List notes missing required fields or using off-schema
    values. Show this before editing.
-5. **Apply, additively.** Use `update_frontmatter` to set missing/normalized
-   fields. It merges (tags union; scalar set) and preserves untouched keys —
-   never strip fields you didn't discuss.
-6. **Batch with consent.** Apply in batches the user approves; report what
-   changed.
+5. **Preview an operation list.** For every note, show each property name,
+   current value, proposed value, and type. Omitted properties remain untouched.
+6. **Apply in approved batches.** Use
+   `obsidian property:set vault=<vault> file=<path> name=<name> value=<value> type=<type>`.
+   Use `obsidian property:remove vault=<vault> file=<path> name=<name>` only
+   when removal was explicitly included in the approved change set. Re-run
+   `obsidian properties vault=<vault> file=<path> format=json` after each batch
+   and report what changed.
 
 ## Hard requirements
 
@@ -47,7 +52,7 @@ there before changing anything.
 - Never propose a field that contradicts a declared type's required properties.
 - Where an ontology exists, new conventions are proposed as schema notes, not as
   loose frontmatter keys.
-- Survey with `frontmatter_query` BEFORE proposing a schema.
+- Survey note properties BEFORE proposing a schema.
 - Confirm the schema and the change set before writing.
 - Additive normalization — don't delete frontmatter you weren't asked to.
 

@@ -1,19 +1,12 @@
 ---
-description: Audit and optimize the Obsidian vault — diagnose orphans, tag sprawl, missing links, and stale notes, then fix with consent.
+description: Audit the Obsidian vault for orphans, tag sprawl, missing links, stale notes, and inconsistent frontmatter.
 argument-hint: "[optional focus: tags | links | orphans | stale]"
 ---
 
-Run a vault-health pass following the **claude-obsidian:manifest-vault** skill.
+# Claude compatibility adapter
 
-Optional focus: `$1` (tags, links, orphans, or stale — otherwise all)
+Invoke **`obsidian-agent:manifest-vault`** with the user's arguments:
 
-Steps:
+`$ARGUMENTS`
 
-1. Survey the vault (`list_titles`, `vault_tags`, `list_recent`, backlinks) and
-   diagnose health issues, scoped to `$1` if given.
-2. Present a prioritized report as a self-contained `claude-html` artifact
-   (claude-obsidian:note-to-artifact), highest-impact issue first.
-3. With the user's go-ahead per batch, delegate fixes:
-   missing links/orphans → claude-obsidian:wikilink-weaver; tag sprawl →
-   claude-obsidian:consistent-tagging.
-4. Offer a recurring health-sweep routine (claude-obsidian:vault-routines).
+Follow that canonical skill exactly. This command contains no independent workflow logic.

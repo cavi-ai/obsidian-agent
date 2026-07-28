@@ -1,51 +1,61 @@
 ---
 name: vault-grounding
-description: Use when another claude-obsidian skill declares it as a required sub-skill — the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.
+description: Use when another obsidian-agent skill declares it as a required sub-skill — the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.
 ---
 
 # Vault grounding
 
-The discipline for working honestly inside someone's vault. Every other
-claude-obsidian skill builds on this.
+The portable discipline for working honestly inside someone's vault. Every
+portable `obsidian-agent` skill builds on this and uses the official Obsidian
+CLI. Obsidian 1.12.7 or newer must be installed, the command-line interface
+must be enabled, and Obsidian must be running. Use
+`node scripts/obsidian-cli.mjs doctor` when availability is uncertain.
 
 **Violating the letter of these rules is violating their spirit.**
 
 ## The rules
 
 1. **Cite, don't fabricate.** Every factual claim about the vault must trace to
-   a note you actually read (`note_read`). Never assert vault content from
+   a note you actually read with `obsidian read`. Never assert vault content from
    memory or inference. If you didn't read it, you don't know it.
 2. **Don't pad.** When asked what the vault says, answer from the vault only. If
    it's thin on the topic, say so plainly — do not supplement with general
    knowledge or fill gaps from memory. A short honest answer beats a padded one.
 3. **Verify before you link.** Before writing a `[[Wikilink]]`, confirm the
-   target exists with `list_titles` or `note_read`. A link to a non-existent
-   note is a broken link, not a helpful one.
-4. **Reuse the user's taxonomy and voice.** Read `vault_tags` before tagging;
-   reuse existing tags over inventing near-duplicates. Match the note's
-   existing tone — you are extending their vault, not imposing yours.
-5. **Writes are gated and consequential.** `note_create`/`note_append`/
-   `note_update`/`update_frontmatter` only work when the user enabled writes.
-   Before any in-place edit or overwrite, show what will change and confirm.
-   Never silently overwrite a note (`note_update` replaces — it is not append).
-6. **Right output form.** Synthesis, reports, dashboards → a self-contained
-   `claude-html` artifact (see claude-obsidian:note-to-artifact). Structural and
-   hygiene changes (tags, links, frontmatter) → plain Markdown.
+   target exists by reading its exact path with `obsidian read`. A link to a
+   non-existent note is a broken link, not a helpful one.
+4. **Reuse the user's taxonomy and voice.** Inspect
+   `obsidian tags vault=<vault> counts format=json` before tagging; reuse
+   existing tags over inventing near-duplicates. Match the note's existing tone
+   — you are extending their vault, not imposing yours.
+5. **Preview before writes.** Before `obsidian create`, `append`, `prepend`,
+   `property:set`, `property:remove`, `move`, `rename`, or `delete`, show the
+   exact proposed change and get explicit approval. Re-read every changed note
+   afterward. Never use `create ... overwrite` unless the user approved
+   replacing the complete current contents.
+6. **Right output form.** Return portable Markdown. Use headings, tables,
+   callouts, wikilinks, and fenced Mermaid diagrams when they improve the
+   result; do not require a host-specific renderer.
 
 ## Red flags — STOP
 
 - About to write a fact about the vault you didn't read → read it first.
-- About to write `[[X]]` without confirming X exists → verify with list_titles.
-- About to `note_update` to "fix" a note → show the diff and confirm first.
+- About to write `[[X]]` without confirming X exists → read the target first.
+- About to replace a note → show the complete diff and confirm first.
 - Inventing a new tag when a similar one exists → reuse the existing tag.
+- About to use `create ... overwrite` without explicit replacement approval →
+  stop.
 
 ## Quick reference
 
-| Need | Tool |
-|------|------|
-| Find notes on a topic | `vault_search` |
-| Read a note's content | `note_read` |
-| Confirm a note exists / get titles | `list_titles` |
-| Who links here / where does this link | `get_backlinks` / `get_outgoing_links` |
-| Existing tags | `vault_tags` |
-| Create / append / replace / retag | `note_create` / `note_append` / `note_update` / `update_frontmatter` |
+| Need | Official CLI form |
+|------|-------------------|
+| Find notes on a topic | `obsidian search vault=<vault> query=<query> format=json` |
+| Read or verify a note | `obsidian read vault=<vault> file=<path>` |
+| Find notes linking here | `obsidian backlinks vault=<vault> file=<path> format=json` |
+| List outgoing links | `obsidian links vault=<vault> file=<path>` |
+| Inspect existing tags | `obsidian tags vault=<vault> counts format=json` |
+| List files in a scope | `obsidian files vault=<vault> folder=<path>` |
+| Create a new note | `obsidian create vault=<vault> path=<path> content=<markdown>` |
+| Append without replacing | `obsidian append vault=<vault> file=<path> content=<markdown>` |
+| Set a frontmatter property | `obsidian property:set vault=<vault> file=<path> name=<name> value=<value> type=<type>` |

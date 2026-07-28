@@ -1,9 +1,15 @@
 ---
 name: vault-routines
 description: Use when a vault result has recurring value and the user wants it repeated on a schedule. Registers a scheduled cloud agent in Claude Code; in Companion it can only fire a routine the user already created.
+portable: false
 ---
 
 # Vault routines
+
+> **Claude adapter only.** Scheduling and routine-fire URLs belong to the
+> Claude/Companion host integration; the official Obsidian CLI has no scheduler.
+> Keep this skill out of universal capability lists and move it into the
+> dedicated Claude adapter.
 
 Turn a one-off vault result into an editable, scheduled routine. You leverage
 existing scheduling machinery; you never build scheduling yourself.

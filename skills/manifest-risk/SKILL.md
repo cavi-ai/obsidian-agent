@@ -5,7 +5,7 @@ description: Use when surfacing risks, blockers, contradictions, or single point
 
 # Manifest: risk register
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
@@ -14,4 +14,4 @@ unstated dependencies, stale assumptions. Score likelihood × impact and order b
 
 ## Operationalizer
 
-claude-obsidian:plan-to-spec for mitigations that require building.
+`obsidian-agent:plan-to-spec` for mitigations that require building.

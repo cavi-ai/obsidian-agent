@@ -5,7 +5,7 @@ description: Use when turning vault knowledge into publishable content, planning
 
 # Manifest: content strategist
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
@@ -14,4 +14,4 @@ Publishable ideas: for each candidate piece the audience, the angle or hook, the
 
 ## Operationalizer
 
-claude-obsidian:outline-to-draft.
+`obsidian-agent:outline-to-draft`.

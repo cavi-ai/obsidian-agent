@@ -1,15 +1,21 @@
 ---
 name: session-to-note
 description: Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.
+portable: false
 ---
 
 # Session → note
+
+> **Claude adapter only.** Transcript discovery and parsing depend on Claude's
+> private session layout and plugin-root environment. The official Obsidian CLI
+> does not expose host transcripts. Keep this skill out of universal capability
+> lists and move it into the dedicated Claude adapter.
 
 Distill the current Claude session into ONE consolidated vault note — the ideas,
 decisions, and conclusions you'd remember walking out of a meeting, not a
 keystroke log.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
@@ -20,7 +26,7 @@ keystroke log.
 2. **Distill, don't transcribe.** From the clean turns, extract: the goal, key
    decisions, what was built/changed, open questions, and the few durable ideas
    worth keeping. Drop chatter. Aim for a note a reader understands in a minute.
-3. **Tag it.** Apply tags via claude-obsidian:consistent-tagging (reuse the
+3. **Tag it.** Apply tags via obsidian-agent:consistent-tagging (reuse the
    vault's taxonomy). Always include a `session` tag.
 4. **Write the note.** `note_create` with a clear title (topic + date) and a
    body that leads with the goal and the decisions. `note_create` writes
@@ -28,7 +34,7 @@ keystroke log.
 5. **Stamp the type.** `note_create` cannot set arbitrary frontmatter, so call
    `update_frontmatter` on the new note with `fields: { type: "session" }` —
    this is what makes it index as a session in search/Dataview/the tag pane.
-6. **Link into the graph.** Use claude-obsidian:wikilink-weaver to connect the
+6. **Link into the graph.** Use obsidian-agent:wikilink-weaver to connect the
    new note to related existing notes, so the session becomes connected
    knowledge, not an island.
 

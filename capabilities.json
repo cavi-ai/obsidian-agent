@@ -1,14 +1,19 @@
 {
+  "plugin": "obsidian-agent",
+  "requires": {
+    "obsidian": ">=1.12.7"
+  },
+  "transport": "cli",
   "capabilities": [
     {
       "id": "build-retrospective",
       "tier": "pipeline",
       "name": "Build retrospective",
       "description": "Use when a spec-based build or tracker is complete and a retrospective is needed, or when closing out a build against its spec.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<tracker note path>",
-        "companion": false
+        "command": "<tracker note path>"
       }
     },
     {
@@ -16,10 +21,10 @@
       "tier": "harness",
       "name": "Cloud reply",
       "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo \u2014 do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
+      "portable": false,
       "surfaces": {
         "skill": true,
-        "command": false,
-        "companion": false
+        "command": false
       }
     },
     {
@@ -27,10 +32,10 @@
       "tier": "worker",
       "name": "Connection finder",
       "description": "Use when looking for non-obvious conceptual relationships between notes that are not linked yet. Read-only discovery that ranks and explains candidate connections; it proposes, it does not edit. To write the links, use wikilink-weaver.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<note path or topic>",
-        "companion": false
+        "command": "<note path or topic>"
       }
     },
     {
@@ -38,10 +43,10 @@
       "tier": "worker",
       "name": "Consistent tagging",
       "description": "Use when tagging notes, applying tags to new or untagged notes, or cleaning up tag sprawl and inconsistency in an Obsidian vault.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<note path or scope>",
-        "companion": false
+        "command": "<note path or scope>"
       }
     },
     {
@@ -49,10 +54,10 @@
       "tier": "orchestrator",
       "name": "Daily rollup",
       "description": "Use when summarizing or recapping recent vault activity \u2014 a daily, weekly, or periodic review of what changed, what was decided, and what is still open in a time window. For every open task across the whole vault with no time bound, use task-harvester.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[days, default 7]",
-        "companion": "Knowledge & synthesis"
+        "command": "[days, default 7]"
       }
     },
     {
@@ -60,10 +65,10 @@
       "tier": "worker",
       "name": "Dedup & merge",
       "description": "Use when finding and merging duplicate or near-duplicate notes, consolidating notes that cover the same thing, or cleaning up redundant notes in an Obsidian vault.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional scope]",
-        "companion": false
+        "command": "[optional scope]"
       }
     },
     {
@@ -71,10 +76,10 @@
       "tier": "orchestrator",
       "name": "Frontmatter audit",
       "description": "Use when auditing or normalizing note frontmatter to a consistent schema across a folder or the vault. Defers to the vault's declared ontology types where they exist and proposes a schema only where they are silent.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional folder or scope, e.g. Projects/]",
-        "companion": "Knowledge & synthesis"
+        "command": "[optional folder or scope, e.g. Projects/]"
       }
     },
     {
@@ -82,10 +87,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Content plan",
       "description": "Use when turning vault knowledge into publishable content, planning a content calendar from your notes, or deciding what to write as a blog post, doc, or thread.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional topic/audience focus]",
-        "companion": "Manifest"
+        "command": "[optional topic/audience focus]"
       }
     },
     {
@@ -93,10 +98,10 @@
       "tier": "worker",
       "name": "Manifest core",
       "description": "Use when running any manifest-* advisor skill \u2014 the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": false,
-        "companion": false
+        "command": false
       }
     },
     {
@@ -104,10 +109,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Feature backlog",
       "description": "Use when proposing new product scope from idea, feedback, or interview notes \u2014 deciding what to build that is not yet committed, or building a feature backlog from user signal. For sequencing work already scoped, use manifest-pm.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional product/area focus]",
-        "companion": "Manifest"
+        "command": "[optional product/area focus]"
       }
     },
     {
@@ -115,10 +120,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Infra design",
       "description": "Use when proposing infrastructure or system designs from architecture notes, reviewing a system's design, or planning infra and scaling moves from vault notes.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional system/area focus]",
-        "companion": "Manifest"
+        "command": "[optional system/area focus]"
       }
     },
     {
@@ -126,10 +131,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Product roadmap",
       "description": "Use when prioritizing already-scoped project work, producing a roadmap or client status from project notes, or deciding the next move on work that is already committed. For proposing new features from feedback, use manifest-feature.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional project/topic focus]",
-        "companion": "Manifest"
+        "command": "[optional project/topic focus]"
       }
     },
     {
@@ -137,10 +142,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Research agenda",
       "description": "Use when identifying knowledge gaps, deciding what to research next, or planning a research agenda from what an Obsidian vault already covers.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional topic/area focus]",
-        "companion": "Manifest"
+        "command": "[optional topic/area focus]"
       }
     },
     {
@@ -148,10 +153,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Risk register",
       "description": "Use when surfacing risks, blockers, contradictions, or single points of failure across project notes, or building a risk register from the vault.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional project/area focus]",
-        "companion": "Manifest"
+        "command": "[optional project/area focus]"
       }
     },
     {
@@ -159,10 +164,10 @@
       "tier": "orchestrator",
       "name": "Manifest: Vault audit",
       "description": "Use when asked to optimize, clean up, audit, or improve an Obsidian vault, assess vault health, or find structural problems in a vault.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional focus: tags | links | orphans | stale]",
-        "companion": "Manifest"
+        "command": "[optional focus: tags | links | orphans | stale]"
       }
     },
     {
@@ -170,10 +175,10 @@
       "tier": "worker",
       "name": "Meeting cleanup",
       "description": "Use when turning raw meeting notes, voice memos, or messy capture into a structured note with decisions, action items, and attendees.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<raw note path>",
-        "companion": false
+        "command": "<raw note path>"
       }
     },
     {
@@ -181,10 +186,10 @@
       "tier": "orchestrator",
       "name": "Map of Content",
       "description": "Use when building or refreshing a Map of Content (MOC), creating an index or hub note for a topic or folder, or organizing related notes under one navigational note.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<topic or folder>",
-        "companion": "Knowledge & synthesis"
+        "command": "<topic or folder>"
       }
     },
     {
@@ -192,10 +197,10 @@
       "tier": "worker",
       "name": "Note splitter",
       "description": "Use when a note covers too many topics and should be split into atomic notes, breaking up a bloated note, or extracting sections into their own linked notes.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<note path>",
-        "companion": false
+        "command": "<note path>"
       }
     },
     {
@@ -203,10 +208,10 @@
       "tier": "technique",
       "name": "Note \u2192 artifact",
       "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style \u2014 especially for Obsidian notes rendered in a ```claude-html``` block.",
+      "portable": false,
       "surfaces": {
         "skill": true,
-        "command": "<note path or topic>",
-        "companion": false
+        "command": "<note path or topic>"
       }
     },
     {
@@ -214,21 +219,21 @@
       "tier": "worker",
       "name": "Outline \u2192 draft",
       "description": "Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<outline note path>",
-        "companion": false
+        "command": "<outline note path>"
       }
     },
     {
       "id": "plan-to-spec",
       "tier": "pipeline",
       "name": "Plan \u2192 spec",
-      "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a Claude Code build, or creating a spec and tracker from a plan.",
+      "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a coding-agent build, or creating a spec and tracker from a plan.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<planning note path>",
-        "companion": false
+        "command": "<planning note path>"
       }
     },
     {
@@ -236,10 +241,10 @@
       "tier": "orchestrator",
       "name": "Research workbench",
       "description": "Use when running a formal research project on typed research records \u2014 creating a project, importing sources, capturing evidence with locators, building supported claims, auditing provenance, and generating an evidence-backed outline via the research_* tools.",
+      "portable": false,
       "surfaces": {
         "skill": true,
-        "command": "[project, source, question, or desired stage]",
-        "companion": false
+        "command": "[project, source, question, or desired stage]"
       }
     },
     {
@@ -247,21 +252,21 @@
       "tier": "worker",
       "name": "Session \u2192 note",
       "description": "Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.",
+      "portable": false,
       "surfaces": {
         "skill": true,
-        "command": "[optional note title]",
-        "companion": false
+        "command": "[optional note title]"
       }
     },
     {
       "id": "source-digest",
       "tier": "orchestrator",
       "name": "Source digest",
-      "description": "Use when comparing notes that are typed or tagged as sources or papers, building an evidence or comparison table across them. Operates on existing plain source notes; for provenance-tracked research records use research-workbench.",
+      "description": "Use when comparing notes that are typed or tagged as sources or papers, building an evidence or comparison table across them. Operates on existing plain source notes; typed provenance-record workflows are outside the portable CLI scope.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[source type/tag or topic]",
-        "companion": "Knowledge & synthesis"
+        "command": "[source type/tag or topic]"
       }
     },
     {
@@ -269,10 +274,10 @@
       "tier": "worker",
       "name": "Summarize and link",
       "description": "Use when adding a TL;DR or summary to a long note, condensing a note, or surfacing and linking the key concepts inside a note.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<note path>",
-        "companion": false
+        "command": "<note path>"
       }
     },
     {
@@ -280,10 +285,10 @@
       "tier": "orchestrator",
       "name": "Harvest open tasks",
       "description": "Use when collecting open tasks or todos scattered across notes into one consolidated action list \u2014 unchecked checkboxes and #task/#todo-tagged items across the whole vault, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional folder/tag/topic focus]",
-        "companion": "Knowledge & synthesis"
+        "command": "[optional folder/tag/topic focus]"
       }
     },
     {
@@ -291,21 +296,21 @@
       "tier": "pipeline",
       "name": "Tracker driver",
       "description": "Use when driving a spec-based build against the vault and updating its tracker note, or reporting build progress honestly to a tracker as tasks complete.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": false,
-        "companion": false
+        "command": false
       }
     },
     {
       "id": "vault-grounding",
       "tier": "policy",
       "name": "Vault grounding",
-      "description": "Use when another claude-obsidian skill declares it as a required sub-skill \u2014 the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.",
+      "description": "Use when another obsidian-agent skill declares it as a required sub-skill \u2014 the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": false,
-        "companion": false
+        "command": false
       }
     },
     {
@@ -313,10 +318,10 @@
       "tier": "harness",
       "name": "Vault routines",
       "description": "Use when a vault result has recurring value and the user wants it repeated on a schedule. Registers a scheduled cloud agent in Claude Code; in Companion it can only fire a routine the user already created.",
+      "portable": false,
       "surfaces": {
         "skill": true,
-        "command": false,
-        "companion": false
+        "command": false
       }
     },
     {
@@ -324,10 +329,10 @@
       "tier": "orchestrator",
       "name": "Vault synthesis",
       "description": "Use when answering \"what do I know about X\" from the whole vault \u2014 a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<topic>",
-        "companion": "Knowledge & synthesis"
+        "command": "<topic>"
       }
     },
     {
@@ -335,10 +340,10 @@
       "tier": "worker",
       "name": "Wikilink weaver",
       "description": "Use when a note's body mentions other notes by title without linking them, when applying or repairing wikilinks, or when listing orphan notes. This is the skill that edits notes to add links. For conceptual discovery instead, use connection-finder.",
+      "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "<note path>",
-        "companion": false
+        "command": "<note path>"
       }
     }
   ]

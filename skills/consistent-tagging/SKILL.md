@@ -7,22 +7,28 @@ description: Use when tagging notes, applying tags to new or untagged notes, or 
 
 Apply tags that fit the vault's *existing* taxonomy instead of growing sprawl.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Learn the taxonomy first.** Call `vault_tags` to get existing tags with
-   usage counts. This is your vocabulary — prefer it over inventing new tags.
-2. **Read the note(s)** you're tagging (`note_read`) so tags reflect actual
-   content, not the title alone.
+1. **Learn the taxonomy first.** Run
+   `obsidian tags vault=<vault> counts format=json`. This is your vocabulary —
+   prefer it over inventing new tags.
+2. **Read each note** with `obsidian read vault=<vault> file=<path>` so tags
+   reflect actual content, not the title alone. Also inspect its current tags
+   with `obsidian tags vault=<vault> file=<path> format=json`.
 3. **Match, don't multiply.** For each note, pick 2–5 tags. Reuse an existing
    tag whenever one fits. Only propose a new tag when nothing existing covers a
    genuinely new theme — and prefer the vault's casing/format convention.
 4. **Catch near-duplicates.** Treat `#project`/`#Projects`/`#project-x` family
    members deliberately; don't create a sibling that means the same thing.
-5. **Propose, then apply.** Show the proposed tags per note and the reasoning
-   ("reusing #research, #llm; new: #eval-harness"). On confirmation, apply with
-   `update_frontmatter` (tags are unioned with existing, never replaced).
+5. **Propose the complete merged list.** Show existing tags, additions, and the
+   final list per note with reasoning. Never drop an existing tag implicitly.
+6. **Apply only after approval.** Set the complete merged list with
+   `obsidian property:set vault=<vault> file=<path> name=tags value=<tags> type=list`.
+   This command replaces the property value, so the final list must include the
+   existing tags being retained. Re-run
+   `obsidian tags vault=<vault> file=<path> format=json` to verify it.
 
 ## Common mistakes
 
@@ -30,3 +36,5 @@ Apply tags that fit the vault's *existing* taxonomy instead of growing sprawl.
 - Inventing `#machine-learning` when `#ml` already has 40 uses.
 - Case/plural drift creating silent duplicate tags.
 - Writing tags before showing the user what you'll apply.
+- Passing only new tags to `property:set` and accidentally replacing existing
+  tags.

@@ -8,24 +8,29 @@ description: Use when a note covers too many topics and should be split into ato
 Break a bloated, multi-topic note into atomic notes that link back together —
 without losing content.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Read and map.** `note_read` the note; identify the distinct topics/sections
-   that each deserve their own note.
+1. **Read and map.** Run `obsidian read vault=<vault> file=<source-path>` and
+   identify the distinct topics or sections that each deserve their own note.
 2. **Propose a split plan.** List the new atomic notes (title + which content
    moves to each) and what stays in the original. Confirm before writing —
    splitting is consequential.
-3. **Create the atomic notes.** `note_create` one per topic, each carrying its
-   moved content verbatim and a link back to the source. Verify nothing is
-   dropped.
-4. **Reshape the original.** `note_update` the source into a short hub that links
-   the new notes (consider claude-obsidian:moc-builder if it's becoming an index)
-   — or, if the whole note became one atomic topic, `note_move` it to a better
-   name/location (backlinks follow automatically).
-5. **Link** the new notes to each other and to related notes via
-   claude-obsidian:wikilink-weaver.
+3. **Preview every write.** Show each new path and complete body plus the full
+   before/after diff for the source. Prove that every original section lands in
+   exactly one destination.
+4. **Create the atomic notes.** After approval, run
+   `obsidian create vault=<vault> path=<new-path> content=<markdown>` once per
+   topic. Each note carries its moved content verbatim and a link back.
+5. **Reshape the original.** Replace it with an approved hub using
+   `obsidian create vault=<vault> path=<source-path> content=<hub-markdown> overwrite`
+   (consider `obsidian-agent:moc-builder` if it is becoming an index). If the
+   whole note became one atomic topic, use
+   `obsidian move vault=<vault> file=<source-path> to=<destination>` instead.
+   Re-read every resulting note.
+6. **Link** the new notes to each other and to related notes via
+   `obsidian-agent:wikilink-weaver`.
 
 ## Hard requirements
 

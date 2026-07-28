@@ -1,16 +1,22 @@
 ---
 name: cloud-reply
 description: Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo — do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.
+portable: false
 ---
 
 # Cloud reply
+
+> **Claude adapter only.** This workflow depends on Claude cloud sessions,
+> Companion reply polling, and GitHub pull requests. The official Obsidian CLI
+> cannot provide that transport. Keep it out of universal capability lists and
+> move it into the dedicated Claude adapter when that provider package lands.
 
 You are a cloud Claude Code session fired against an Obsidian vault that is this
 Git repo (e.g. via a Companion "Send to cloud session" routine). The user is
 usually on their phone and can't see your terminal — your **reply note + PR is
 the only way your work reaches them**, so land it where Companion looks.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## The discipline
 

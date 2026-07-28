@@ -8,20 +8,25 @@ description: Use when building or refreshing a Map of Content (MOC), creating an
 Build a Map of Content — a hub note that groups and annotates links to the notes
 on a topic, so the user can navigate the area at a glance.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Scope it.** Topic or folder. `vault_search` the topic and `list_titles` to
-   enumerate candidate members; `note_read` to confirm relevance.
+1. **Scope it.** For a topic, run
+   `obsidian search vault=<vault> query=<topic> format=json`. For a folder, run
+   `obsidian files vault=<vault> folder=<path> ext=md`. Read each candidate
+   with `obsidian read vault=<vault> file=<path>` to confirm relevance.
 2. **Group thematically.** Cluster the members into a few meaningful sections —
    not one flat list. Order sections by importance.
-3. **Annotate.** Each entry is `[[Note]] — one-line what-it-covers`. Verify every
-   `[[link]]` target exists (it came from `list_titles`).
-4. **Write the MOC.** If refreshing an existing MOC, `note_read` it and
-   `note_update` (show the change); otherwise `note_create` titled `<Topic> MOC`.
-   Lead with a one-line purpose for the map.
-5. **Tag** via claude-obsidian:consistent-tagging (include a `moc` tag).
+3. **Annotate.** Each entry is `[[Note]] — one-line what-it-covers`. Every
+   target must be one of the notes successfully read in step 1.
+4. **Preview the MOC.** Lead with a one-line purpose. If refreshing an existing
+   MOC, read it first and show the complete diff; otherwise show the new path
+   and body.
+5. **Write after approval.** Use
+   `obsidian create vault=<vault> path=<moc-path> content=<markdown> overwrite`
+   only for an approved refresh; omit `overwrite` for a new MOC. Re-read it.
+6. **Tag** via `obsidian-agent:consistent-tagging`, reusing an existing MOC tag.
 
 ## Common mistakes
 

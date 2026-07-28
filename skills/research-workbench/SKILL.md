@@ -1,13 +1,19 @@
 ---
 name: research-workbench
 description: Use when running a formal research project on typed research records — creating a project, importing sources, capturing evidence with locators, building supported claims, auditing provenance, and generating an evidence-backed outline via the research_* tools.
+portable: false
 ---
 
 # Research workbench
 
+> **Claude adapter only.** The typed `research_*` record API has no equivalent
+> in the official Obsidian CLI. Keep this skill out of universal capability
+> lists and move it with its owning research tools into the dedicated Claude
+> adapter. Use `obsidian-agent:source-digest` for portable plain-note research.
+
 Preserve continuity from research question through an evidence-backed outline.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 

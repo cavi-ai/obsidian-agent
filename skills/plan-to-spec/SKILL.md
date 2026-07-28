@@ -1,21 +1,22 @@
 ---
 name: plan-to-spec
-description: Use when turning a planning note into a build spec, preparing a note for handoff to a Claude Code build, or creating a spec and tracker from a plan.
+description: Use when turning a planning note into a build spec, preparing a note for handoff to a coding-agent build, or creating a spec and tracker from a plan.
 ---
 
 # Plan → spec
 
-Convert a planning note into a structured build spec (plus a tracker note) that
-the claude-obsidian:build-from-spec command can drive directly.
+Convert a planning note into a structured build spec plus a tracker note that a
+coding agent can drive with `obsidian-agent:tracker-driver`.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Read the plan.** `note_read` the planning note. Extract concrete, ordered
-   tasks from its steps/checklist — don't invent tasks the plan doesn't imply.
-2. **Write the spec note** with `note_create`, body in EXACTLY this shape so the
-   build harness can parse it:
+1. **Read the plan.** Run
+   `obsidian read vault=<vault> file=<planning-path>`. Extract concrete,
+   ordered tasks from its steps or checklist; do not invent scope.
+2. **Draft both notes.** Choose unused spec and tracker paths. Build the spec in
+   exactly this shape so a coding agent can parse it:
 
    ```
    # Build spec: <title>
@@ -32,23 +33,24 @@ the claude-obsidian:build-from-spec command can drive directly.
    <the relevant plan detail, verbatim or tightened>
    ```
 
-   The `Tracker:` line names the tracker note so `build-from-spec` can find it
-   even when the user doesn't pass the tracker path explicitly.
-3. **Create the tracker note** (`note_create`) — an empty note the build will
-   append progress to (one per spec). Name it `<title> — tracker`, and write its
-   path into the spec's `Tracker:` line.
-4. **Hand off.** Tell the user to run
-   `/claude-obsidian:build-from-spec <spec path> <tracker path>` to start the
-   build, and confirm both paths.
+   The `Tracker:` line contains the tracker note's exact vault path.
+3. **Preview and create.** Show both paths and complete bodies. After approval,
+   create the tracker with
+   `obsidian create vault=<vault> path=<tracker-path> content=<tracker-heading>`
+   and the spec with
+   `obsidian create vault=<vault> path=<spec-path> content=<spec-markdown>`.
+   Do not use `overwrite`. Re-read both notes.
+4. **Hand off.** Report both paths and instruct the build agent to invoke
+   `obsidian-agent:tracker-driver` while implementing the ordered tasks.
 
 ## Hard requirements
 
-- `## Tasks` uses `- [ ]` checkboxes (the harness extracts these).
+- `## Tasks` uses `- [ ]` checkboxes so the build agent can read them.
 - Tasks come from the plan, in order — no invented scope.
 - A tracker note exists, its path is written into the spec's `Tracker:` line,
   and it is reported to the user.
 
 ## Common mistakes
 
-- An ad-hoc spec format the build harness can't parse.
-- Forgetting the tracker note, or not telling the user the next command.
+- An ad-hoc spec format a coding agent cannot parse.
+- Forgetting the tracker note or not reporting both paths.

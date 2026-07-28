@@ -7,18 +7,29 @@ import { parseFrontmatter } from "./lib/frontmatter.mjs";
 
 const TIERS = new Set(["policy", "worker", "orchestrator", "pipeline", "technique", "harness"]);
 const NO_COMMAND_TIERS = new Set(["policy", "harness"]);
-// Orchestrators needing CLI-only state or stateful write tools cannot run in Companion.
-const COMPANION_INELIGIBLE = new Set(["research-workbench"]);
 // Pipeline entry points with a command file but no skill.
 const COMMAND_ONLY = new Set(["build-from-spec"]);
 
 export function validate(root) {
   const errors = [];
   const registry = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"));
+  if (registry.plugin !== "obsidian-agent") {
+    errors.push("registry plugin must be 'obsidian-agent'");
+  }
+  if (registry.transport !== "cli") {
+    errors.push("registry transport must be 'cli'");
+  }
+  if (registry.requires?.obsidian !== ">=1.12.7") {
+    errors.push("registry requires.obsidian must be '>=1.12.7'");
+  }
+
   const byId = new Map();
   for (const cap of registry.capabilities) {
     if (byId.has(cap.id)) errors.push(`duplicate registry id '${cap.id}'`);
     byId.set(cap.id, cap);
+    if (typeof cap.portable !== "boolean") {
+      errors.push(`'${cap.id}': portable must be a boolean`);
+    }
   }
 
   const skillsDir = join(root, "skills");
@@ -34,6 +45,12 @@ export function validate(root) {
     if (fields.name !== id) errors.push(`skill '${id}': frontmatter name '${fields.name}' does not match directory '${id}'`);
     if (fields.description !== cap.description) {
       errors.push(`skill '${id}': description mismatch\n  SKILL.md: ${fields.description}\n  registry: ${cap.description}`);
+    }
+    if (cap.portable === false && fields.portable !== "false") {
+      errors.push(`skill '${id}': non-portable capability must declare 'portable: false'`);
+    }
+    if (cap.portable === true && fields.portable === "false") {
+      errors.push(`skill '${id}': portable capability is incorrectly marked portable: false`);
     }
   }
 
@@ -65,10 +82,8 @@ export function validate(root) {
       if (!commandIds.includes(cap.id)) errors.push(`'${cap.id}' declares a command but there is no file commands/${cap.id}.md`);
     }
 
-    const comp = cap.surfaces.companion;
-    if (comp !== false) {
-      if (cap.tier !== "orchestrator") errors.push(`'${cap.id}': only orchestrator tier may have a companion workflow (tier is '${cap.tier}')`);
-      if (COMPANION_INELIGIBLE.has(cap.id)) errors.push(`'${cap.id}' is on the companion-ineligible list and may not have a workflow`);
+    if (Object.hasOwn(cap.surfaces, "companion")) {
+      errors.push(`'${cap.id}': surfaces.companion is a legacy host surface and is not allowed`);
     }
   }
 

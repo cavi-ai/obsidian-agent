@@ -1,17 +1,12 @@
 ---
-description: Find and apply missing wikilinks in a note — title mentions that are not yet linked — with the change shown before it is written.
+description: Find and apply verified missing wikilinks after showing the complete change.
 argument-hint: "<note path>"
 ---
 
-Weave missing wikilinks into the note below, following the
-**claude-obsidian:wikilink-weaver** skill.
+# Claude compatibility adapter
 
-Note: `$1`
+Invoke **`obsidian-agent:wikilink-weaver`** with the user's arguments:
 
-Steps:
+`$ARGUMENTS`
 
-1. Call `list_titles` for the vocabulary of valid link targets.
-2. `note_read` the note and scan its body for unlinked mentions of those titles.
-3. Check `get_outgoing_links` so you do not duplicate an existing link.
-4. Propose each candidate with the phrase, the target, and why it is a real reference.
-5. On confirmation, apply with `note_update`, having shown the change first.
+Follow that canonical skill exactly. This command contains no independent workflow logic.

@@ -7,32 +7,38 @@ description: Use when a note's body mentions other notes by title without linkin
 
 Find real, missing connections and weave them in — without inventing links.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Get the vocabulary of titles.** Call `list_titles` for every note path +
-   title. These are the only valid link targets — never link to a title that
-   isn't here.
-2. **Read the source note** (`note_read`) and scan its body for mentions of
-   existing note titles that are not yet `[[linked]]`.
-3. **Check what's already linked.** Use `get_outgoing_links` (avoid duplicating
-   existing links) and `get_backlinks` (understand current connectivity).
+1. **Get the vocabulary of paths.** Run
+   `obsidian files vault=<vault> ext=md`. Treat these as candidates, not proof:
+   successfully read a target with `obsidian read vault=<vault> file=<path>`
+   before proposing its wikilink.
+2. **Read the source note** with `obsidian read vault=<vault> file=<path>` and
+   scan its body for mentions of verified note titles that are not linked.
+3. **Check what's already linked.** Run
+   `obsidian links vault=<vault> file=<path>` and
+   `obsidian backlinks vault=<vault> file=<path> format=json`.
 4. **Propose links with evidence.** For each candidate: the phrase in the body,
    the target note, and why it's a real reference (not a coincidental word
    match). Skip weak/ambiguous matches.
-5. **Apply on confirmation** with `note_update` (replace the body or the
-   affected section), having shown the change first.
+5. **Apply on confirmation.** Show the complete note diff, then run
+   `obsidian create vault=<vault> path=<path> content=<complete-markdown> overwrite`.
+   Re-read the source and list its outgoing links to verify the change.
 
 ## Finding orphans
 
-A note is an orphan when `get_backlinks` returns none AND `get_outgoing_links`
-returns none. List orphans so the user can decide where they belong — don't
+A note is an orphan only when it has neither incoming nor outgoing links.
+Intersect `obsidian orphans vault=<vault>` with
+`obsidian deadends vault=<vault>`, then verify each candidate with
+`obsidian backlinks vault=<vault> file=<path> format=json` and
+`obsidian links vault=<vault> file=<path>`. List them for the user; never
 auto-link them.
 
 ## Common mistakes
 
-- Linking to a title that isn't in `list_titles` (broken link).
-- Re-adding a link that already exists (didn't check `get_outgoing_links`).
+- Linking to a target that was never successfully read.
+- Re-adding a link that already exists (didn't check `obsidian links`).
 - Matching a common word as if it were a note reference.
-- Overwriting the note via `note_update` without showing the change.
+- Overwriting the note without showing the complete diff.

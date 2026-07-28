@@ -5,16 +5,31 @@ description: Use when asked to optimize, clean up, audit, or improve an Obsidian
 
 # Manifest: vault optimizer
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
-Structural survey, not claude-obsidian:vault-synthesis: `list_titles` (all notes),
-`vault_tags` (taxonomy), `list_recent` (freshness), sample via `note_read`, and
-`get_backlinks` / `get_outgoing_links` for orphans. Diagnose orphan notes, tag sprawl,
-missing links, stale notes, and frontmatter inconsistency.
+Structural survey, not `obsidian-agent:vault-synthesis`:
+
+- enumerate notes with `obsidian files vault=<vault> ext=md`;
+- inspect taxonomy with `obsidian tags vault=<vault> counts format=json`;
+- inspect freshness with `obsidian file vault=<vault> path=<path>` and its
+  `modified` value (not `obsidian recents`, which means recently opened);
+- intersect `obsidian orphans vault=<vault>` and
+  `obsidian deadends vault=<vault>`, then verify with
+  `obsidian backlinks vault=<vault> file=<path> format=json` and
+  `obsidian links vault=<vault> file=<path>`;
+- inspect broken targets with
+  `obsidian unresolved vault=<vault> counts verbose format=json`;
+- read a representative sample with
+  `obsidian read vault=<vault> file=<path>` and inspect it with
+  `obsidian properties vault=<vault> file=<path> format=json`.
+
+Diagnose orphan notes, tag sprawl, missing links, stale notes, and frontmatter
+inconsistency.
 
 ## Operationalizer
 
-claude-obsidian:wikilink-weaver, claude-obsidian:consistent-tagging, and
-claude-obsidian:frontmatter-normalizer. Never edit inline; offer a recurring sweep via claude-obsidian:vault-routines.
+`obsidian-agent:wikilink-weaver`, `obsidian-agent:consistent-tagging`, and
+`obsidian-agent:frontmatter-normalizer`. Never edit inline; present findings
+and let the user choose an operationalizer.

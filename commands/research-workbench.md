@@ -1,12 +1,12 @@
 ---
-description: Run the evidence-backed Research Workbench from project framing through audit or outline.
+description: Run the Claude-adapter Research Workbench from project framing through audit or outline.
 argument-hint: "[project, source, question, or desired stage]"
 ---
 
-Run the request through the **claude-obsidian:research-workbench** skill.
+# Claude compatibility adapter
 
-Research request: `$ARGUMENTS`
+Invoke **`obsidian-agent:research-workbench`** with the user's arguments:
 
-Use the active research project when it is unambiguous. Otherwise ask the user
-to select or create one. Execute only the stages needed for this request and
-finish by naming the records changed and the next useful workflow stage.
+`$ARGUMENTS`
+
+Follow that canonical skill exactly. This command contains no independent workflow logic.

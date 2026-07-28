@@ -5,14 +5,15 @@ description: Use when proposing infrastructure or system designs from architectu
 
 # Manifest: infra architect
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
 Architecture notes: current state, bottlenecks, single points of failure, scaling limits,
-security and cost. Propose concrete designs with trade-offs; include inline SVG diagrams
-where they clarify.
+security and cost. Propose concrete designs with trade-offs; include fenced Mermaid
+diagrams where they clarify relationships.
 
 ## Operationalizer
 
-claude-obsidian:plan-to-spec, then `/claude-obsidian:build-from-spec`.
+`obsidian-agent:plan-to-spec`, then `obsidian-agent:tracker-driver` during the
+approved build.

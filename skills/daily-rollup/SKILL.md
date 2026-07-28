@@ -8,25 +8,33 @@ description: Use when summarizing or recapping recent vault activity — a daily
 Turn recent vault activity into one review note — decisions made, what changed,
 and what's still open — grounded in the notes that actually changed.
 
-**REQUIRED SUB-SKILL:** claude-obsidian:vault-grounding
+**REQUIRED SUB-SKILL:** obsidian-agent:vault-grounding
 
 ## Process
 
-1. **Find what changed.** `list_recent` for the window in question (default the
-   last 7 days; ask if unclear). These are your sources — don't summarize notes
-   you didn't read.
-2. **Read them.** `note_read` each relevant note. Pull out: decisions, things
-   completed or changed, and open tasks (`- [ ]` lines and `#task`/`#todo`).
-3. **Write the review.** `note_create` a review note that leads with the 1–3
-   most important developments, then sections for **Decisions**, **Changed /
-   shipped**, and **Open tasks** (each task linked to its source note). Keep it
-   skimmable.
-4. **Tag** via claude-obsidian:consistent-tagging (include a `review` tag).
-5. **Offer a routine.** A rollup is recurring by nature — offer to schedule it
-   via claude-obsidian:vault-routines (e.g. every Monday 8am).
+1. **Set the window.** Default to the last seven days; ask when the intended
+   period is unclear.
+2. **Find what changed.** List note paths with
+   `obsidian files vault=<vault> ext=md`, then inspect each candidate's `modified` value with
+   `obsidian file vault=<vault> path=<path>`. Keep only notes modified inside
+   the window. Do not substitute `obsidian recents`: it reports recently
+   opened files, not modified files.
+3. **Read the sources.** Run `obsidian read vault=<vault> file=<path>` for each
+   relevant note. Pull out decisions, completed or changed work, and open
+   tasks. `obsidian tasks vault=<vault> path=<path> todo verbose format=json`
+   may locate tasks, but the source note still must be read.
+4. **Draft the review.** Lead with the one to three most important
+   developments, then **Decisions**, **Changed / shipped**, and **Open tasks**.
+   Link every task and claim to its source note.
+5. **Preview and save.** Show the proposed path and complete Markdown. After
+   approval, create it with
+   `obsidian create vault=<vault> path=<path> content=<markdown>`, re-read it,
+   and invoke `obsidian-agent:consistent-tagging` to reuse an existing review
+   tag where appropriate.
 
 ## Common mistakes
 
 - Summarizing from titles/memory instead of reading the notes.
 - Dropping open tasks — they're the most useful part of a review.
 - A wall of text instead of a skimmable, prioritized review.
+- Treating recently opened files as evidence that those files changed.

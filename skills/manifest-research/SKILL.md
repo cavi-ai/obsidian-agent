@@ -5,7 +5,7 @@ description: Use when identifying knowledge gaps, deciding what to research next
 
 # Manifest: research director
 
-**REQUIRED SUB-SKILL:** claude-obsidian:manifest-core
+**REQUIRED SUB-SKILL:** obsidian-agent:manifest-core
 
 ## Lens
 
@@ -15,5 +15,5 @@ absent entirely.
 
 ## Operationalizer
 
-claude-obsidian:source-digest for evidence from existing source notes, or
-claude-obsidian:vault-synthesis on the narrowed question.
+`obsidian-agent:source-digest` for evidence from existing source notes, or
+`obsidian-agent:vault-synthesis` on the narrowed question.
