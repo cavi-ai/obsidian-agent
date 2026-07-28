@@ -12,28 +12,28 @@ Find real, missing connections and weave them in — without inventing links.
 ## Process
 
 1. **Get the vocabulary of paths.** Run
-   `obsidian files vault=<vault> ext=md`. Treat these as candidates, not proof:
-   successfully read a target with `obsidian read vault=<vault> file=<path>`
+   `obsidian vault=<vault> files ext=md`. Treat these as candidates, not proof:
+   successfully read a target with `obsidian vault=<vault> read path=<path>`
    before proposing its wikilink.
-2. **Read the source note** with `obsidian read vault=<vault> file=<path>` and
+2. **Read the source note** with `obsidian vault=<vault> read path=<path>` and
    scan its body for mentions of verified note titles that are not linked.
 3. **Check what's already linked.** Run
-   `obsidian links vault=<vault> file=<path>` and
-   `obsidian backlinks vault=<vault> file=<path> format=json`.
+   `obsidian vault=<vault> links path=<path>` and
+   `obsidian vault=<vault> backlinks path=<path> format=json`.
 4. **Propose links with evidence.** For each candidate: the phrase in the body,
    the target note, and why it's a real reference (not a coincidental word
    match). Skip weak/ambiguous matches.
 5. **Apply on confirmation.** Show the complete note diff, then run
-   `obsidian create vault=<vault> path=<path> content=<complete-markdown> overwrite`.
+   `obsidian vault=<vault> create path=<path> content=<complete-markdown> overwrite`.
    Re-read the source and list its outgoing links to verify the change.
 
 ## Finding orphans
 
 A note is an orphan only when it has neither incoming nor outgoing links.
-Intersect `obsidian orphans vault=<vault>` with
-`obsidian deadends vault=<vault>`, then verify each candidate with
-`obsidian backlinks vault=<vault> file=<path> format=json` and
-`obsidian links vault=<vault> file=<path>`. List them for the user; never
+Intersect `obsidian vault=<vault> orphans` with
+`obsidian vault=<vault> deadends`, then verify each candidate with
+`obsidian vault=<vault> backlinks path=<path> format=json` and
+`obsidian vault=<vault> links path=<path>`. List them for the user; never
 auto-link them.
 
 ## Common mistakes

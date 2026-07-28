@@ -13,10 +13,10 @@ their vault, in their voice.
 ## Process
 
 1. **Read the outline** with
-   `obsidian read vault=<vault> file=<outline-path>`. Gather context with
-   `obsidian links vault=<vault> file=<outline-path>`,
-   `obsidian backlinks vault=<vault> file=<outline-path> format=json`, and
-   `obsidian search vault=<vault> query=<topic> format=json`. Read every note
+   `obsidian vault=<vault> read path=<outline-path>`. Gather context with
+   `obsidian vault=<vault> links path=<outline-path>`,
+   `obsidian vault=<vault> backlinks path=<outline-path> format=json`, and
+   `obsidian vault=<vault> search query=<topic> format=json`. Read every note
    used as evidence.
 2. **Learn the voice.** Skim 1–2 of the user's existing prose notes to match
    their tone, sentence length, and vocabulary. You are drafting *as them*.
@@ -26,7 +26,7 @@ their vault, in their voice.
    inventing content.
 4. **Show the draft**, target path, and complete in-place diff if applicable.
    After approval, use
-   `obsidian create vault=<vault> path=<path> content=<draft-markdown> overwrite`
+   `obsidian vault=<vault> create path=<path> content=<draft-markdown> overwrite`
    to replace the outline, or omit `overwrite` for a new draft note linked back
    to it. Re-read the result.
 

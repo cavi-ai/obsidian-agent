@@ -13,15 +13,15 @@ claims, evidence, and gaps — grounded in the notes themselves.
 ## Process
 
 1. **Find the source convention.** Inspect existing metadata with
-   `obsidian properties vault=<vault> counts sort=count format=json` and
-   `obsidian tags vault=<vault> counts format=json`. Reuse the vault's
+   `obsidian vault=<vault> properties counts sort=count format=json` and
+   `obsidian vault=<vault> tags counts format=json`. Reuse the vault's
    established `type` value or source tag.
 2. **Select candidates.** Use property or tag search, for example
-   `obsidian search vault=<vault> query='[type:source]' format=json` or
-   `obsidian search vault=<vault> query='tag:#source' format=json`. If the
+   `obsidian vault=<vault> search query='[type:source]' format=json` or
+   `obsidian vault=<vault> search query='tag:#source' format=json`. If the
    vault has no source convention, search the requested topic instead.
 3. **Read each candidate** with
-   `obsidian read vault=<vault> file=<path>`. Extract the core claim or
+   `obsidian vault=<vault> read path=<path>`. Extract the core claim or
    finding, supporting evidence or method, and stated limitations.
 4. **Build a comparison.** A Markdown table with one row per source and columns for
    claim, evidence/strength, and notes — so sources can be compared at a glance.

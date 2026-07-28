@@ -24,8 +24,9 @@ export function buildObsidianArgs(operation) {
     throw new TypeError("operation.command must be a non-empty string");
   }
 
-  const args = [operation.command];
+  const args = [];
   if (operation.vault) args.push(`vault=${operation.vault}`);
+  args.push(operation.command);
 
   for (const [key, value] of Object.entries(operation)) {
     if (key === "command" || key === "vault" || key === "format" || value === undefined || value === null) continue;

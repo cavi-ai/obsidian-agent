@@ -13,10 +13,10 @@ contradictions. Not a general-knowledge essay.
 ## Process
 
 1. **Gather.** Run
-   `obsidian search vault=<vault> query=<topic> format=json`. Read the most
-   relevant hits in full with `obsidian read vault=<vault> file=<path>`, then
-   follow `obsidian backlinks vault=<vault> file=<path> format=json` and
-   `obsidian links vault=<vault> file=<path>` to find connected notes the
+   `obsidian vault=<vault> search query=<topic> format=json`. Read the most
+   relevant hits in full with `obsidian vault=<vault> read path=<path>`, then
+   follow `obsidian vault=<vault> backlinks path=<path> format=json` and
+   `obsidian vault=<vault> links path=<path>` to find connected notes the
    search missed. Read those notes before using them.
 2. **Extract claims, attributed.** As you read, collect each claim with its
    source note. Every claim carries a `[[Source Note]]` citation.

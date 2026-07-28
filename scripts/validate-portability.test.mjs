@@ -31,6 +31,65 @@ test("allows provider terminology in canonical prose", () => {
   assert.deepEqual(validatePortability(root), []);
 });
 
+for (const [position, example] of [
+  ["immediately after the command", "obsidian read vault=<vault> path=<path>"],
+  ["after another option", "obsidian read path=<path> vault=<vault>"],
+]) {
+  test(`rejects vault selection ${position} in portable Obsidian CLI examples`, () => {
+    const root = fixture({
+      "scripts/obsidian-cli.mjs": CLI_HELPER,
+      "skills/portable/SKILL.md": `Run \`${example}\`.\n`,
+    });
+
+    assert.deepEqual(validatePortability(root), [
+      "skills/portable/SKILL.md: Obsidian CLI examples must place vault=<vault> before the command",
+    ]);
+  });
+}
+
+for (const [target, example] of [
+  ["literal path", "obsidian vault=\"My Vault\" read file=Projects/CAVI.md"],
+  ["path placeholder", "obsidian vault=<vault> read file=<source-path>"],
+]) {
+  test(`rejects wikilink-style file resolution for a ${target}`, () => {
+    const root = fixture({
+      "scripts/obsidian-cli.mjs": CLI_HELPER,
+      "skills/portable/SKILL.md": `Run \`${example}\`.\n`,
+    });
+
+    assert.deepEqual(validatePortability(root), [
+      "skills/portable/SKILL.md: exact vault-root targets must use path= instead of file=",
+    ]);
+  });
+}
+
+test("allows deliberate wikilink-style name resolution in portable CLI examples", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "skills/portable/SKILL.md": "Run `obsidian vault=<vault> read file=<note-name>`.\n",
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("allows vault-first exact paths and excludes explicitly nonportable skills", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "skills/portable/SKILL.md": "Run `obsidian vault=<vault> read path=<path>`.\n",
+    "skills/provider-owned/SKILL.md": [
+      "---",
+      "name: provider-owned",
+      "portable: false",
+      "---",
+      "",
+      "Provider-owned example: `obsidian read vault=<vault> file=<path>`.",
+      "",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
 test("requires the official CLI helper when canonical skills exist", () => {
   const root = fixture({ "skills/portable/SKILL.md": "# Portable\n" });
 

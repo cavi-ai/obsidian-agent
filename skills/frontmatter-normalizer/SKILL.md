@@ -13,10 +13,10 @@ there before changing anything.
 ## Process
 
 1. **Check for an ontology first — it outranks any schema you would invent.**
-   Run `obsidian search vault=<vault> query='[ontology:type]' format=json` to
+   Run `obsidian vault=<vault> search query='[ontology:type]' format=json` to
    find the vault's schema notes. Do not look in a folder by name: the ontology
    folder is user-configurable. Read each hit with
-   `obsidian read vault=<vault> file=<path>` — the frontmatter carries `type_name`,
+   `obsidian vault=<vault> read path=<path>` — the frontmatter carries `type_name`,
    and the body's first fenced `yaml` block holds that type's `extends`,
    `properties`, and `relations`.
 
@@ -30,8 +30,8 @@ there before changing anything.
    - **If there are no schema notes**, continue with the survey-and-propose flow
      below.
 2. **Survey.** Enumerate the target with
-   `obsidian files vault=<vault> folder=<scope> ext=md`, then inspect each note
-   using `obsidian properties vault=<vault> file=<path> format=json`. Record
+   `obsidian vault=<vault> files folder=<scope> ext=md`, then inspect each note
+   using `obsidian vault=<vault> properties path=<path> format=json`. Record
    which fields exist and how values vary.
 3. **Agree the schema.** Propose the target schema (which fields, allowed
    values) and confirm it with the user — don't impose one silently.
@@ -40,11 +40,14 @@ there before changing anything.
 5. **Preview an operation list.** For every note, show each property name,
    current value, proposed value, and type. Omitted properties remain untouched.
 6. **Apply in approved batches.** Use
-   `obsidian property:set vault=<vault> file=<path> name=<name> value=<value> type=<type>`.
-   Use `obsidian property:remove vault=<vault> file=<path> name=<name>` only
-   when removal was explicitly included in the approved change set. Re-run
-   `obsidian properties vault=<vault> file=<path> format=json` after each batch
-   and report what changed.
+   `obsidian vault=<vault> property:set path=<path> name=<name> value=<value> type=<type>`.
+   Use `obsidian vault=<vault> property:remove path=<path> name=<name>` only
+   when removal was explicitly included in the approved change set. After each
+   batch, re-read every changed note in full with
+   `obsidian vault=<vault> read path=<path>` to ensure its body and unrelated
+   frontmatter stayed intact. Then re-run
+   `obsidian vault=<vault> properties path=<path> format=json` for every changed
+   note and report what changed.
 
 ## Hard requirements
 

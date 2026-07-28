@@ -25,7 +25,7 @@ must be enabled, and Obsidian must be running. Use
    target exists by reading its exact path with `obsidian read`. A link to a
    non-existent note is a broken link, not a helpful one.
 4. **Reuse the user's taxonomy and voice.** Inspect
-   `obsidian tags vault=<vault> counts format=json` before tagging; reuse
+   `obsidian vault=<vault> tags counts format=json` before tagging; reuse
    existing tags over inventing near-duplicates. Match the note's existing tone
    — you are extending their vault, not imposing yours.
 5. **Preview before writes.** Before `obsidian create`, `append`, `prepend`,
@@ -50,12 +50,12 @@ must be enabled, and Obsidian must be running. Use
 
 | Need | Official CLI form |
 |------|-------------------|
-| Find notes on a topic | `obsidian search vault=<vault> query=<query> format=json` |
-| Read or verify a note | `obsidian read vault=<vault> file=<path>` |
-| Find notes linking here | `obsidian backlinks vault=<vault> file=<path> format=json` |
-| List outgoing links | `obsidian links vault=<vault> file=<path>` |
-| Inspect existing tags | `obsidian tags vault=<vault> counts format=json` |
-| List files in a scope | `obsidian files vault=<vault> folder=<path>` |
-| Create a new note | `obsidian create vault=<vault> path=<path> content=<markdown>` |
-| Append without replacing | `obsidian append vault=<vault> file=<path> content=<markdown>` |
-| Set a frontmatter property | `obsidian property:set vault=<vault> file=<path> name=<name> value=<value> type=<type>` |
+| Find notes on a topic | `obsidian vault=<vault> search query=<query> format=json` |
+| Read or verify a note | `obsidian vault=<vault> read path=<path>` |
+| Find notes linking here | `obsidian vault=<vault> backlinks path=<path> format=json` |
+| List outgoing links | `obsidian vault=<vault> links path=<path>` |
+| Inspect existing tags | `obsidian vault=<vault> tags counts format=json` |
+| List files in a scope | `obsidian vault=<vault> files folder=<path>` |
+| Create a new note | `obsidian vault=<vault> create path=<path> content=<markdown>` |
+| Append without replacing | `obsidian vault=<vault> append path=<path> content=<markdown>` |
+| Set a frontmatter property | `obsidian vault=<vault> property:set path=<path> name=<name> value=<value> type=<type>` |

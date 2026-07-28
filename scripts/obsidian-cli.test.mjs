@@ -9,17 +9,22 @@ import {
 
 test("builds the documented search argv with JSON output", () => {
   assert.deepEqual(buildObsidianArgs({ command: "search", vault: "Work", query: "agent systems" }),
-    ["search", "vault=Work", "query=agent systems", "format=json"]);
+    ["vault=Work", "search", "query=agent systems", "format=json"]);
 });
 
-test("builds the documented read argv without JSON output", () => {
-  assert.deepEqual(buildObsidianArgs({ command: "read", vault: "Work", file: "Projects/CAVI.md" }),
-    ["read", "vault=Work", "file=Projects/CAVI.md"]);
+test("preserves deliberate wikilink-style file resolution after the command", () => {
+  assert.deepEqual(buildObsidianArgs({ command: "read", vault: "Work", file: "CAVI" }),
+    ["vault=Work", "read", "file=CAVI"]);
 });
 
-test("does not add JSON output to commands that do not document it", () => {
+test("builds an exact-path read without adding unsupported JSON output", () => {
   assert.deepEqual(buildObsidianArgs({ command: "read", vault: "Work", path: "Projects/CAVI.md" }),
-    ["read", "vault=Work", "path=Projects/CAVI.md"]);
+    ["vault=Work", "read", "path=Projects/CAVI.md"]);
+});
+
+test("keeps the command first when no vault is selected", () => {
+  assert.deepEqual(buildObsidianArgs({ command: "read", path: "Projects/CAVI.md" }),
+    ["read", "path=Projects/CAVI.md"]);
 });
 
 test("parses an Obsidian semantic version", () => {

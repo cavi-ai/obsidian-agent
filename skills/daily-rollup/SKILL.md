@@ -15,20 +15,20 @@ and what's still open — grounded in the notes that actually changed.
 1. **Set the window.** Default to the last seven days; ask when the intended
    period is unclear.
 2. **Find what changed.** List note paths with
-   `obsidian files vault=<vault> ext=md`, then inspect each candidate's `modified` value with
-   `obsidian file vault=<vault> path=<path>`. Keep only notes modified inside
+   `obsidian vault=<vault> files ext=md`, then inspect each candidate's `modified` value with
+   `obsidian vault=<vault> file path=<path>`. Keep only notes modified inside
    the window. Do not substitute `obsidian recents`: it reports recently
    opened files, not modified files.
-3. **Read the sources.** Run `obsidian read vault=<vault> file=<path>` for each
+3. **Read the sources.** Run `obsidian vault=<vault> read path=<path>` for each
    relevant note. Pull out decisions, completed or changed work, and open
-   tasks. `obsidian tasks vault=<vault> path=<path> todo verbose format=json`
+   tasks. `obsidian vault=<vault> tasks path=<path> todo verbose format=json`
    may locate tasks, but the source note still must be read.
 4. **Draft the review.** Lead with the one to three most important
    developments, then **Decisions**, **Changed / shipped**, and **Open tasks**.
    Link every task and claim to its source note.
 5. **Preview and save.** Show the proposed path and complete Markdown. After
    approval, create it with
-   `obsidian create vault=<vault> path=<path> content=<markdown>`, re-read it,
+   `obsidian vault=<vault> create path=<path> content=<markdown>`, re-read it,
    and invoke `obsidian-agent:consistent-tagging` to reuse an existing review
    tag where appropriate.
 

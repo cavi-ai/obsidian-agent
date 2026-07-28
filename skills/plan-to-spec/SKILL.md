@@ -13,7 +13,7 @@ coding agent can drive with `obsidian-agent:tracker-driver`.
 ## Process
 
 1. **Read the plan.** Run
-   `obsidian read vault=<vault> file=<planning-path>`. Extract concrete,
+   `obsidian vault=<vault> read path=<planning-path>`. Extract concrete,
    ordered tasks from its steps or checklist; do not invent scope.
 2. **Draft both notes.** Choose unused spec and tracker paths. Build the spec in
    exactly this shape so a coding agent can parse it:
@@ -36,9 +36,9 @@ coding agent can drive with `obsidian-agent:tracker-driver`.
    The `Tracker:` line contains the tracker note's exact vault path.
 3. **Preview and create.** Show both paths and complete bodies. After approval,
    create the tracker with
-   `obsidian create vault=<vault> path=<tracker-path> content=<tracker-heading>`
+   `obsidian vault=<vault> create path=<tracker-path> content=<tracker-heading>`
    and the spec with
-   `obsidian create vault=<vault> path=<spec-path> content=<spec-markdown>`.
+   `obsidian vault=<vault> create path=<spec-path> content=<spec-markdown>`.
    Do not use `overwrite`. Re-read both notes.
 4. **Hand off.** Report both paths and instruct the build agent to invoke
    `obsidian-agent:tracker-driver` while implementing the ordered tasks.

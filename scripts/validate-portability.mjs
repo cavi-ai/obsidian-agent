@@ -6,7 +6,7 @@ import {
   readdirSync,
   realpathSync,
 } from "node:fs";
-import { dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
@@ -15,6 +15,7 @@ const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 const CONFIGURATION_EXTENSIONS = new Set([".json"]);
 const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "gemini", "opencode"]);
 const PROVIDER_PATH_FIELDS = ["artifact", "source"];
+const OBSIDIAN_CLI_EXAMPLE = /\bobsidian\s+[^\n`]*/gi;
 
 function inspectPathEntry(path) {
   try {
@@ -87,6 +88,66 @@ function containsMcpServers(path) {
     return objectContainsKey(JSON.parse(text), "mcpServers");
   } catch {
     return false;
+  }
+}
+
+function isPortableSkill(text) {
+  const frontmatter = text.replace(/^\uFEFF/, "").match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  return !frontmatter || !/^\s*portable:\s*false\s*$/im.test(frontmatter[1]);
+}
+
+function splitCliArguments(example) {
+  const source = example.replace(/^obsidian\s+/i, "");
+  const arguments_ = [];
+  let current = "";
+  let quote;
+  for (const character of source) {
+    if (quote) {
+      current += character;
+      if (character === quote) quote = undefined;
+    } else if (character === "\"" || character === "'") {
+      quote = character;
+      current += character;
+    } else if (/\s/.test(character)) {
+      if (current) arguments_.push(current);
+      current = "";
+    } else {
+      current += character;
+    }
+  }
+  if (current) arguments_.push(current);
+  return arguments_;
+}
+
+function isExactPathFileSelector(argument) {
+  if (!argument.startsWith("file=")) return false;
+  const rawValue = argument.slice("file=".length);
+  const value = /^(["']).*\1$/.test(rawValue) ? rawValue.slice(1, -1) : rawValue;
+  return value.includes("/") || value.includes("\\") || /^<[^>]*path[^>]*>$/i.test(value);
+}
+
+function portableCliExampleIssues(text) {
+  const issues = { commandFirstVault: false, exactPathFile: false };
+  for (const example of text.match(OBSIDIAN_CLI_EXAMPLE) ?? []) {
+    const arguments_ = splitCliArguments(example);
+    const vaultIndex = arguments_.findIndex((argument) => argument.startsWith("vault="));
+    if (vaultIndex > 0) issues.commandFirstVault = true;
+    if (arguments_.some(isExactPathFileSelector)) issues.exactPathFile = true;
+  }
+  return issues;
+}
+
+function validatePortableCliExamples(skillFiles, add) {
+  for (const path of skillFiles.filter((file) => basename(file) === "SKILL.md")) {
+    const text = readFileSync(path, "utf8");
+    if (!isPortableSkill(text)) continue;
+    const issues = portableCliExampleIssues(text);
+    if (issues.commandFirstVault) {
+      add(path, "Obsidian CLI examples must place vault=<vault> before the command");
+    }
+    if (issues.exactPathFile) {
+      add(path, "exact vault-root targets must use path= instead of file=");
+    }
   }
 }
 
@@ -239,6 +300,7 @@ export function validatePortability(root) {
     }
   }
   for (const path of skillFiles.symlinks) add(path, "symbolic links are not allowed in canonical skills");
+  validatePortableCliExamples(skillFiles.files, add);
   if (skillFiles.files.length || skillFiles.symlinks.length) {
     const cliHelper = join(root, "scripts", "obsidian-cli.mjs");
     if (!pathEntryExists(cliHelper)) {

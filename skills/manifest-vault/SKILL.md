@@ -11,19 +11,19 @@ description: Use when asked to optimize, clean up, audit, or improve an Obsidian
 
 Structural survey, not `obsidian-agent:vault-synthesis`:
 
-- enumerate notes with `obsidian files vault=<vault> ext=md`;
-- inspect taxonomy with `obsidian tags vault=<vault> counts format=json`;
-- inspect freshness with `obsidian file vault=<vault> path=<path>` and its
+- enumerate notes with `obsidian vault=<vault> files ext=md`;
+- inspect taxonomy with `obsidian vault=<vault> tags counts format=json`;
+- inspect freshness with `obsidian vault=<vault> file path=<path>` and its
   `modified` value (not `obsidian recents`, which means recently opened);
-- intersect `obsidian orphans vault=<vault>` and
-  `obsidian deadends vault=<vault>`, then verify with
-  `obsidian backlinks vault=<vault> file=<path> format=json` and
-  `obsidian links vault=<vault> file=<path>`;
+- intersect `obsidian vault=<vault> orphans` and
+  `obsidian vault=<vault> deadends`, then verify with
+  `obsidian vault=<vault> backlinks path=<path> format=json` and
+  `obsidian vault=<vault> links path=<path>`;
 - inspect broken targets with
-  `obsidian unresolved vault=<vault> counts verbose format=json`;
+  `obsidian vault=<vault> unresolved counts verbose format=json`;
 - read a representative sample with
-  `obsidian read vault=<vault> file=<path>` and inspect it with
-  `obsidian properties vault=<vault> file=<path> format=json`.
+  `obsidian vault=<vault> read path=<path>` and inspect it with
+  `obsidian vault=<vault> properties path=<path> format=json`.
 
 Diagnose orphan notes, tag sprawl, missing links, stale notes, and frontmatter
 inconsistency.

@@ -13,20 +13,20 @@ key concepts it touches.
 ## Process
 
 1. **Read the whole note** with
-   `obsidian read vault=<vault> file=<path>` — summarize the actual content,
+   `obsidian vault=<vault> read path=<path>` — summarize the actual content,
    never the title alone.
 2. **Write a TL;DR**: 2–4 sentences leading with the note's single most important
    point, optionally followed by a few key bullets.
 3. **Surface key concepts.** Identify the core concepts. Search with
-   `obsidian search vault=<vault> query=<concept> format=json` and successfully
+   `obsidian vault=<vault> search query=<concept> format=json` and successfully
    read each intended target before adding a wikilink to the summary; never
    fabricate a link.
 4. **Preview and place the summary.** Show the inserted block and its location.
    If no Summary section exists, obtain approval and run
-   `obsidian prepend vault=<vault> file=<path> content=<summary-markdown>`;
+   `obsidian vault=<vault> prepend path=<path> content=<summary-markdown>`;
    Obsidian places it after frontmatter. If replacing an existing Summary,
    show the complete note diff and, after approval, run
-   `obsidian create vault=<vault> path=<path> content=<complete-markdown> overwrite`.
+   `obsidian vault=<vault> create path=<path> content=<complete-markdown> overwrite`.
    Re-read the result.
 
 ## Common mistakes

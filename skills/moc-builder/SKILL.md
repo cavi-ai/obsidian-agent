@@ -13,9 +13,9 @@ on a topic, so the user can navigate the area at a glance.
 ## Process
 
 1. **Scope it.** For a topic, run
-   `obsidian search vault=<vault> query=<topic> format=json`. For a folder, run
-   `obsidian files vault=<vault> folder=<path> ext=md`. Read each candidate
-   with `obsidian read vault=<vault> file=<path>` to confirm relevance.
+   `obsidian vault=<vault> search query=<topic> format=json`. For a folder, run
+   `obsidian vault=<vault> files folder=<path> ext=md`. Read each candidate
+   with `obsidian vault=<vault> read path=<path>` to confirm relevance.
 2. **Group thematically.** Cluster the members into a few meaningful sections —
    not one flat list. Order sections by importance.
 3. **Annotate.** Each entry is `[[Note]] — one-line what-it-covers`. Every
@@ -24,7 +24,7 @@ on a topic, so the user can navigate the area at a glance.
    MOC, read it first and show the complete diff; otherwise show the new path
    and body.
 5. **Write after approval.** Use
-   `obsidian create vault=<vault> path=<moc-path> content=<markdown> overwrite`
+   `obsidian vault=<vault> create path=<moc-path> content=<markdown> overwrite`
    only for an approved refresh; omit `overwrite` for a new MOC. Re-read it.
 6. **Tag** via `obsidian-agent:consistent-tagging`, reusing an existing MOC tag.
 

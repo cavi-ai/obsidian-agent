@@ -11,7 +11,7 @@ Close a build with an honest retro grounded in what the tracker actually records
 
 ## Process
 
-1. **Read the record.** Use `obsidian read vault=<vault> file=<path>` for both
+1. **Read the record.** Use `obsidian vault=<vault> read path=<path>` for both
    the tracker note and the spec note. The
    tracker holds `- [x] …` / `- [ ] … BLOCKED: …` lines and a `## Summary`.
 2. **Tally honestly.** What shipped (done tasks), what's still open or blocked
@@ -21,7 +21,7 @@ Close a build with an honest retro grounded in what the tracker actually records
    differently — tied to specific tasks.
 4. **Preview and write the retro.** Show the new path and complete Markdown,
    linking `[[spec]]` and `[[tracker]]`. After approval, run
-   `obsidian create vault=<vault> path=<retro-path> content=<markdown>` and
+   `obsidian vault=<vault> create path=<retro-path> content=<markdown>` and
    re-read it. Lead with shipped/left, then lessons and actionable follow-ups.
 5. **Tag** via `obsidian-agent:consistent-tagging`, reusing the vault's retro tag.
 

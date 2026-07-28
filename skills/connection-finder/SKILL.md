@@ -13,14 +13,14 @@ the connections the user would value but hasn't made.
 ## Process
 
 1. **Anchor.** Take the focus note (or topic). Read a focus note with
-   `obsidian read vault=<vault> file=<path>` and note its themes, entities,
+   `obsidian vault=<vault> read path=<path>` and note its themes, entities,
    and questions.
 2. **Cast a wide net.** Search each strong theme or entity with
-   `obsidian search vault=<vault> query=<query> format=json`. Read every
+   `obsidian vault=<vault> search query=<query> format=json`. Read every
    promising candidate in full; search results alone are not evidence.
 3. **Exclude what's already linked.** For a focus note, run
-   `obsidian links vault=<vault> file=<path>` and
-   `obsidian backlinks vault=<vault> file=<path> format=json`. Do not
+   `obsidian vault=<vault> links path=<path>` and
+   `obsidian vault=<vault> backlinks path=<path> format=json`. Do not
    re-suggest an existing connection.
 4. **Judge for real relationships.** For each candidate, decide if there's a
    genuine conceptual link (shared argument, cause/effect, example-of, tension),

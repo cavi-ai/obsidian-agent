@@ -12,16 +12,16 @@ Pull every open task in the vault into one consolidated, sourced action list.
 ## Process
 
 1. **Find both marker types.** Run
-   `obsidian tasks vault=<vault> todo verbose format=json` for unchecked
+   `obsidian vault=<vault> tasks todo verbose format=json` for unchecked
    checkboxes. Separately run
-   `obsidian search:context vault=<vault> query='tag:#task OR tag:#todo' format=json`
+   `obsidian vault=<vault> search:context query='tag:#task OR tag:#todo' format=json`
    for task-tagged lines. For a folder scope, enumerate its Markdown files and
-   run `obsidian tasks vault=<vault> path=<path> todo verbose format=json` per
+   run `obsidian vault=<vault> tasks path=<path> todo verbose format=json` per
    file; add `path=<folder>` to the `search:context` call. For a topic scope,
    read the returned source notes and filter by supported content rather than
    inventing an unsupported task-query flag.
 2. **Read and extract.** Read every candidate with
-   `obsidian read vault=<vault> file=<path>`. Collect each open task verbatim —
+   `obsidian vault=<vault> read path=<path>`. Collect each open task verbatim —
    both checkbox and tagged forms — with its source note. Deduplicate an item
    found by both queries.
 3. **Consolidate, don't lose.** One list, each item linked to its
@@ -31,7 +31,7 @@ Pull every open task in the vault into one consolidated, sourced action list.
    priority); otherwise group sensibly. Lead with anything overdue/urgent.
 5. **Preview and save portable Markdown.** Show the complete grouped action
    list and target path. After approval, run
-   `obsidian create vault=<vault> path=<path> content=<markdown>`, re-read it,
+   `obsidian vault=<vault> create path=<path> content=<markdown>`, re-read it,
    and invoke `obsidian-agent:consistent-tagging`.
 
 ## Hard requirements

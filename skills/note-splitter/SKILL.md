@@ -12,7 +12,7 @@ without losing content.
 
 ## Process
 
-1. **Read and map.** Run `obsidian read vault=<vault> file=<source-path>` and
+1. **Read and map.** Run `obsidian vault=<vault> read path=<source-path>` and
    identify the distinct topics or sections that each deserve their own note.
 2. **Propose a split plan.** List the new atomic notes (title + which content
    moves to each) and what stays in the original. Confirm before writing —
@@ -21,13 +21,13 @@ without losing content.
    before/after diff for the source. Prove that every original section lands in
    exactly one destination.
 4. **Create the atomic notes.** After approval, run
-   `obsidian create vault=<vault> path=<new-path> content=<markdown>` once per
+   `obsidian vault=<vault> create path=<new-path> content=<markdown>` once per
    topic. Each note carries its moved content verbatim and a link back.
 5. **Reshape the original.** Replace it with an approved hub using
-   `obsidian create vault=<vault> path=<source-path> content=<hub-markdown> overwrite`
+   `obsidian vault=<vault> create path=<source-path> content=<hub-markdown> overwrite`
    (consider `obsidian-agent:moc-builder` if it is becoming an index). If the
    whole note became one atomic topic, use
-   `obsidian move vault=<vault> file=<source-path> to=<destination>` instead.
+   `obsidian vault=<vault> move path=<source-path> to=<destination>` instead.
    Re-read every resulting note.
 6. **Link** the new notes to each other and to related notes via
    `obsidian-agent:wikilink-weaver`.
