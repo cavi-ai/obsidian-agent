@@ -1,6 +1,7 @@
 {
   "schema_version": "1.0",
   "identity": "obsidian-agent",
+  "version": "0.1.0",
   "requirements": { "obsidian": ">=1.12.7" },
   "transport": "cli",
   "providers": {

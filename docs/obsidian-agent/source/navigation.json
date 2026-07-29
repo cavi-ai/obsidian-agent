@@ -1,0 +1,17 @@
+{
+  "title": "Obsidian Agent",
+  "version": "0.1.0",
+  "sections": [
+    { "title": "Introduction", "pages": [
+      { "title": "Overview", "path": "introduction/overview.md" },
+      { "title": "Installation", "path": "introduction/installation.md" }
+    ] },
+    { "title": "Guides", "pages": [
+      { "title": "Hosts and portability", "path": "guides/hosts-and-portability.md" },
+      { "title": "Vault safety", "path": "guides/vault-safety.md" }
+    ] },
+    { "title": "Release", "pages": [
+      { "title": "Version and support", "path": "release/version-and-support.md" }
+    ] }
+  ]
+}
