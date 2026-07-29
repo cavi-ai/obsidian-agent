@@ -14,7 +14,12 @@ jobs:
         with:
           node-version: "22.x"
       - name: Unit tests
-        run: node --test 'scripts/**/*.test.mjs'
+        run: node --test --test-concurrency=1 'scripts/**/*.test.mjs'
+      - name: Validate release identity and documentation
+        run: |
+          node scripts/validate-release.mjs
+          node scripts/docs/build-obsidian-agent.mjs --version 0.1.0 --tag v0.1.0 --commit "$(git rev-parse HEAD)" --source-date-epoch "$(git show -s --format=%ct HEAD)"
+          node scripts/docs/verify-obsidian-agent.mjs
       - name: Validate capability registry
         run: node scripts/validate-registry.mjs
       - name: Validate portability

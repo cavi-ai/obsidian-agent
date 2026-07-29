@@ -128,6 +128,15 @@ git diff --check
 Versions in native manifests move only for an intentional release. Refactors
 and host-packaging changes do not imply a version bump or release.
 
+### Versioned documentation
+
+Release `v0.1.0` introduces the canonical versioned documentation under
+`docs/obsidian-agent/v0.1.0`. The published GitHub Release attaches the
+deterministic documentation archive and checksum, then dispatches its verified
+`product-docs` envelope to CAVI Home. Maintainers can exercise the complete
+artifact path with the `Publish product documentation` workflow in dry-run mode;
+non-dry-run delivery requires `CONSUMER_DISPATCH_TOKEN`.
+
 ## Credits
 
 The repository retains its existing third-party attributions in `NOTICE`.
