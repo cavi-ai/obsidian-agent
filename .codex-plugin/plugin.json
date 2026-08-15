@@ -17,7 +17,7 @@
     "displayName": "Obsidian Agent",
     "shortDescription": "Grounded Obsidian workflows over the official CLI.",
     "longDescription": "Synthesize, organize, draft, and track work in Obsidian with portable skills and preview-before-write safety.",
-    "developerName": "Cavi AI",
+    "developerName": "Sasan Sotoodehfar",
     "category": "Productivity",
     "capabilities": ["Knowledge", "Write"],
     "websiteURL": "https://cavi-ai.xyz",
