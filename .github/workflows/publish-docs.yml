@@ -6,9 +6,8 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Exact stable version to verify or backfill
+        description: Exact stable version to verify or backfill, matching plugin.json
         required: true
-        default: "0.1.0"
         type: string
       dry_run:
         description: Build and verify without upload or dispatch

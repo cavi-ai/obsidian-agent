@@ -5,22 +5,35 @@ import { fileURLToPath } from "node:url";
 
 const SEMVER = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/u;
 
+// plugin.json is the one version; every other manifest restates it and must agree.
+const RESTATED = [
+  ["gemini-extension.json", (json) => json.version],
+  [".claude-plugin/plugin.json", (json) => json.version],
+  [".codex-plugin/plugin.json", (json) => json.version],
+  ["docs/obsidian-agent/source/navigation.json", (json) => json.version],
+  [".claude-plugin/marketplace.json", (json) => json.plugins.map((entry) => entry.version)],
+];
+
 export async function collectReleaseIdentity(rootUrl = new URL("../", import.meta.url)) {
   const root = fileURLToPath(rootUrl);
-  const plugin = JSON.parse(await readFile(path.join(root, "plugin.json"), "utf8"));
-  const gemini = JSON.parse(await readFile(path.join(root, "gemini-extension.json"), "utf8"));
-  return {
-    version: plugin.version,
-    pluginVersion: plugin.version,
-    geminiVersion: gemini.version,
-  };
+  const read = async (file) => JSON.parse(await readFile(path.join(root, file), "utf8"));
+  const plugin = await read("plugin.json");
+  const restated = [];
+  for (const [file, pick] of RESTATED) {
+    const value = pick(await read(file));
+    for (const version of [value].flat()) restated.push({ file, version });
+  }
+  return { version: plugin.version, restated };
 }
 
 export function validateReleaseIdentity(identity, tag = `v${identity.version}`) {
   const errors = [];
   if (!SEMVER.test(identity.version ?? "")) errors.push("plugin version must be stable SemVer");
-  if (identity.pluginVersion !== identity.version) errors.push("plugin version does not match canonical version");
-  if (identity.geminiVersion !== identity.version) errors.push("Gemini version does not match canonical version");
+  for (const { file, version } of identity.restated ?? []) {
+    if (version !== identity.version) {
+      errors.push(`${file} version ${version} does not match plugin.json ${identity.version}`);
+    }
+  }
   if (tag !== `v${identity.version}`) errors.push(`tag ${tag} does not match v${identity.version}`);
   return errors;
 }

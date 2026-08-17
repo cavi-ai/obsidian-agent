@@ -7,14 +7,7 @@ import test from "node:test";
 
 import { buildObsidianAgentDocs } from "./build-obsidian-agent.mjs";
 import { createProductDocsReleaseArtifact } from "./release-artifact.mjs";
-import { createDocsSandbox } from "./sandbox.mjs";
-
-const RELEASE = {
-  version: "0.1.0",
-  tag: "v0.1.0",
-  commit: "7".repeat(40),
-  sourceDateEpoch: 1784953886,
-};
+import { createDocsSandbox, TEST_RELEASE as RELEASE } from "./sandbox.mjs";
 const REPOSITORY = "cavi-ai/obsidian-agent";
 
 function tarEntries(archive) {
@@ -46,7 +39,7 @@ test("builds deterministic safe archives with exact embedded identity and checks
     const entries = tarEntries(await readFile(first.artifactPath));
     assert.ok(entries.length > 2);
     assert.ok(entries.every(({ name }) =>
-      name === "cavi-release.json" || name.startsWith("docs/obsidian-agent/v0.1.0/"),
+      name === "cavi-release.json" || name.startsWith(`docs/obsidian-agent/${RELEASE.tag}/`),
     ));
     assert.ok(entries.every(({ name }) => !name.includes("..") && !name.startsWith("/")));
     const release = JSON.parse(entries.find(({ name }) => name === "cavi-release.json").body.toString("utf8"));

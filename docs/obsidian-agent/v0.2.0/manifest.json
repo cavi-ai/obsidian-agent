@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "package": "obsidian-agent",
+  "product": "obsidian-agent",
+  "version": "0.2.0",
+  "contentSha256": "cb8e5a588e40dcb87a4213f1b26af5003b514b4702e100a36300b4f0afaada8b",
+  "publicBasePath": "/docs/obsidian-agent/v0.2.0",
+  "stableAlias": "/docs/obsidian-agent",
+  "release": {
+    "tag": "v0.2.0",
+    "commit": "58048399e5c5aa60112493a85783ea9a8234b830"
+  },
+  "generatedAt": "2026-08-17T16:54:38.000Z"
+}
