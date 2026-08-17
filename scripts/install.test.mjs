@@ -19,6 +19,23 @@ const expectedHosts = ["claude", "codex", "gemini", "opencode", "agentskills"];
 const portableSkillCount = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"))
   .capabilities.filter((cap) => cap.portable).length;
 
+// plugin.json is the one author identity; host manifests copy it, never restate it.
+test("every host manifest carries the author identity from plugin.json", () => {
+  const author = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8")).author;
+  assert.ok(author?.name && author.organization && author.organization_url, "plugin.json must declare an author");
+
+  const marketplace = JSON.parse(readFileSync(join(root, ".claude-plugin/marketplace.json"), "utf8"));
+  assert.deepEqual(marketplace.owner, author);
+  for (const entry of marketplace.plugins) assert.deepEqual(entry.author, author, entry.name);
+
+  for (const path of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json"]) {
+    assert.deepEqual(JSON.parse(readFileSync(join(root, path), "utf8")).author, author, path);
+  }
+
+  const codex = JSON.parse(readFileSync(join(root, ".codex-plugin/plugin.json"), "utf8"));
+  assert.equal(codex.interface.developerName, author.name);
+});
+
 test("all provider manifests use the universal identity and no MCP configuration", () => {
   const rootManifest = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
   assert.equal(rootManifest.identity, "obsidian-agent");

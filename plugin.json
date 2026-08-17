@@ -2,6 +2,11 @@
   "schema_version": "1.0",
   "identity": "obsidian-agent",
   "version": "0.1.0",
+  "author": {
+    "name": "Sasan Sotoodehfar",
+    "organization": "CAVI AI",
+    "organization_url": "https://cavi-ai.xyz"
+  },
   "requirements": { "obsidian": ">=1.12.7" },
   "transport": "cli",
   "providers": {

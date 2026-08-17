@@ -4,14 +4,18 @@
   "description": "Portable, CLI-powered Obsidian vault workflows for Codex.",
   "author": {
     "name": "Sasan Sotoodehfar",
-    "url": "https://cavi-ai.xyz",
-    "organization": "Cavi AI",
-    "organization_url": "https://github.com/cavi-ai"
+    "organization": "CAVI AI",
+    "organization_url": "https://cavi-ai.xyz"
   },
   "homepage": "https://github.com/cavi-ai/obsidian-agent",
   "repository": "https://github.com/cavi-ai/obsidian-agent",
   "license": "MIT",
-  "keywords": ["obsidian", "agent-skills", "knowledge", "cli"],
+  "keywords": [
+    "obsidian",
+    "agent-skills",
+    "knowledge",
+    "cli"
+  ],
   "skills": "./skills/",
   "interface": {
     "displayName": "Obsidian Agent",
@@ -19,8 +23,11 @@
     "longDescription": "Synthesize, organize, draft, and track work in Obsidian with portable skills and preview-before-write safety.",
     "developerName": "Sasan Sotoodehfar",
     "category": "Productivity",
-    "capabilities": ["Knowledge", "Write"],
-    "websiteURL": "https://cavi-ai.xyz",
+    "capabilities": [
+      "Knowledge",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/cavi-ai/obsidian-agent",
     "defaultPrompt": [
       "Synthesize what my vault says about this topic.",
       "Find useful connections between these notes.",
