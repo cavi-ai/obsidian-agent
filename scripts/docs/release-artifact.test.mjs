@@ -7,6 +7,7 @@ import test from "node:test";
 
 import { buildObsidianAgentDocs } from "./build-obsidian-agent.mjs";
 import { createProductDocsReleaseArtifact } from "./release-artifact.mjs";
+import { createDocsSandbox } from "./sandbox.mjs";
 
 const RELEASE = {
   version: "0.1.0",
@@ -15,7 +16,6 @@ const RELEASE = {
   sourceDateEpoch: 1784953886,
 };
 const REPOSITORY = "cavi-ai/obsidian-agent";
-const REPO_ROOT = path.resolve(import.meta.dirname, "../..");
 
 function tarEntries(archive) {
   const tar = gunzipSync(archive);
@@ -34,8 +34,9 @@ function tarEntries(archive) {
 
 test("builds deterministic safe archives with exact embedded identity and checksum", async () => {
   const output = await mkdtemp(path.join(tmpdir(), "bobby-docs-release-"));
+  const sandbox = await createDocsSandbox();
   try {
-    const { outputRoot } = await buildObsidianAgentDocs(REPO_ROOT, RELEASE);
+    const { outputRoot } = await buildObsidianAgentDocs(sandbox.root, RELEASE);
     const first = await createProductDocsReleaseArtifact({ docsRoot: outputRoot, outputDirectory: output, repository: REPOSITORY, ...RELEASE });
     const second = await createProductDocsReleaseArtifact({ docsRoot: outputRoot, outputDirectory: output, repository: REPOSITORY, ...RELEASE });
     assert.equal(first.artifactSha256, second.artifactSha256);
@@ -60,5 +61,6 @@ test("builds deterministic safe archives with exact embedded identity and checks
     });
   } finally {
     await rm(output, { recursive: true, force: true });
+    await sandbox.dispose();
   }
 });

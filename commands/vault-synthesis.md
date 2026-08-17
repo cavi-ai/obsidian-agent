@@ -1,5 +1,5 @@
 ---
-description: Synthesize what the vault says about a topic with citations, contradictions, and gaps.
+description: Use when answering "what do I know about X" from the whole vault — a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.
 argument-hint: "<topic>"
 ---
 

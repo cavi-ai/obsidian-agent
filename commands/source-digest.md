@@ -1,5 +1,5 @@
 ---
-description: Digest research source notes into a cited Markdown comparison with conflicts and gaps.
+description: Use when comparing notes that are typed or tagged as sources or papers, building an evidence or comparison table across them. Operates on existing plain source notes; typed provenance-record workflows are outside the portable CLI scope.
 argument-hint: "[source type/tag or topic]"
 ---
 

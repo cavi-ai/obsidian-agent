@@ -1,18 +1,22 @@
 {
   "name": "obsidian-agent",
   "owner": {
-    "name": "Cavi AI",
-    "url": "https://github.com/cavi-ai"
-  },
-  "metadata": {
-    "description": "Portable, CLI-powered Obsidian vault workflows for agent hosts.",
-    "version": "0.1.0"
+    "name": "Sasan Sotoodehfar",
+    "organization": "CAVI AI",
+    "organization_url": "https://cavi-ai.xyz"
   },
   "plugins": [
     {
       "name": "obsidian-agent",
-      "source": ".",
-      "description": "Use canonical Obsidian CLI workflows with Claude compatibility commands."
+      "description": "Portable, CLI-powered Obsidian vault workflows with Claude compatibility commands.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Sasan Sotoodehfar",
+        "organization": "CAVI AI",
+        "organization_url": "https://cavi-ai.xyz"
+      },
+      "source": "./",
+      "category": "development"
     }
   ]
 }

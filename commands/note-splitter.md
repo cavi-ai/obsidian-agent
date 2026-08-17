@@ -1,5 +1,5 @@
 ---
-description: Split a bloated, multi-topic note into atomic notes that link back together after an approved plan.
+description: Use when a note covers too many topics and should be split into atomic notes, breaking up a bloated note, or extracting sections into their own linked notes.
 argument-hint: "<note path>"
 ---
 

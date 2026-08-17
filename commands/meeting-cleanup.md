@@ -1,5 +1,5 @@
 ---
-description: Turn raw meeting notes or voice-memo capture into a structured note with attendees, decisions, and action items.
+description: Use when turning raw meeting notes, voice memos, or messy capture into a structured note with decisions, action items, and attendees.
 argument-hint: "<raw note path>"
 ---
 

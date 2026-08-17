@@ -1,5 +1,5 @@
 ---
-description: Distill the current Claude session into one consolidated, tagged, linked Obsidian note.
+description: Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.
 argument-hint: "[optional note title]"
 ---
 

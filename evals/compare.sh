@@ -8,7 +8,7 @@ mkdir -p evals/results
 
 python3 - <<'PY'
 import json
-COLL={"manifest-pm","manifest-feature","connection-finder","wikilink-weaver","vault-synthesis",
+COLL={"manifest","connection-finder","wikilink-weaver","vault-synthesis",
       "source-digest","research-workbench","daily-rollup","task-harvester"}
 q=[x for x in json.load(open("evals/routing/queries.json")) if x["expected_skill"] in COLL]
 json.dump(q, open("evals/results/collision-queries.json","w"), indent=1)

@@ -1,5 +1,5 @@
 ---
-description: Render a note or topic as a self-contained Claude/Companion HTML artifact.
+description: Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored "HTML is all you need" style — especially for Obsidian notes rendered in a ```claude-html``` block.
 argument-hint: "<note path or topic>"
 ---
 

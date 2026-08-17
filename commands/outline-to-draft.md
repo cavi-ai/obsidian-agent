@@ -1,5 +1,5 @@
 ---
-description: Expand an outline or stub into a full draft grounded in the vault and written in the user's voice.
+description: Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.
 argument-hint: "<outline note path>"
 ---
 

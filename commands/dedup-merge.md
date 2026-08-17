@@ -1,5 +1,5 @@
 ---
-description: Find duplicate or near-duplicate notes and merge them safely into one canonical note.
+description: Use when finding and merging duplicate or near-duplicate notes, consolidating notes that cover the same thing, or cleaning up redundant notes in an Obsidian vault.
 argument-hint: "[optional scope]"
 ---
 

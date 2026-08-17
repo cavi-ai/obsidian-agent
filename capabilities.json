@@ -20,7 +20,7 @@
       "id": "cloud-reply",
       "tier": "harness",
       "name": "Cloud reply",
-      "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo \u2014 do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
+      "description": "Use when running as a dispatched cloud Claude Code session against an Obsidian vault repo — do the task, write the result back as a reply note, and open a PR so Companion can pull it into the vault on any device.",
       "portable": false,
       "surfaces": {
         "skill": true,
@@ -53,7 +53,7 @@
       "id": "daily-rollup",
       "tier": "orchestrator",
       "name": "Daily rollup",
-      "description": "Use when summarizing or recapping recent vault activity \u2014 a daily, weekly, or periodic review of what changed, what was decided, and what is still open in a time window. For every open task across the whole vault with no time bound, use task-harvester.",
+      "description": "Use when summarizing or recapping recent vault activity — a daily, weekly, or periodic review of what changed, what was decided, and what is still open in a time window. For every open task across the whole vault with no time bound, use task-harvester.",
       "portable": true,
       "surfaces": {
         "skill": true,
@@ -83,80 +83,51 @@
       }
     },
     {
-      "id": "manifest-content",
+      "id": "manifest",
       "tier": "orchestrator",
-      "name": "Manifest: Content plan",
-      "description": "Use when turning vault knowledge into publishable content, planning a content calendar from your notes, or deciding what to write as a blog post, doc, or thread.",
+      "name": "Manifest",
+      "description": "Use when prioritizing or proposing work from vault notes — a roadmap, feature backlog, content plan, research agenda, risk register, or infra design, ranked and grounded in the notes. Pass the lens - pm (work already scoped), feature (new scope from feedback), content, infra, research, or risk.",
       "portable": true,
       "surfaces": {
         "skill": true,
-        "command": "[optional topic/audience focus]"
-      }
+        "command": "pm | feature | content | infra | research | risk [+ optional focus]"
+      },
+      "lenses": [
+        {
+          "id": "pm",
+          "name": "Manifest: Product roadmap"
+        },
+        {
+          "id": "feature",
+          "name": "Manifest: Feature backlog"
+        },
+        {
+          "id": "content",
+          "name": "Manifest: Content plan"
+        },
+        {
+          "id": "infra",
+          "name": "Manifest: Infra design"
+        },
+        {
+          "id": "research",
+          "name": "Manifest: Research agenda"
+        },
+        {
+          "id": "risk",
+          "name": "Manifest: Risk register"
+        }
+      ]
     },
     {
       "id": "manifest-core",
       "tier": "worker",
       "name": "Manifest core",
-      "description": "Use when running any manifest-* advisor skill \u2014 the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
+      "description": "Use when running any manifest-* advisor skill — the shared gather, prioritize, present, and route spine they all follow. Invoked by those skills, not directly by the user.",
       "portable": true,
       "surfaces": {
         "skill": true,
         "command": false
-      }
-    },
-    {
-      "id": "manifest-feature",
-      "tier": "orchestrator",
-      "name": "Manifest: Feature backlog",
-      "description": "Use when proposing new product scope from idea, feedback, or interview notes \u2014 deciding what to build that is not yet committed, or building a feature backlog from user signal. For sequencing work already scoped, use manifest-pm.",
-      "portable": true,
-      "surfaces": {
-        "skill": true,
-        "command": "[optional product/area focus]"
-      }
-    },
-    {
-      "id": "manifest-infra",
-      "tier": "orchestrator",
-      "name": "Manifest: Infra design",
-      "description": "Use when proposing infrastructure or system designs from architecture notes, reviewing a system's design, or planning infra and scaling moves from vault notes.",
-      "portable": true,
-      "surfaces": {
-        "skill": true,
-        "command": "[optional system/area focus]"
-      }
-    },
-    {
-      "id": "manifest-pm",
-      "tier": "orchestrator",
-      "name": "Manifest: Product roadmap",
-      "description": "Use when prioritizing already-scoped project work, producing a roadmap or client status from project notes, or deciding the next move on work that is already committed. For proposing new features from feedback, use manifest-feature.",
-      "portable": true,
-      "surfaces": {
-        "skill": true,
-        "command": "[optional project/topic focus]"
-      }
-    },
-    {
-      "id": "manifest-research",
-      "tier": "orchestrator",
-      "name": "Manifest: Research agenda",
-      "description": "Use when identifying knowledge gaps, deciding what to research next, or planning a research agenda from what an Obsidian vault already covers.",
-      "portable": true,
-      "surfaces": {
-        "skill": true,
-        "command": "[optional topic/area focus]"
-      }
-    },
-    {
-      "id": "manifest-risk",
-      "tier": "orchestrator",
-      "name": "Manifest: Risk register",
-      "description": "Use when surfacing risks, blockers, contradictions, or single points of failure across project notes, or building a risk register from the vault.",
-      "portable": true,
-      "surfaces": {
-        "skill": true,
-        "command": "[optional project/area focus]"
       }
     },
     {
@@ -206,8 +177,8 @@
     {
       "id": "note-to-artifact",
       "tier": "technique",
-      "name": "Note \u2192 artifact",
-      "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style \u2014 especially for Obsidian notes rendered in a ```claude-html``` block.",
+      "name": "Note → artifact",
+      "description": "Use when turning notes, data, or a plan into a beautiful, self-contained HTML artifact (report, dashboard, plan, table, or diagram) in the Anthropic-flavored \"HTML is all you need\" style — especially for Obsidian notes rendered in a ```claude-html``` block.",
       "portable": false,
       "surfaces": {
         "skill": true,
@@ -217,7 +188,7 @@
     {
       "id": "outline-to-draft",
       "tier": "worker",
-      "name": "Outline \u2192 draft",
+      "name": "Outline → draft",
       "description": "Use when expanding an outline or stub note into a full draft, fleshing bullet points into prose, or drafting longer-form writing grounded in vault context and the user's voice.",
       "portable": true,
       "surfaces": {
@@ -228,7 +199,7 @@
     {
       "id": "plan-to-spec",
       "tier": "pipeline",
-      "name": "Plan \u2192 spec",
+      "name": "Plan → spec",
       "description": "Use when turning a planning note into a build spec, preparing a note for handoff to a coding-agent build, or creating a spec and tracker from a plan.",
       "portable": true,
       "surfaces": {
@@ -240,7 +211,7 @@
       "id": "research-workbench",
       "tier": "orchestrator",
       "name": "Research workbench",
-      "description": "Use when running a formal research project on typed research records \u2014 creating a project, importing sources, capturing evidence with locators, building supported claims, auditing provenance, and generating an evidence-backed outline via the research_* tools.",
+      "description": "Use when running a formal research project on typed research records — creating a project, importing sources, capturing evidence with locators, building supported claims, auditing provenance, and generating an evidence-backed outline via the research_* tools.",
       "portable": false,
       "surfaces": {
         "skill": true,
@@ -250,7 +221,7 @@
     {
       "id": "session-to-note",
       "tier": "worker",
-      "name": "Session \u2192 note",
+      "name": "Session → note",
       "description": "Use when distilling or saving a Claude session into the Obsidian vault, capturing what was decided or learned in a session, or turning session memory into a persistent, linked knowledge note.",
       "portable": false,
       "surfaces": {
@@ -284,7 +255,7 @@
       "id": "task-harvester",
       "tier": "orchestrator",
       "name": "Harvest open tasks",
-      "description": "Use when collecting open tasks or todos scattered across notes into one consolidated action list \u2014 unchecked checkboxes and #task/#todo-tagged items across the whole vault, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
+      "description": "Use when collecting open tasks or todos scattered across notes into one consolidated action list — unchecked checkboxes and #task/#todo-tagged items across the whole vault, regardless of when the notes were written. For a review bounded to a recent time window, use daily-rollup.",
       "portable": true,
       "surfaces": {
         "skill": true,
@@ -306,7 +277,7 @@
       "id": "vault-grounding",
       "tier": "policy",
       "name": "Vault grounding",
-      "description": "Use when another obsidian-agent skill declares it as a required sub-skill \u2014 the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.",
+      "description": "Use when another obsidian-agent skill declares it as a required sub-skill — the honesty rules for citing, linking, tagging, and writing in a vault. A shared discipline other skills invoke, never a response to a user request on its own.",
       "portable": true,
       "surfaces": {
         "skill": true,
@@ -328,7 +299,7 @@
       "id": "vault-synthesis",
       "tier": "orchestrator",
       "name": "Vault synthesis",
-      "description": "Use when answering \"what do I know about X\" from the whole vault \u2014 a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.",
+      "description": "Use when answering \"what do I know about X\" from the whole vault — a grounded, cited topic synthesis across all notes regardless of type, with contradictions and gaps named.",
       "portable": true,
       "surfaces": {
         "skill": true,

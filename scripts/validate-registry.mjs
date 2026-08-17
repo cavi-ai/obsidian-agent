@@ -7,8 +7,8 @@ import { parseFrontmatter } from "./lib/frontmatter.mjs";
 
 const TIERS = new Set(["policy", "worker", "orchestrator", "pipeline", "technique", "harness"]);
 const NO_COMMAND_TIERS = new Set(["policy", "harness"]);
-// Pipeline entry points with a command file but no skill.
-const COMMAND_ONLY = new Set(["build-from-spec"]);
+// Every command delegates: `Invoke **`obsidian-agent:<id>`**` names the capability it runs.
+const INVOKE_TARGET = /Invoke \*\*`obsidian-agent:([a-z0-9-]+)`\*\*/g;
 
 export function validate(root) {
   const errors = [];
@@ -64,10 +64,43 @@ export function validate(root) {
     : [];
 
   for (const id of commandIds) {
-    if (COMMAND_ONLY.has(id)) continue;
+    const source = readFileSync(join(commandsDir, `${id}.md`), "utf8");
+    const { fields, error } = parseFrontmatter(source);
+    if (error) { errors.push(`command '${id}': ${error}`); continue; }
+
+    const targets = [...new Set([...source.matchAll(INVOKE_TARGET)].map((match) => match[1]))];
+    if (targets.length !== 1) {
+      errors.push(`command '${id}': must name exactly one 'Invoke **\`obsidian-agent:<id>\`**' target, found ${targets.length}`);
+    } else if (!byId.has(targets[0])) {
+      errors.push(`command '${id}': invokes '${targets[0]}', which is not a capability in capabilities.json`);
+    }
+
     const cap = byId.get(id);
-    if (!cap) { errors.push(`command '${id}' has no registry entry in capabilities.json`); continue; }
+    if (!cap) {
+      // A delegate command fronts another capability, so it owns its own text.
+      if (targets.length === 1 && targets[0] === id) {
+        errors.push(`command '${id}' invokes itself but has no registry entry in capabilities.json`);
+      }
+      if (!fields.description) errors.push(`command '${id}': missing description`);
+      if (!fields["argument-hint"]) errors.push(`command '${id}': missing argument-hint`);
+      continue;
+    }
+
+    if (targets.length === 1 && targets[0] !== id) {
+      errors.push(`command '${id}': has a registry entry but invokes '${targets[0]}'`);
+    }
     if (!cap.surfaces.command) errors.push(`command '${id}' exists but the registry sets surfaces.command to false`);
+
+    const description = fields.description ?? "";
+    if (description !== cap.description) {
+      errors.push(`command '${id}': description mismatch\n  commands/${id}.md: ${description}\n  registry: ${cap.description}`);
+    }
+    if (typeof cap.surfaces.command === "string") {
+      const hint = fields["argument-hint"] ?? "";
+      if (hint !== cap.surfaces.command) {
+        errors.push(`command '${id}': argument-hint mismatch\n  commands/${id}.md: ${hint}\n  registry: ${cap.surfaces.command}`);
+      }
+    }
   }
 
   for (const cap of registry.capabilities) {
@@ -85,8 +118,55 @@ export function validate(root) {
     if (Object.hasOwn(cap.surfaces, "companion")) {
       errors.push(`'${cap.id}': surfaces.companion is a legacy host surface and is not allowed`);
     }
+
+    if (Object.hasOwn(cap, "lenses")) errors.push(...validateLenses(cap, root));
   }
 
+  return errors;
+}
+
+// A lens capability is one skill with named variants; the registry owns the ids and labels.
+function validateLenses(cap, root) {
+  const errors = [];
+  const lenses = cap.lenses;
+  if (!Array.isArray(lenses) || lenses.length === 0) {
+    return [`'${cap.id}': lenses must be a non-empty array`];
+  }
+
+  const seen = new Set();
+  for (const lens of lenses) {
+    if (typeof lens?.id !== "string" || lens.id.trim() === "") {
+      errors.push(`'${cap.id}': every lens needs a non-empty id`);
+      continue;
+    }
+    if (typeof lens.name !== "string" || lens.name.trim() === "") {
+      errors.push(`'${cap.id}': lens '${lens.id}' needs a non-empty name`);
+    }
+    if (seen.has(lens.id)) errors.push(`'${cap.id}': duplicate lens id '${lens.id}'`);
+    seen.add(lens.id);
+  }
+  if (errors.length) return errors;
+
+  if (typeof cap.surfaces.command === "string") {
+    for (const lens of lenses) {
+      if (!cap.surfaces.command.includes(lens.id)) {
+        errors.push(`'${cap.id}': lens '${lens.id}' is missing from surfaces.command`);
+      }
+    }
+  }
+
+  const skillPath = join(root, "skills", cap.id, "SKILL.md");
+  if (!existsSync(skillPath)) return errors;
+  const body = readFileSync(skillPath, "utf8");
+  const documented = new Set([...body.matchAll(/^\|\s*`([a-z-]+)`\s*\|/gm)].map((m) => m[1]));
+  for (const lens of lenses) {
+    if (!documented.has(lens.id)) {
+      errors.push(`'${cap.id}': lens '${lens.id}' has no row in skills/${cap.id}/SKILL.md`);
+    }
+  }
+  for (const id of documented) {
+    if (!seen.has(id)) errors.push(`'${cap.id}': skills/${cap.id}/SKILL.md documents lens '${id}' which the registry does not declare`);
+  }
   return errors;
 }
 

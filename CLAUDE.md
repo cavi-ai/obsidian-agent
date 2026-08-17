@@ -39,6 +39,7 @@ Run before committing:
 node --test 'scripts/**/*.test.mjs'
 node scripts/validate-registry.mjs
 node scripts/validate-portability.mjs
+node scripts/validate-context-budget.mjs
 git diff --check
 ```
 

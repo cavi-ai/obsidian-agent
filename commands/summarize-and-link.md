@@ -1,5 +1,5 @@
 ---
-description: Add a concise summary and verified links to key concepts at the top of a long note.
+description: Use when adding a TL;DR or summary to a long note, condensing a note, or surfacing and linking the key concepts inside a note.
 argument-hint: "<note path>"
 ---
 

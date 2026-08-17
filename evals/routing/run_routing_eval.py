@@ -4,8 +4,9 @@
 skill-creator's run_eval.py tests one skill in isolation and answers a
 boolean (did it trigger?). That can't see collisions: two skills can each
 score ~100% alone while fighting over the same real queries. This harness
-stages all skills into one temp project and records which skill actually
-fires for each query, so contested queries and their winners are visible.
+stages the whole plugin the way an install presents it — manifest, commands,
+and skills, loaded via --plugin-dir — and records which skill actually fires
+for each query, so contested queries and their winners are visible.
 """
 
 import argparse
@@ -23,25 +24,50 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 
-def stage_skills(skills_dir: Path, vault_dir: Path | None = None) -> Path:
-    """Copy skill dirs into a fresh temp project's .claude/skills/ once for the whole run."""
+PLUGIN_ROOT = Path(__file__).resolve().parents[2]
+
+
+def stage_plugin(skills_dir: Path, plugin_root: Path, vault_dir: Path | None = None) -> tuple[Path, Path, Path]:
+    """Stage a loadable plugin dir (manifest + commands + skills) beside the project cwd, once per run."""
+    manifest = plugin_root / ".claude-plugin" / "plugin.json"
+    commands_dir = plugin_root / "commands"
+    # Skills-only staging hides command descriptions, which shadow theirs in the listing the router reads.
+    if not manifest.is_file():
+        raise SystemExit(f"no plugin manifest at {manifest}")
+    if not commands_dir.is_dir():
+        raise SystemExit(f"no commands dir at {commands_dir}")
+
     staging = Path(tempfile.mkdtemp(prefix="routing-eval-"))
-    dest = staging / ".claude" / "skills"
-    dest.mkdir(parents=True)
+    project = staging / "project"
+    project.mkdir()
+
+    plugin = staging / "plugin"
+    (plugin / ".claude-plugin").mkdir(parents=True)
+    # marketplace.json describes the catalog, not the plugin; a staged plugin dir is not a marketplace.
+    shutil.copy2(manifest, plugin / ".claude-plugin" / "plugin.json")
+    shutil.copytree(commands_dir, plugin / "commands")
+    dest = plugin / "skills"
+    dest.mkdir()
     for entry in sorted(skills_dir.iterdir()):
         if entry.is_dir():
             shutil.copytree(entry, dest / entry.name)
+
     # Without notes to act on, the model answers from whatever else it can reach and
     # never invokes a skill; the fixture makes vault queries contextually sensible.
     if vault_dir is not None:
         for entry in sorted(vault_dir.iterdir()):
-            target = staging / entry.name
+            target = project / entry.name
             shutil.copytree(entry, target) if entry.is_dir() else shutil.copy2(entry, target)
-    return staging
+    return staging, project, plugin
 
 
-def extract_skill(line: str, state: dict) -> str | None:
-    """Feed one stream-json line through the Skill-tool-call state machine."""
+def extract_invocation(line: str, state: dict) -> tuple[str, str] | None:
+    """Feed one stream-json line through the Skill-tool-call state machine.
+
+    Returns (skill, lens). A lens capability is one skill with named variants, so the
+    skill id alone cannot say whether the right variant ran — the lens is the first
+    token of the Skill call's args, and '' when the call passed none.
+    """
     try:
         event = json.loads(line)
     except json.JSONDecodeError:
@@ -75,15 +101,18 @@ def extract_skill(line: str, state: dict) -> str | None:
         skill = payload.get("skill")
         if not skill:
             return None
-        return skill.split(":")[-1]  # plugin-prefixed ids -> last segment
+        args = payload.get("args") or ""
+        lens = args.strip().split()[0] if args.strip() else ""
+        return skill.split(":")[-1], lens  # plugin-prefixed ids -> last segment
 
     return None
 
 
-def run_one(query: str, cwd: Path, timeout: int, model: str | None) -> str:
-    """Run one `claude -p` invocation, return the first skill id invoked or 'none'."""
+def run_one(query: str, cwd: Path, plugin_dir: Path, timeout: int, model: str | None) -> tuple[str, str]:
+    """Run one `claude -p` invocation, return (skill id, lens) for the first Skill call."""
     cmd = [
         "claude", "-p", query,
+        "--plugin-dir", str(plugin_dir),
         "--output-format", "stream-json",
         "--include-partial-messages",
         "--verbose",
@@ -110,7 +139,7 @@ def run_one(query: str, cwd: Path, timeout: int, model: str | None) -> str:
         while True:
             elapsed = time.monotonic() - start
             if elapsed >= timeout:
-                return "none"
+                return "none", ""
 
             if proc.poll() is not None:
                 try:
@@ -121,10 +150,10 @@ def run_one(query: str, cwd: Path, timeout: int, model: str | None) -> str:
                     buffer += rest.decode("utf-8", errors="replace")
                 while "\n" in buffer:
                     line, buffer = buffer.split("\n", 1)
-                    skill = extract_skill(line.strip(), state)
-                    if skill:
-                        return skill
-                return "none"
+                    found = extract_invocation(line.strip(), state)
+                    if found:
+                        return found
+                return "none", ""
 
             ready, _, _ = select.select([proc.stdout], [], [], min(0.5, max(0.0, timeout - elapsed)))
             if not ready:
@@ -138,26 +167,26 @@ def run_one(query: str, cwd: Path, timeout: int, model: str | None) -> str:
             buffer += chunk.decode("utf-8", errors="replace")
             while "\n" in buffer:
                 line, buffer = buffer.split("\n", 1)
-                skill = extract_skill(line.strip(), state)
-                if skill:
-                    return skill
+                found = extract_invocation(line.strip(), state)
+                if found:
+                    return found
     finally:
         if proc.poll() is None:
             proc.kill()
         proc.wait()
 
 
-def run_all(queries: list[dict], staging: Path, runs_per_query: int, num_workers: int, timeout: int, model: str | None) -> dict:
+def run_all(queries: list[dict], project: Path, plugin: Path, runs_per_query: int, num_workers: int, timeout: int, model: str | None) -> dict:
     total_runs = len(queries) * runs_per_query
     done = 0
     done_lock = threading.Lock()
-    observed_by_query: dict[int, list[str]] = {i: [] for i in range(len(queries))}
+    observed_by_query: dict[int, list[tuple[str, str]]] = {i: [] for i in range(len(queries))}
 
     with ThreadPoolExecutor(max_workers=num_workers) as pool:
         future_to_idx = {}
         for i, item in enumerate(queries):
             for _ in range(runs_per_query):
-                fut = pool.submit(run_one, item["query"], staging, timeout, model)
+                fut = pool.submit(run_one, item["query"], project, plugin, timeout, model)
                 future_to_idx[fut] = i
 
         for fut in as_completed(future_to_idx):
@@ -166,7 +195,7 @@ def run_all(queries: list[dict], staging: Path, runs_per_query: int, num_workers
                 observed = fut.result()
             except Exception as e:
                 print(f"warning: run failed: {e}", file=sys.stderr)
-                observed = "none"
+                observed = ("none", "")
             observed_by_query[idx].append(observed)
             with done_lock:
                 done += 1
@@ -175,39 +204,60 @@ def run_all(queries: list[dict], staging: Path, runs_per_query: int, num_workers
     return observed_by_query
 
 
-def aggregate(queries: list[dict], observed_by_query: dict[int, list[str]]) -> dict:
+def aggregate(queries: list[dict], observed_by_query: dict[int, list[tuple[str, str]]]) -> dict:
     results = []
     confusion: Counter = Counter()
     per_skill_total: Counter = Counter()
     per_skill_correct: Counter = Counter()
     per_skill_stolen: dict[str, Counter] = {}
+    per_lens_total: Counter = Counter()
+    per_lens_correct: Counter = Counter()
+    per_lens_observed: dict[str, Counter] = {}
     total_correct = 0
     total_all = 0
 
     for i, item in enumerate(queries):
         expected = item["expected_skill"]
+        expected_lens = item.get("expected_lens")
         observed_list = observed_by_query[i]
-        modal = Counter(observed_list).most_common(1)[0][0] if observed_list else "none"
-        correct = sum(1 for o in observed_list if o == expected)
-        accuracy = correct / len(observed_list) if observed_list else 0.0
-        results.append({
+        skills = [skill for skill, _ in observed_list]
+        modal = Counter(skills).most_common(1)[0][0] if skills else "none"
+        correct = sum(1 for s in skills if s == expected)
+        accuracy = correct / len(skills) if skills else 0.0
+        row = {
             "query": item["query"],
             "expected": expected,
-            "observed": observed_list,
+            "observed": skills,
             "modal": modal,
             "accuracy": accuracy,
-        })
+        }
 
-        per_skill_total[expected] += len(observed_list)
+        # Routing to a lens capability is only half the answer; the lens says which variant ran.
+        if expected_lens is not None:
+            lenses = [lens for skill, lens in observed_list if skill == expected]
+            lens_correct = sum(1 for lens in lenses if lens == expected_lens)
+            row["expected_lens"] = expected_lens
+            row["observed_lenses"] = lenses
+            row["lens_accuracy"] = lens_correct / len(lenses) if lenses else 0.0
+            per_lens_total[expected_lens] += len(lenses)
+            per_lens_correct[expected_lens] += lens_correct
+            seen = per_lens_observed.setdefault(expected_lens, Counter())
+            for lens in lenses:
+                if lens != expected_lens:
+                    seen[lens or "(none passed)"] += 1
+
+        results.append(row)
+
+        per_skill_total[expected] += len(skills)
         per_skill_correct[expected] += correct
         total_correct += correct
-        total_all += len(observed_list)
+        total_all += len(skills)
 
         stolen = per_skill_stolen.setdefault(expected, Counter())
-        for o in observed_list:
-            confusion[f"{expected}->{o}"] += 1
-            if o != expected and o != "none":
-                stolen[o] += 1
+        for s in skills:
+            confusion[f"{expected}->{s}"] += 1
+            if s != expected and s != "none":
+                stolen[s] += 1
 
     per_skill = {}
     for skill, total in per_skill_total.items():
@@ -217,17 +267,31 @@ def aggregate(queries: list[dict], observed_by_query: dict[int, list[str]]) -> d
             "stolen_by": dict(per_skill_stolen.get(skill, Counter()).most_common(3)),
         }
 
+    per_lens = {}
+    for lens, total in per_lens_total.items():
+        # null, not 0.0 — a lens nothing routed to was never scored, it did not score zero.
+        per_lens[lens] = {
+            "accuracy": (per_lens_correct[lens] / total) if total else None,
+            "runs_scored": total,
+            "confused_with": dict(per_lens_observed.get(lens, Counter()).most_common(3)),
+        }
+
     overall_accuracy = total_correct / total_all if total_all else 0.0
 
     return {
         "overall_accuracy": overall_accuracy,
         "per_skill": per_skill,
+        "per_lens": per_lens,
         "confusion": dict(confusion),
         "results": results,
+        "lens_note": (
+            "Lens accuracy is scored only over runs that routed to the expected skill, "
+            "so it measures variant selection independently of routing. A run that passed "
+            "no argument counts as an incorrect lens, not as a skipped run."
+        ),
         "ambient_note": (
-            "claude -p also sees the user's global (non-project) skills, "
-            "so a skill outside this repo's 30 can legitimately win a query "
-            "and show up here."
+            "claude -p also sees the user's global (non-project) skills, so a skill "
+            "outside this plugin can legitimately win a query and show up here."
         ),
     }
 
@@ -235,7 +299,8 @@ def aggregate(queries: list[dict], observed_by_query: dict[int, list[str]]) -> d
 def main():
     parser = argparse.ArgumentParser(description="Measure which skill wins a contested query")
     parser.add_argument("--queries", required=True, help="Path to queries.json")
-    parser.add_argument("--skills", required=True, help="Path to the skills/ directory")
+    parser.add_argument("--skills", required=True, help="Path to the skills/ directory to stage")
+    parser.add_argument("--plugin-root", default=str(PLUGIN_ROOT), help="Plugin root supplying .claude-plugin/plugin.json and commands/")
     parser.add_argument("--vault", default=None, help="Fixture vault copied into the staged project")
     parser.add_argument("--runs-per-query", type=int, default=3)
     parser.add_argument("--num-workers", type=int, default=10)
@@ -246,10 +311,12 @@ def main():
 
     queries = json.loads(Path(args.queries).read_text())
     skills_dir = Path(args.skills)
-    staging = stage_skills(skills_dir, Path(args.vault) if args.vault else None)
+    staging, project, plugin = stage_plugin(
+        skills_dir, Path(args.plugin_root), Path(args.vault) if args.vault else None
+    )
 
     try:
-        observed_by_query = run_all(queries, staging, args.runs_per_query, args.num_workers, args.timeout, args.model)
+        observed_by_query = run_all(queries, project, plugin, args.runs_per_query, args.num_workers, args.timeout, args.model)
     finally:
         shutil.rmtree(staging, ignore_errors=True)
 
@@ -257,6 +324,10 @@ def main():
     Path(args.out).write_text(json.dumps(output, indent=2))
 
     print(f"overall_accuracy: {output['overall_accuracy']:.3f}")
+    for lens, stats in sorted(output["per_lens"].items(), key=lambda kv: (kv[1]["accuracy"] is not None, kv[1]["accuracy"])):
+        confused = ", ".join(f"{k}:{v}" for k, v in stats["confused_with"].items())
+        score = "unscored" if stats["accuracy"] is None else f"accuracy={stats['accuracy']:.2f}"
+        print(f"  lens {lens}: {score} n={stats['runs_scored']} confused_with={{{confused}}}")
     for skill, stats in sorted(output["per_skill"].items(), key=lambda kv: kv[1]["recall"]):
         if stats["recall"] < 0.9:
             stolen_str = ", ".join(f"{k}:{v}" for k, v in stats["stolen_by"].items())
