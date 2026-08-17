@@ -4,9 +4,12 @@
   "version": "0.1.0",
   "author": {
     "name": "Sasan Sotoodehfar",
-    "url": "https://github.com/cavi-ai"
+    "url": "https://cavi-ai.xyz",
+    "organization": "Cavi AI",
+    "organization_url": "https://github.com/cavi-ai"
   },
   "homepage": "https://github.com/cavi-ai/obsidian-agent",
+  "repository": "https://github.com/cavi-ai/obsidian-agent",
   "license": "MIT",
   "keywords": ["obsidian", "agent-skills", "notes", "cli", "knowledge"]
 }
