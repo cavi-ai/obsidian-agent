@@ -1,5 +1,5 @@
 ---
-description: Convert a planning note into a structured build spec and tracker ready for a coding-agent handoff.
+description: Use when turning a planning note into a build spec, preparing a note for handoff to a coding-agent build, or creating a spec and tracker from a plan.
 argument-hint: "<planning note path>"
 ---
 

@@ -1,5 +1,5 @@
 ---
-description: Close out a spec-based build with an honest retrospective grounded in what the tracker actually records.
+description: Use when a spec-based build or tracker is complete and a retrospective is needed, or when closing out a build against its spec.
 argument-hint: "<tracker note path>"
 ---
 

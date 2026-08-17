@@ -5,10 +5,11 @@ Two instruments. They answer different questions, and the first is the primary o
 ## 1. Routing eval — which skill wins a contested query
 
 `skill-creator`'s `run_eval.py` presents **one skill in isolation** and answers a boolean:
-did it trigger? That cannot see collisions — `manifest-pm` and `manifest-feature` each score
-near 100% alone while fighting over the same queries in practice.
+did it trigger? That cannot see collisions — two skills can each score near 100% alone while
+fighting over the same queries in practice.
 
-This harness stages **every** skill so they compete, then records which one actually fired.
+This harness stages the **whole plugin** — manifest, commands, and skills — so every
+description competes, then records which one actually fired.
 
 ```bash
 python3 evals/routing/run_routing_eval.py \
@@ -21,6 +22,19 @@ python3 evals/routing/run_routing_eval.py \
 
 Output: overall accuracy, per-skill recall, what stole each skill's queries, and a full
 confusion matrix.
+
+### The staged surface is a plugin install
+
+Consumers install this as a plugin, so the router reads command descriptions alongside skill
+descriptions. `stage_plugin()` reproduces that: it builds a plugin root — `.claude-plugin/plugin.json`,
+`commands/`, `skills/` — and passes it to `claude -p --plugin-dir`, with the fixture vault as the
+separate project cwd. `--plugin-root` selects where the manifest and commands come from (default:
+the repo root); `--skills` still selects which skills tree is staged, so a pristine tree can be
+compared against the current one.
+
+`claude --plugin-dir <staged> plugin details obsidian-agent` counts each command as its own
+component alongside its skill, carrying its own description. Staging skills alone measures a
+surface no consumer has.
 
 ### The vault fixture is not optional
 
@@ -61,10 +75,54 @@ operation. No query names a skill id or title.
 
 ## Comparing runs
 
-Baseline and post-rewrite runs use the **identical** query set. The baseline was measured
-against the pristine pre-rewrite skill tree (`git archive 27dc26b skills`), so the
-comparison isolates the description changes.
+Baseline and post-rewrite runs use the **identical** 152-query set, which stays frozen. The
+baseline was measured against the pristine pre-rewrite skill tree (`git archive 27dc26b skills`),
+so the comparison isolates the description changes.
+
+### Everything in `evals/results/` predates the staging fix
+
+Every committed result — `baseline-routing-INVALID-no-vault-fixture.json`,
+`baseline-collision.json`, `post-collision.json`, `final-collision.json` — was measured when
+staging copied skills alone into `.claude/skills/`, with no commands and no plugin manifest.
+That surface has no command descriptions to shadow the skills', so those numbers describe a
+configuration no consumer installs. **They are not comparable to anything measured after this
+fix** — not overall accuracy, not per-skill recall, not the confusion matrix. Re-measure the
+baseline under plugin staging before calling any post-fix number a regression or an
+improvement. The files are kept as a record, not as a reference point.
+
+`compare.sh` stages a pristine **skills** tree against current commands and manifest, so its
+baseline arm isolates skill-description changes only.
 
 Gate: no skill regresses, and the collision set clears its target. The collision set is
-`manifest-pm`, `manifest-feature`, `connection-finder`, `wikilink-weaver`, `vault-synthesis`,
-`source-digest`, `research-workbench`, `daily-rollup`, `task-harvester`.
+`manifest`, `connection-finder`, `wikilink-weaver`, `vault-synthesis`, `source-digest`,
+`research-workbench`, `daily-rollup`, `task-harvester`.
+
+## 3. Lens accuracy — did the right variant of a lens capability run
+
+A lens capability is one skill with named variants declared in `capabilities.json`
+(`manifest` holds `pm`, `feature`, `content`, `infra`, `research`, `risk`). Routing to the
+skill is only half the answer; the lens moved the rest of the decision into the argument,
+so the harness reads it there.
+
+`extract_invocation()` returns the lens alongside the skill — the first token of the Skill
+call's `args`. Queries carry `expected_lens`, and results gain a `per_lens` block plus
+`expected_lens` / `observed_lenses` / `lens_accuracy` per row. Two rules keep the number
+honest:
+
+- Lens accuracy is scored **only over runs that routed to the expected skill**, so a routing
+  miss cannot be double-counted as a lens miss.
+- A run that passed no argument is a **wrong lens**, not a skipped run. A lens nothing routed
+  to reports `accuracy: null` — never scored, as against scored zero.
+
+This rides along with the routing run: no extra `claude -p` sessions, no separate arm.
+
+`evals/routing/test_run_routing_eval.py` covers the reader and the scorer offline, and pins
+the query set to the registry — every declared lens must be exercised by at least one query,
+and no query may name a lens the registry does not declare. It runs in CI and spends nothing.
+
+### The manifest lenses were six skills
+
+`manifest-{pm,feature,content,infra,research,risk}` are now the `manifest` lenses. The queries
+that named a lens keep their text and gain `expected_lens`; their old trigger sets moved out
+with the skills. Mechanical remap, not a re-authoring — comparability was already reset by the
+staging fix above, so no frozen-set rule is bent.

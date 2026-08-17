@@ -1,5 +1,5 @@
 ---
-description: Summarize recent vault activity into a skimmable review note with decisions, changes, and open tasks.
+description: Use when summarizing or recapping recent vault activity — a daily, weekly, or periodic review of what changed, what was decided, and what is still open in a time window. For every open task across the whole vault with no time bound, use task-harvester.
 argument-hint: "[days, default 7]"
 ---
 

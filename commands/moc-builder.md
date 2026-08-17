@@ -1,5 +1,5 @@
 ---
-description: Build or refresh a Map of Content hub that groups and annotates notes on a topic or folder.
+description: Use when building or refreshing a Map of Content (MOC), creating an index or hub note for a topic or folder, or organizing related notes under one navigational note.
 argument-hint: "<topic or folder>"
 ---
 

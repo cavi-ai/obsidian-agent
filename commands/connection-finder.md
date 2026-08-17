@@ -1,5 +1,5 @@
 ---
-description: Surface real, non-obvious connections to a note or topic that aren't linked yet, ranked by relevance.
+description: Use when looking for non-obvious conceptual relationships between notes that are not linked yet. Read-only discovery that ranks and explains candidate connections; it proposes, it does not edit. To write the links, use wikilink-weaver.
 argument-hint: "<note path or topic>"
 ---
 

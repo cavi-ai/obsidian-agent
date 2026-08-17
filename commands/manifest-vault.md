@@ -1,5 +1,5 @@
 ---
-description: Audit the Obsidian vault for orphans, tag sprawl, missing links, stale notes, and inconsistent frontmatter.
+description: Use when asked to optimize, clean up, audit, or improve an Obsidian vault, assess vault health, or find structural problems in a vault.
 argument-hint: "[optional focus: tags | links | orphans | stale]"
 ---
 

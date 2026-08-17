@@ -15,6 +15,8 @@ jobs:
           node-version: "22.x"
       - name: Unit tests
         run: node --test --test-concurrency=1 'scripts/**/*.test.mjs'
+      - name: Eval harness tests
+        run: python3 -m unittest discover -s evals/routing -p "test_*.py"
       - name: Validate release identity and documentation
         run: |
           node scripts/validate-release.mjs
@@ -24,3 +26,5 @@ jobs:
         run: node scripts/validate-registry.mjs
       - name: Validate portability
         run: node scripts/validate-portability.mjs
+      - name: Validate context budget
+        run: node scripts/validate-context-budget.mjs

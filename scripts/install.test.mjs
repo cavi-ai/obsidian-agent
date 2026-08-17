@@ -15,6 +15,10 @@ import {
 const root = resolve(import.meta.dirname, "..");
 const expectedHosts = ["claude", "codex", "gemini", "opencode", "agentskills"];
 
+// Cross-check: the plan is built from the filesystem, so the count comes from the registry.
+const portableSkillCount = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"))
+  .capabilities.filter((cap) => cap.portable).length;
+
 test("all provider manifests use the universal identity and no MCP configuration", () => {
   const rootManifest = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
   assert.equal(rootManifest.identity, "obsidian-agent");
@@ -123,7 +127,7 @@ test("OpenCode and Gemini plans use their exact native skill discovery roots", (
   }
 });
 
-test("Codex preview creates a self-contained 26-skill marketplace package without activating it", () => {
+test("Codex preview packages exactly the portable skills without activating them", () => {
   const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-codex-package-"));
   for (const scope of ["user", "project"]) {
     const plan = buildInstallPlan(root, {
@@ -134,7 +138,7 @@ test("Codex preview creates a self-contained 26-skill marketplace package withou
     });
     const expected = join(sandbox, scope === "user" ? "home" : "project", "plugins", "obsidian-agent");
     assert.equal(plan.destinationRoot, expected);
-    assert.equal(plan.files.filter(({ path }) => path.startsWith("skills/")).length, 26);
+    assert.equal(plan.files.filter(({ path }) => path.startsWith("skills/")).length, portableSkillCount);
     assert.ok(plan.files.some(({ path }) => path === ".codex-plugin/plugin.json"));
     assert.ok(plan.files.every(({ destination }) => destination.startsWith(expected + "/")));
     assert.ok(plan.files.every(({ path }) => !path.startsWith(".agents/plugins/")));
