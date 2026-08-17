@@ -1,24 +1,38 @@
 {
   "schema_version": "1.0",
   "identity": "obsidian-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": {
     "name": "Sasan Sotoodehfar",
     "organization": "CAVI AI",
     "organization_url": "https://cavi-ai.xyz"
   },
-  "requirements": { "obsidian": ">=1.12.7" },
+  "requirements": {
+    "obsidian": ">=1.12.7"
+  },
   "transport": "cli",
   "providers": {
-    "claude": { "native": true, "artifact": "providers/claude" },
+    "claude": {
+      "native": true,
+      "artifact": "providers/claude"
+    },
     "codex": {
       "native": true,
       "artifact": "providers/codex",
       "distribution": "marketplace",
       "direct_install": false
     },
-    "gemini": { "native": true, "artifact": "providers/gemini" },
-    "opencode": { "native": true, "artifact": "providers/opencode" },
-    "agentskills": { "native": false, "artifact": "providers/agentskills" }
+    "gemini": {
+      "native": true,
+      "artifact": "providers/gemini"
+    },
+    "opencode": {
+      "native": true,
+      "artifact": "providers/opencode"
+    },
+    "agentskills": {
+      "native": false,
+      "artifact": "providers/agentskills"
+    }
   }
 }

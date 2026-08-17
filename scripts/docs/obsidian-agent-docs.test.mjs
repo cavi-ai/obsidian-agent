@@ -6,14 +6,7 @@ import test from "node:test";
 import { buildObsidianAgentDocs } from "./build-obsidian-agent.mjs";
 import { verifyObsidianAgentDocs } from "./verify-obsidian-agent.mjs";
 import { OUTPUT_REL } from "./lib.mjs";
-import { createDocsSandbox } from "./sandbox.mjs";
-
-const RELEASE = Object.freeze({
-  version: "0.1.0",
-  tag: "v0.1.0",
-  commit: "7".repeat(40),
-  sourceDateEpoch: 1784953886,
-});
+import { createDocsSandbox, TEST_RELEASE as RELEASE } from "./sandbox.mjs";
 
 test("build is deterministic for unchanged source", async () => {
   const sandbox = await createDocsSandbox();
@@ -26,7 +19,7 @@ test("build is deterministic for unchanged source", async () => {
     assert.equal(firstBytes, secondBytes);
     assert.equal(first.manifest.schemaVersion, 1);
     assert.deepEqual(first.manifest.release, { tag: RELEASE.tag, commit: RELEASE.commit });
-    assert.equal(first.manifest.generatedAt, "2026-07-25T04:31:26.000Z");
+    assert.equal(first.manifest.generatedAt, RELEASE.generatedAt);
     await verifyObsidianAgentDocs(sandbox.root, RELEASE);
   } finally {
     await sandbox.dispose();
@@ -82,7 +75,7 @@ test("verify fails when navigation points at a missing page", async () => {
       path.join(fixtureRoot, "docs/obsidian-agent/source/navigation.json"),
       JSON.stringify({
         title: "obsidian-agent",
-        version: "0.1.0",
+        version: RELEASE.version,
         sections: [
           {
             title: "Introduction",

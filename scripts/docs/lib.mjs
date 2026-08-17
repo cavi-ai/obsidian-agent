@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
+import { readFileSync } from "node:fs";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 export const PRODUCT_ID = "obsidian-agent";
-export const DOCUMENTED_VERSION = "0.1.0";
+// plugin.json is the one version; every manifest and this docs tree follow it.
+export const DOCUMENTED_VERSION = JSON.parse(
+  readFileSync(path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../plugin.json"), "utf8"),
+).version;
 export const SOURCE_REL = "docs/obsidian-agent/source";
 export const OUTPUT_REL = `docs/obsidian-agent/v${DOCUMENTED_VERSION}`;
 const STABLE_VERSION = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/u;

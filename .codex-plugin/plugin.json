@@ -1,6 +1,6 @@
 {
   "name": "obsidian-agent",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Portable, CLI-powered Obsidian vault workflows for Codex.",
   "author": {
     "name": "Sasan Sotoodehfar",
