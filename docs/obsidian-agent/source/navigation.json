@@ -5,36 +5,39 @@
     {
       "title": "Introduction",
       "pages": [
-        {
-          "title": "Overview",
-          "path": "introduction/overview.md"
-        },
-        {
-          "title": "Installation",
-          "path": "introduction/installation.md"
-        }
+        { "title": "Overview", "path": "introduction/overview.md" },
+        { "title": "Installation", "path": "introduction/installation.md" },
+        { "title": "Quickstart", "path": "introduction/quickstart.md" }
       ]
     },
     {
       "title": "Guides",
       "pages": [
-        {
-          "title": "Hosts and portability",
-          "path": "guides/hosts-and-portability.md"
-        },
-        {
-          "title": "Vault safety",
-          "path": "guides/vault-safety.md"
-        }
+        { "title": "Hosts and portability", "path": "guides/hosts-and-portability.md" },
+        { "title": "Vault safety", "path": "guides/vault-safety.md" },
+        { "title": "Running workflows", "path": "guides/running-workflows.md" },
+        { "title": "Capability registry", "path": "guides/capability-registry.md" }
+      ]
+    },
+    {
+      "title": "Reference",
+      "pages": [
+        { "title": "CLI", "path": "reference/cli.md" },
+        { "title": "Capability manifest", "path": "reference/capability-manifest.md" },
+        { "title": "Command catalog", "path": "reference/command-catalog.md" },
+        { "title": "Host packaging", "path": "reference/host-packaging.md" }
+      ]
+    },
+    {
+      "title": "Security",
+      "pages": [
+        { "title": "Trust boundary", "path": "security/trust-boundary.md" }
       ]
     },
     {
       "title": "Release",
       "pages": [
-        {
-          "title": "Version and support",
-          "path": "release/version-and-support.md"
-        }
+        { "title": "Version and support", "path": "release/version-and-support.md" }
       ]
     }
   ]
