@@ -3,12 +3,12 @@
   "package": "obsidian-agent",
   "product": "obsidian-agent",
   "version": "0.2.0",
-  "contentSha256": "cb8e5a588e40dcb87a4213f1b26af5003b514b4702e100a36300b4f0afaada8b",
+  "contentSha256": "1dd0c0932ed01173c4cbda7d9eea905cd4dd38e26a34c8c2f75edae62479df0d",
   "publicBasePath": "/docs/obsidian-agent/v0.2.0",
   "stableAlias": "/docs/obsidian-agent",
   "release": {
     "tag": "v0.2.0",
-    "commit": "58048399e5c5aa60112493a85783ea9a8234b830"
+    "commit": "d9c65c3dcfb4815b7bf29698241745217bc6fd3d"
   },
-  "generatedAt": "2026-08-17T16:54:38.000Z"
+  "generatedAt": "2026-08-31T17:35:02.000Z"
 }
