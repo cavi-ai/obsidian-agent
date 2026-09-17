@@ -1,3 +1,5 @@
 *.pyc
 .quarantine/
 __pycache__/
+# Built docs artifact, regenerated from docs/obsidian-agent/source by scripts/docs/build-obsidian-agent.mjs.
+/docs/obsidian-agent/v*/
