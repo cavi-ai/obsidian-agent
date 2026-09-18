@@ -130,11 +130,13 @@ and host-packaging changes do not imply a version bump or release.
 
 ### Versioned documentation
 
-Each release publishes canonical documentation under
-`docs/obsidian-agent/v<version>`, where the version comes from `plugin.json`.
-The published GitHub Release attaches the
-deterministic documentation archive and checksum, then dispatches its verified
-`product-docs` envelope to CAVI Home. Maintainers can exercise the complete
+Each release publishes canonical documentation as the
+`obsidian-agent-docs-v<version>.tar.gz` asset of its GitHub Release, where the
+version comes from `plugin.json`. The archive is built from
+`docs/obsidian-agent/source` into `docs/obsidian-agent/v<version>`, which is not
+tracked. The published GitHub Release attaches the deterministic documentation
+archive and checksum, then dispatches its verified `product-docs` envelope to
+CAVI Home. Maintainers can exercise the complete
 artifact path with the `Publish product documentation` workflow in dry-run mode;
 non-dry-run delivery requires `CONSUMER_DISPATCH_TOKEN`.
 
