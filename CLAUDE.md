@@ -6,9 +6,11 @@
 canonical `skills/` use the official Obsidian CLI 1.12.7+ and are shared by
 Claude, Codex, Gemini CLI, OpenCode, and AgentSkills-compatible hosts.
 
-The portable core has no MCP, Companion for Claude, Anthropic API, or direct
-vault-file dependency. Companion for Claude is a separate Obsidian community
-plugin and is not part of this repository's runtime topology.
+The portable core requires only the Obsidian CLI. Skills marked
+`enhancedBy: companion-bridge` use Companion's `obsidian-vault` MCP tools when
+the host already has them, and never require them. The package ships no MCP
+configuration. Companion for Claude is a separate Obsidian community plugin
+and is not part of this repository's runtime topology.
 
 ## Source layout
 

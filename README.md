@@ -5,8 +5,10 @@ vault synthesis, connection finding, note hygiene, drafting, project tracking,
 and evidence-backed advisor passes. One canonical set of AgentSkills-compatible
 skills powers every host adapter.
 
-The portable package uses the official `obsidian` CLI exclusively. It does not
-require MCP, Companion for Claude, an Anthropic API, or direct vault-file access.
+The portable core requires only the Obsidian CLI — no Anthropic API or direct
+vault-file access. Skills marked `enhancedBy: companion-bridge` use Companion's
+`obsidian-vault` MCP tools when the host already has them, and never require
+them. The package ships no MCP configuration.
 
 ## Requirement
 
