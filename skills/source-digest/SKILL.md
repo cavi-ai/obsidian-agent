@@ -42,3 +42,11 @@ claims, evidence, and gaps — grounded in the notes themselves.
 - Summarizing from general knowledge instead of the source notes.
 - Missing sources because you ignored the vault's existing source tag or
   property convention.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Select candidates: `vault_search` query=<topic> type=source — replaces the property/tag search in step 2.

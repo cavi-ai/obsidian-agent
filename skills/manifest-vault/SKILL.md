@@ -33,3 +33,12 @@ inconsistency.
 `obsidian-agent:wikilink-weaver`, `obsidian-agent:consistent-tagging`, and
 `obsidian-agent:frontmatter-normalizer`. Never edit inline; present findings
 and let the user choose an operationalizer.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Inspect schema: `obsidian://ontology` — replaces re-deriving declared types from the ontology search in the Lens survey.
+- Inspect standing context: `obsidian://memory` — supplements the freshness/orphan probes with the vault's consolidated summary.

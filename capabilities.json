@@ -36,7 +36,10 @@
       "surfaces": {
         "skill": true,
         "command": "<note path or topic>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "consistent-tagging",
@@ -47,7 +50,10 @@
       "surfaces": {
         "skill": true,
         "command": "<note path or scope>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "daily-rollup",
@@ -58,7 +64,10 @@
       "surfaces": {
         "skill": true,
         "command": "[days, default 7]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "dedup-merge",
@@ -69,7 +78,10 @@
       "surfaces": {
         "skill": true,
         "command": "[optional scope]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "frontmatter-normalizer",
@@ -80,7 +92,10 @@
       "surfaces": {
         "skill": true,
         "command": "[optional folder or scope, e.g. Projects/]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "manifest",
@@ -139,7 +154,10 @@
       "surfaces": {
         "skill": true,
         "command": "[optional focus: tags | links | orphans | stale]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "meeting-cleanup",
@@ -161,7 +179,10 @@
       "surfaces": {
         "skill": true,
         "command": "<topic or folder>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "note-splitter",
@@ -238,7 +259,10 @@
       "surfaces": {
         "skill": true,
         "command": "[source type/tag or topic]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "summarize-and-link",
@@ -249,7 +273,10 @@
       "surfaces": {
         "skill": true,
         "command": "<note path>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "task-harvester",
@@ -260,7 +287,10 @@
       "surfaces": {
         "skill": true,
         "command": "[optional folder/tag/topic focus]"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "tracker-driver",
@@ -282,7 +312,10 @@
       "surfaces": {
         "skill": true,
         "command": false
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "vault-routines",
@@ -304,7 +337,10 @@
       "surfaces": {
         "skill": true,
         "command": "<topic>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     },
     {
       "id": "wikilink-weaver",
@@ -315,7 +351,10 @@
       "surfaces": {
         "skill": true,
         "command": "<note path>"
-      }
+      },
+      "enhancedBy": [
+        "companion-bridge"
+      ]
     }
   ]
 }

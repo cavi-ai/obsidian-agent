@@ -33,3 +33,11 @@ on a topic, so the user can navigate the area at a glance.
 - A flat, unannotated link dump (no grouping, no one-liners).
 - Linking notes that don't exist, or missing obvious members.
 - Overwriting an existing MOC without reading it first.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Scope it: `vault_search` query=<topic> tag=<tag> type=<type> — replaces the topic search in step 1.

@@ -7,6 +7,7 @@ import { parseFrontmatter } from "./lib/frontmatter.mjs";
 
 const TIERS = new Set(["policy", "worker", "orchestrator", "pipeline", "technique", "harness"]);
 const NO_COMMAND_TIERS = new Set(["policy", "harness"]);
+const ENHANCERS = new Set(["companion-bridge"]);
 // Every command delegates: `Invoke **`obsidian-agent:<id>`**` names the capability it runs.
 const INVOKE_TARGET = /Invoke \*\*`obsidian-agent:([a-z0-9-]+)`\*\*/g;
 
@@ -120,8 +121,21 @@ export function validate(root) {
     }
 
     if (Object.hasOwn(cap, "lenses")) errors.push(...validateLenses(cap, root));
+    if (Object.hasOwn(cap, "enhancedBy")) errors.push(...validateEnhancedBy(cap));
   }
 
+  return errors;
+}
+
+// enhancedBy names an optional bridge that upgrades the skill's steps when available; the skill never requires it.
+function validateEnhancedBy(cap) {
+  const enhancedBy = cap.enhancedBy;
+  if (!Array.isArray(enhancedBy)) return [`'${cap.id}': enhancedBy must be an array`];
+  if (enhancedBy.length === 0) return [`'${cap.id}': enhancedBy must be a non-empty array`];
+  const errors = [];
+  for (const value of enhancedBy) {
+    if (!ENHANCERS.has(value)) errors.push(`'${cap.id}': enhancedBy contains unsupported value '${value}'`);
+  }
   return errors;
 }
 

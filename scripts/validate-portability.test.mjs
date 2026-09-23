@@ -240,6 +240,33 @@ test("allows declared provider directories and owned manifest paths", () => {
   assert.deepEqual(validatePortability(root), []);
 });
 
+test("allows the companion-bridge provider directory without a plugin.json declaration", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "providers/companion-bridge/tools.json": JSON.stringify({
+      server: "obsidian-vault",
+      tools: ["vault_search"],
+      resources: ["obsidian://ontology"],
+    }),
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("still rejects other undeclared provider directories alongside companion-bridge", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "plugin.json": JSON.stringify({ providers: { claude: {} } }),
+    "providers/claude/adapter.md": "declared\n",
+    "providers/companion-bridge/tools.json": JSON.stringify({ server: "obsidian-vault", tools: [], resources: [] }),
+    "providers/codex/adapter.md": "undeclared\n",
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "providers/codex: provider directory is not declared in plugin.json",
+  ]);
+});
+
 test("allows an in-root manifest path whose name begins with two dots", () => {
   const root = fixture({
     "plugin.json": JSON.stringify({
@@ -487,4 +514,196 @@ test("rejects a root provider manifest symlink outside the repository", () => {
   assert.deepEqual(validatePortability(root), [
     "plugin.json: provider manifest must be a real repository file",
   ]);
+});
+
+const BRIDGE_TOOLS = JSON.stringify({
+  server: "obsidian-vault",
+  tools: ["vault_search", "related_notes"],
+  resources: ["obsidian://ontology"],
+});
+
+const bridgeSkill = (body) =>
+  `---\nname: bridged\ndescription: Use when bridged.\n---\n\n# Bridged\n\nRun \`obsidian vault=<vault> search query=<q> format=json\`.\n\n${body}\n`;
+
+const CAP_ENHANCED = JSON.stringify({
+  plugin: "obsidian-agent",
+  requires: { obsidian: ">=1.12.7" },
+  transport: "cli",
+  capabilities: [{ id: "bridged", tier: "worker", portable: true, enhancedBy: ["companion-bridge"] }],
+});
+
+const CAP_PLAIN = JSON.stringify({
+  plugin: "obsidian-agent",
+  requires: { obsidian: ">=1.12.7" },
+  transport: "cli",
+  capabilities: [{ id: "bridged", tier: "worker", portable: true }],
+});
+
+test("accepts a Companion bridge section citing declared tools and resources", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(
+      [
+        "## Companion bridge (optional)",
+        "",
+        "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+        "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+        "otherwise follow the CLI steps above. Never require them.",
+        "",
+        "- Candidate scan: `related_notes` path, limit 15 — replaces the search step.",
+      ].join("\n"),
+    ),
+  });
+
+  assert.deepEqual(validatePortability(root), []);
+});
+
+test("requires a Companion bridge section when a capability declares enhancedBy", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(""),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: capability 'bridged' is enhancedBy companion-bridge but has no '## Companion bridge (optional)' section",
+  ]);
+});
+
+test("rejects a Companion bridge section with no matching enhancedBy declaration", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_PLAIN,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(
+      [
+        "## Companion bridge (optional)",
+        "",
+        "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+        "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+        "otherwise follow the CLI steps above. Never require them.",
+        "",
+        "- Candidate scan: `related_notes` path, limit 15 — replaces the search step.",
+      ].join("\n"),
+    ),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: has a '## Companion bridge (optional)' section but capabilities.json does not declare enhancedBy: [\"companion-bridge\"] for 'bridged'",
+  ]);
+});
+
+test("rejects a Companion bridge section citing an undeclared tool", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(
+      [
+        "## Companion bridge (optional)",
+        "",
+        "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+        "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+        "otherwise follow the CLI steps above. Never require them.",
+        "",
+        "- Candidate scan: `ghost_tool` path — replaces the search step.",
+      ].join("\n"),
+    ),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: Companion bridge section cites tool 'ghost_tool', which is not in providers/companion-bridge/tools.json",
+  ]);
+});
+
+test("rejects a Companion bridge section citing an undeclared resource", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(
+      [
+        "## Companion bridge (optional)",
+        "",
+        "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+        "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+        "otherwise follow the CLI steps above. Never require them.",
+        "",
+        "- Memory digest: `obsidian://memory` — replaces the manual survey.",
+      ].join("\n"),
+    ),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: Companion bridge section cites resource 'obsidian://memory', which is not in providers/companion-bridge/tools.json",
+  ]);
+});
+
+test("rejects a Companion bridge section that leaves no CLI step outside it", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": [
+      "---\nname: bridged\ndescription: Use when bridged.\n---\n",
+      "# Bridged\n",
+      "## Companion bridge (optional)",
+      "",
+      "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+      "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+      "otherwise follow the CLI steps above. Never require them.",
+      "",
+      "- Candidate scan: `related_notes` path, limit 15 — replaces the search step.",
+    ].join("\n"),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: capability 'bridged' keeps no 'obsidian ' CLI step outside the Companion bridge section",
+  ]);
+});
+
+test("rejects more than one Companion bridge heading", () => {
+  const section = [
+    "## Companion bridge (optional)",
+    "",
+    "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+    "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+    "otherwise follow the CLI steps above. Never require them.",
+    "",
+    "- Candidate scan: `related_notes` path, limit 15 — replaces the search step.",
+  ].join("\n");
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(`${section}\n\n${section}`),
+  });
+
+  assert.deepEqual(validatePortability(root), [
+    "skills/bridged/SKILL.md: must have exactly one '## Companion bridge (optional)' heading, found 2",
+  ]);
+});
+
+test("does not flag a CLI command name mentioned after the em dash in a bridge bullet", () => {
+  const root = fixture({
+    "scripts/obsidian-cli.mjs": CLI_HELPER,
+    "capabilities.json": CAP_ENHANCED,
+    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "skills/bridged/SKILL.md": bridgeSkill(
+      [
+        "## Companion bridge (optional)",
+        "",
+        "If tools from the `obsidian-vault` MCP server are available (Claude Code shows",
+        "them as `mcp__obsidian-vault__<tool>`), use them for the steps below;",
+        "otherwise follow the CLI steps above. Never require them.",
+        "",
+        "- Candidate scan: `related_notes` path, limit 15 — replaces the `search` and `backlinks` calls.",
+      ].join("\n"),
+    ),
+  });
+
+  assert.deepEqual(validatePortability(root), []);
 });
