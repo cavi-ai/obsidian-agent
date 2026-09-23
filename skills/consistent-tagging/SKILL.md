@@ -41,3 +41,11 @@ Apply tags that fit the vault's *existing* taxonomy instead of growing sprawl.
 - Writing tags before showing the user what you'll apply.
 - Passing only new tags to `property:set` and accidentally replacing existing
   tags.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Learn the taxonomy first: `vault_tags` — replaces the `tags counts` call in step 1.

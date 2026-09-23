@@ -67,3 +67,11 @@ there before changing anything.
 - Inventing a `status` convention when a declared type already defines one.
 - Imposing a schema without seeing the existing one.
 - Bulk-rewriting metadata with no consent or preview.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Check for an ontology first: `ontology_get` — replaces the ontology search-and-read in step 1.

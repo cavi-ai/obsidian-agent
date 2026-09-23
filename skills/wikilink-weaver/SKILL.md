@@ -42,3 +42,12 @@ auto-link them.
 - Re-adding a link that already exists (didn't check `obsidian links`).
 - Matching a common word as if it were a note reference.
 - Overwriting the note without showing the complete diff.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Get the vocabulary of paths: `related_notes` path=<path>, limit 15 — replaces the full `files ext=md` candidate scan in step 1.
+- Check what's already linked: `get_backlinks` and `get_outgoing_links` path=<path> — replaces the `links`/`backlinks` calls in step 3.

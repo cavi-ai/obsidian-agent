@@ -59,3 +59,11 @@ must be enabled, and Obsidian must be running. Use
 | Create a new note | `obsidian vault=<vault> create path=<path> content=<markdown>` |
 | Append without replacing | `obsidian vault=<vault> append path=<path> content=<markdown>` |
 | Set a frontmatter property | `obsidian vault=<vault> property:set path=<path> name=<name> value=<value> type=<type>` |
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Find notes on a topic: `vault_search` query=<query> type=<type> project=<project> tag=<tag> — replaces the plain-text `search` row above when a typed, project, or tagged scope narrows the grounding search.

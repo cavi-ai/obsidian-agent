@@ -38,3 +38,11 @@ and what's still open — grounded in the notes that actually changed.
 - Dropping open tasks — they're the most useful part of a review.
 - A wall of text instead of a skimmable, prioritized review.
 - Treating recently opened files as evidence that those files changed.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Find what changed: `list_recent` — replaces the `files ext=md` + per-file `file` modified-check loop in step 2.

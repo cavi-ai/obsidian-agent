@@ -34,3 +34,11 @@ key concepts it touches.
 - Summarizing from the title/memory rather than the content.
 - Linking concepts to notes that don't exist.
 - Rewriting the whole note instead of prepending a summary.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Surface key concepts: `related_notes` path=<path>, limit 15 — replaces the per-concept search in step 3.

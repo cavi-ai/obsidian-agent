@@ -34,3 +34,11 @@ the connections the user would value but hasn't made.
 - Suggesting a connection to a note that was never successfully read.
 - Re-proposing links that already exist (didn't check existing links).
 - Dumping every keyword co-occurrence instead of ranking real relationships.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Cast a wide net: `related_notes` path=<path>, limit 15 — replaces the per-theme `search` loop in step 2.

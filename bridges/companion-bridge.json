@@ -1,0 +1,5 @@
+{
+  "server": "obsidian-vault",
+  "tools": ["vault_search", "related_notes", "note_read", "list_recent", "vault_tags", "get_backlinks", "get_outgoing_links", "frontmatter_query", "ontology_get"],
+  "resources": ["obsidian://ontology", "obsidian://memory", "obsidian://research/{project}"]
+}

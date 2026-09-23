@@ -16,6 +16,9 @@ const CONFIGURATION_EXTENSIONS = new Set([".json"]);
 const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "gemini", "opencode"]);
 const PROVIDER_PATH_FIELDS = ["artifact", "source"];
 const OBSIDIAN_CLI_EXAMPLE = /\bobsidian\s+[^\n`]*/gi;
+const COMPANION_BRIDGE_HEADING = "## Companion bridge (optional)";
+const BRIDGE_BULLET_TOOL_TOKEN = /`([a-z][a-z0-9_]*)`/g;
+const OBSIDIAN_URI = /obsidian:\/\/[^\s`)]+/g;
 
 function inspectPathEntry(path) {
   try {
@@ -271,6 +274,122 @@ function validateProviderDirectories(root, providers, add) {
   }
 }
 
+// Splits a skill body into the Companion bridge section(s) and everything else,
+// so the CLI-step and tool/resource-citation checks can be scoped independently.
+function companionBridgeSections(text) {
+  const lines = text.split(/\r?\n/);
+  const headingIndexes = [];
+  lines.forEach((line, index) => {
+    if (line.trim() === COMPANION_BRIDGE_HEADING) headingIndexes.push(index);
+  });
+  if (headingIndexes.length === 0) return { count: 0, body: "", outside: text };
+
+  const spans = headingIndexes.map((start) => {
+    let end = lines.length;
+    for (let index = start + 1; index < lines.length; index += 1) {
+      if (/^#{1,2}\s/.test(lines[index])) { end = index; break; }
+    }
+    return [start, end];
+  });
+
+  const body = spans.map(([start, end]) => lines.slice(start, end).join("\n")).join("\n");
+  let outside = "";
+  let cursor = 0;
+  for (const [start, end] of spans) {
+    outside += lines.slice(cursor, start).join("\n") + "\n";
+    cursor = end;
+  }
+  outside += lines.slice(cursor).join("\n");
+
+  return { count: headingIndexes.length, body, outside };
+}
+
+function loadCompanionBridgeTools(root) {
+  const path = join(root, "bridges", "companion-bridge.json");
+  if (!pathEntryExists(path)) return { tools: [], resources: [] };
+  try {
+    const parsed = JSON.parse(readFileSync(path, "utf8"));
+    return {
+      tools: Array.isArray(parsed.tools) ? parsed.tools : [],
+      resources: Array.isArray(parsed.resources) ? parsed.resources : [],
+    };
+  } catch {
+    return { tools: [], resources: [] };
+  }
+}
+
+function validateBridgeSections(root, add) {
+  const capabilitiesPath = join(root, "capabilities.json");
+  if (!pathEntryExists(capabilitiesPath)) return;
+
+  let registry;
+  try {
+    registry = JSON.parse(readFileSync(capabilitiesPath, "utf8"));
+  } catch {
+    return;
+  }
+  const capabilities = Array.isArray(registry?.capabilities) ? registry.capabilities : [];
+  const enhancedIds = new Set(
+    capabilities
+      .filter((cap) => Array.isArray(cap?.enhancedBy) && cap.enhancedBy.includes("companion-bridge"))
+      .map((cap) => cap.id),
+  );
+
+  const skillsRoot = join(root, "skills");
+  if (!pathEntryExists(skillsRoot) || !lstatSync(skillsRoot).isDirectory()) return;
+  const { tools, resources } = loadCompanionBridgeTools(root);
+
+  for (const entry of readdirSync(skillsRoot, { withFileTypes: true }).sort((left, right) => left.name.localeCompare(right.name))) {
+    if (!entry.isDirectory()) continue;
+    const id = entry.name;
+    const skillPath = join(skillsRoot, id, "SKILL.md");
+    if (!pathEntryExists(skillPath) || !lstatSync(skillPath).isFile()) continue;
+
+    const text = readFileSync(skillPath, "utf8");
+    const section = companionBridgeSections(text);
+    const enhanced = enhancedIds.has(id);
+
+    if (section.count === 0) {
+      if (enhanced) {
+        add(skillPath, `capability '${id}' is enhancedBy companion-bridge but has no '${COMPANION_BRIDGE_HEADING}' section`);
+      }
+      continue;
+    }
+
+    if (!enhanced) {
+      add(skillPath, `has a '${COMPANION_BRIDGE_HEADING}' section but capabilities.json does not declare enhancedBy: ["companion-bridge"] for '${id}'`);
+    }
+    if (section.count > 1) {
+      add(skillPath, `must have exactly one '${COMPANION_BRIDGE_HEADING}' heading, found ${section.count}`);
+      continue;
+    }
+    if (!enhanced) continue;
+
+    if (!/\bobsidian\s/.test(section.outside)) {
+      add(skillPath, `capability '${id}' keeps no 'obsidian ' CLI step outside the Companion bridge section`);
+    }
+
+    for (const line of section.body.split(/\r?\n/)) {
+      if (!line.trimStart().startsWith("-")) continue;
+      // The template puts the tool citation before the em dash; text after it explains
+      // what CLI step the bullet replaces and may itself cite the replaced CLI command.
+      const [citation] = line.split("—");
+      for (const match of citation.matchAll(BRIDGE_BULLET_TOOL_TOKEN)) {
+        const tool = match[1];
+        if (!tools.includes(tool)) {
+          add(skillPath, `Companion bridge section cites tool '${tool}', which is not in bridges/companion-bridge.json`);
+        }
+      }
+    }
+    for (const match of section.body.matchAll(OBSIDIAN_URI)) {
+      const uri = match[0];
+      if (!resources.includes(uri)) {
+        add(skillPath, `Companion bridge section cites resource '${uri}', which is not in bridges/companion-bridge.json`);
+      }
+    }
+  }
+}
+
 export function validatePortability(root) {
   const errors = [];
   const add = (path, message) => {
@@ -312,6 +431,7 @@ export function validatePortability(root) {
   }
 
   validateProviderDirectories(root, providerManifest(root, add), add);
+  validateBridgeSections(root, add);
   return errors.sort((left, right) => left.localeCompare(right));
 }
 

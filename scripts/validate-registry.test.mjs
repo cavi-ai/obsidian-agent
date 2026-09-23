@@ -262,3 +262,27 @@ test("rejects an empty lenses array", () => {
   const cap = { ...LENS_CAP, lenses: [] };
   assert.match(validate(lensFixture({ cap })).join("\n"), /lenses must be a non-empty array/);
 });
+
+test("accepts a capability enhancedBy companion-bridge", () => {
+  const cap = { ...OK_CAP, enhancedBy: ["companion-bridge"] };
+  const root = fixture([cap], { alpha: { name: "alpha", description: "Use when alpha." } });
+  assert.deepEqual(validate(root), []);
+});
+
+test("rejects an enhancedBy value other than companion-bridge", () => {
+  const cap = { ...OK_CAP, enhancedBy: ["something-else"] };
+  const root = fixture([cap], { alpha: { name: "alpha", description: "Use when alpha." } });
+  assert.match(validate(root).join("\n"), /alpha.*enhancedBy.*'something-else'/i);
+});
+
+test("rejects a non-array enhancedBy", () => {
+  const cap = { ...OK_CAP, enhancedBy: "companion-bridge" };
+  const root = fixture([cap], { alpha: { name: "alpha", description: "Use when alpha." } });
+  assert.match(validate(root).join("\n"), /alpha.*enhancedBy.*array/i);
+});
+
+test("rejects an empty enhancedBy array", () => {
+  const cap = { ...OK_CAP, enhancedBy: [] };
+  const root = fixture([cap], { alpha: { name: "alpha", description: "Use when alpha." } });
+  assert.match(validate(root).join("\n"), /alpha.*enhancedBy.*non-empty/i);
+});

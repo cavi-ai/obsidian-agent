@@ -54,3 +54,11 @@ content or silently removing anything.
 - Treating same-titled notes as duplicates without reading them.
 - Dropping content that only existed in the merged-away copy.
 - Deleting or archiving the duplicate without separate explicit approval.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Find candidates: `related_notes` path=<path>, limit 15 — replaces the phrase search in step 1.

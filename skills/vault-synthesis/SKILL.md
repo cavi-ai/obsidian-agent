@@ -38,3 +38,12 @@ contradictions. Not a general-knowledge essay.
 - Answering from training knowledge instead of the vault.
 - Only reading search hits, never following links/backlinks.
 - Uncited claims; silently resolving conflicting notes.
+
+## Companion bridge (optional)
+
+If tools from the `obsidian-vault` MCP server are available (Claude Code
+shows them as `mcp__obsidian-vault__<tool>`), use them for the steps below;
+otherwise follow the CLI steps above. Never require them.
+
+- Gather (search): `vault_search` query=<topic> — replaces the initial `search` call in step 1.
+- Gather (widen): `related_notes` path=<path>, limit 15 — supplements the backlinks/links follow-up in step 1.
