@@ -14,8 +14,6 @@ const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 // Host-owned YAML/TOML configuration belongs under a declared providers/<host> root.
 const CONFIGURATION_EXTENSIONS = new Set([".json"]);
 const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "gemini", "opencode"]);
-// The bridge tool contract, not a host provider adapter — never declared in plugin.json's providers map.
-const RESERVED_PROVIDER_DIRECTORIES = new Set(["companion-bridge"]);
 const PROVIDER_PATH_FIELDS = ["artifact", "source"];
 const OBSIDIAN_CLI_EXAMPLE = /\bobsidian\s+[^\n`]*/gi;
 const COMPANION_BRIDGE_HEADING = "## Companion bridge (optional)";
@@ -204,8 +202,6 @@ function validateProviderDirectories(root, providers, add) {
       const path = join(providersRoot, entry.name);
       if (!entry.isDirectory()) {
         add(path, "provider files must be inside a declared provider directory");
-      } else if (RESERVED_PROVIDER_DIRECTORIES.has(entry.name)) {
-        // Validated by validateBridgeSections instead of the host-provider declaration rule.
       } else if (!Object.hasOwn(providers, entry.name)) {
         add(path, "provider directory is not declared in plugin.json");
       }
@@ -309,7 +305,7 @@ function companionBridgeSections(text) {
 }
 
 function loadCompanionBridgeTools(root) {
-  const path = join(root, "providers", "companion-bridge", "tools.json");
+  const path = join(root, "bridges", "companion-bridge.json");
   if (!pathEntryExists(path)) return { tools: [], resources: [] };
   try {
     const parsed = JSON.parse(readFileSync(path, "utf8"));
@@ -381,14 +377,14 @@ function validateBridgeSections(root, add) {
       for (const match of citation.matchAll(BRIDGE_BULLET_TOOL_TOKEN)) {
         const tool = match[1];
         if (!tools.includes(tool)) {
-          add(skillPath, `Companion bridge section cites tool '${tool}', which is not in providers/companion-bridge/tools.json`);
+          add(skillPath, `Companion bridge section cites tool '${tool}', which is not in bridges/companion-bridge.json`);
         }
       }
     }
     for (const match of section.body.matchAll(OBSIDIAN_URI)) {
       const uri = match[0];
       if (!resources.includes(uri)) {
-        add(skillPath, `Companion bridge section cites resource '${uri}', which is not in providers/companion-bridge/tools.json`);
+        add(skillPath, `Companion bridge section cites resource '${uri}', which is not in bridges/companion-bridge.json`);
       }
     }
   }

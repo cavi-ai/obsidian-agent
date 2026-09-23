@@ -240,30 +240,16 @@ test("allows declared provider directories and owned manifest paths", () => {
   assert.deepEqual(validatePortability(root), []);
 });
 
-test("allows the companion-bridge provider directory without a plugin.json declaration", () => {
-  const root = fixture({
-    "scripts/obsidian-cli.mjs": CLI_HELPER,
-    "providers/companion-bridge/tools.json": JSON.stringify({
-      server: "obsidian-vault",
-      tools: ["vault_search"],
-      resources: ["obsidian://ontology"],
-    }),
-  });
-
-  assert.deepEqual(validatePortability(root), []);
-});
-
-test("still rejects other undeclared provider directories alongside companion-bridge", () => {
+test("rejects a providers/companion-bridge directory like any other undeclared provider", () => {
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "plugin.json": JSON.stringify({ providers: { claude: {} } }),
     "providers/claude/adapter.md": "declared\n",
     "providers/companion-bridge/tools.json": JSON.stringify({ server: "obsidian-vault", tools: [], resources: [] }),
-    "providers/codex/adapter.md": "undeclared\n",
   });
 
   assert.deepEqual(validatePortability(root), [
-    "providers/codex: provider directory is not declared in plugin.json",
+    "providers/companion-bridge: provider directory is not declared in plugin.json",
   ]);
 });
 
@@ -543,7 +529,7 @@ test("accepts a Companion bridge section citing declared tools and resources", (
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(
       [
         "## Companion bridge (optional)",
@@ -564,7 +550,7 @@ test("requires a Companion bridge section when a capability declares enhancedBy"
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(""),
   });
 
@@ -577,7 +563,7 @@ test("rejects a Companion bridge section with no matching enhancedBy declaration
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_PLAIN,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(
       [
         "## Companion bridge (optional)",
@@ -600,7 +586,7 @@ test("rejects a Companion bridge section citing an undeclared tool", () => {
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(
       [
         "## Companion bridge (optional)",
@@ -615,7 +601,7 @@ test("rejects a Companion bridge section citing an undeclared tool", () => {
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/bridged/SKILL.md: Companion bridge section cites tool 'ghost_tool', which is not in providers/companion-bridge/tools.json",
+    "skills/bridged/SKILL.md: Companion bridge section cites tool 'ghost_tool', which is not in bridges/companion-bridge.json",
   ]);
 });
 
@@ -623,7 +609,7 @@ test("rejects a Companion bridge section citing an undeclared resource", () => {
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(
       [
         "## Companion bridge (optional)",
@@ -638,7 +624,7 @@ test("rejects a Companion bridge section citing an undeclared resource", () => {
   });
 
   assert.deepEqual(validatePortability(root), [
-    "skills/bridged/SKILL.md: Companion bridge section cites resource 'obsidian://memory', which is not in providers/companion-bridge/tools.json",
+    "skills/bridged/SKILL.md: Companion bridge section cites resource 'obsidian://memory', which is not in bridges/companion-bridge.json",
   ]);
 });
 
@@ -646,7 +632,7 @@ test("rejects a Companion bridge section that leaves no CLI step outside it", ()
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": [
       "---\nname: bridged\ndescription: Use when bridged.\n---\n",
       "# Bridged\n",
@@ -678,7 +664,7 @@ test("rejects more than one Companion bridge heading", () => {
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(`${section}\n\n${section}`),
   });
 
@@ -691,7 +677,7 @@ test("does not flag a CLI command name mentioned after the em dash in a bridge b
   const root = fixture({
     "scripts/obsidian-cli.mjs": CLI_HELPER,
     "capabilities.json": CAP_ENHANCED,
-    "providers/companion-bridge/tools.json": BRIDGE_TOOLS,
+    "bridges/companion-bridge.json": BRIDGE_TOOLS,
     "skills/bridged/SKILL.md": bridgeSkill(
       [
         "## Companion bridge (optional)",

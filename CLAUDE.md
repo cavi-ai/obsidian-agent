@@ -20,6 +20,9 @@ and is not part of this repository's runtime topology.
 - `.claude-plugin/`, `.codex-plugin/`, and `gemini-extension.json` — native host
   metadata.
 - `providers/` — isolated provider adapters with no copied workflow logic.
+- `bridges/` — optional bridge tool contracts (e.g. `companion-bridge.json`)
+  that a skill's steps may use when the host already has them; never a
+  provider adapter and never required.
 - `plugin.json` — cross-host provider map and runtime contract.
 - `scripts/obsidian-cli.mjs` — deterministic CLI argument and doctor contract.
 - `scripts/install.mjs` — preview-first provider installer.

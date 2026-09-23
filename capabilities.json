@@ -287,10 +287,7 @@
       "surfaces": {
         "skill": true,
         "command": "[optional folder/tag/topic focus]"
-      },
-      "enhancedBy": [
-        "companion-bridge"
-      ]
+      }
     },
     {
       "id": "tracker-driver",
