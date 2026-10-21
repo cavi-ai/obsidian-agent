@@ -8,7 +8,7 @@ official CLI.
 
 - **Claude Code** — a slash command: `/obsidian-agent:<capability>`, optionally
   with an instruction, e.g. `/obsidian-agent:task-harvester`.
-- **Codex, OpenCode, AgentSkills** — ask the host to use or activate the
+- **Codex, Agy, OpenCode, OpenClaw, Hermes Agent, AgentSkills** — ask the host to use or activate the
   named `obsidian-agent` skill. The host loads the same canonical skill.
 
 Portable capabilities behave identically across hosts; only invocation differs.

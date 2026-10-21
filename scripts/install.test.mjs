@@ -13,7 +13,7 @@ import {
 } from "./install.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-const expectedHosts = ["claude", "codex", "opencode", "agentskills"];
+const expectedHosts = ["claude", "codex", "agy", "opencode", "openclaw", "hermes", "agentskills"];
 
 // Cross-check: the plan is built from the filesystem, so the count comes from the registry.
 const portableSkillCount = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"))
@@ -28,7 +28,7 @@ test("every host manifest carries the author identity from plugin.json", () => {
   assert.deepEqual(marketplace.owner, author);
   for (const entry of marketplace.plugins) assert.deepEqual(entry.author, author, entry.name);
 
-  for (const path of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json"]) {
+  for (const path of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "providers/agy/plugin.json"]) {
     assert.deepEqual(JSON.parse(readFileSync(join(root, path), "utf8")).author, author, path);
   }
 
@@ -50,6 +50,7 @@ test("all provider manifests use the universal identity and no MCP configuration
     ".claude-plugin/marketplace.json",
     ".codex-plugin/plugin.json",
     "plugin.json",
+    "providers/agy/plugin.json",
   ]) {
     const text = readFileSync(join(root, path), "utf8");
     assert.match(text, /obsidian-agent/);
@@ -116,11 +117,15 @@ test("dry-run plans stay under the selected user or project host root", () => {
   }
 });
 
-test("OpenCode plans use its exact native skill discovery roots", () => {
+test("native skill hosts plan into their exact discovery roots", () => {
   const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-native-roots-"));
   const cases = [
     ["opencode", "user", join(sandbox, "home", ".config", "opencode")],
     ["opencode", "project", join(sandbox, "project", ".opencode")],
+    ["openclaw", "user", join(sandbox, "home", ".openclaw")],
+    ["openclaw", "project", join(sandbox, "project")],
+    ["hermes", "user", join(sandbox, "home", ".hermes")],
+    ["hermes", "project", join(sandbox, "project", ".hermes")],
   ];
   for (const [host, scope, expectedRoot] of cases) {
     const plan = buildInstallPlan(root, {
@@ -135,6 +140,21 @@ test("OpenCode plans use its exact native skill discovery roots", () => {
     assert.ok(plan.files.filter(({ source }) => source.includes("/skills/")).every(({ destination }) =>
       destination.startsWith(join(expectedRoot, "skills") + "/")));
     assert.ok(plan.files.every(({ destination }) => !destination.includes("/plugins/obsidian-agent/")));
+  }
+});
+
+test("Agy plans a native plugin with its manifest and the portable skills", () => {
+  const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-agy-plugin-"));
+  const cases = [
+    ["user", join(sandbox, "home", ".gemini", "config", "plugins", "obsidian-agent")],
+    ["project", join(sandbox, "project", ".agents", "plugins", "obsidian-agent")],
+  ];
+  for (const [scope, expectedRoot] of cases) {
+    const plan = buildInstallPlan(root, { host: "agy", scope, home: join(sandbox, "home"), project: join(sandbox, "project") });
+    assert.equal(plan.destinationRoot, expectedRoot);
+    assert.ok(plan.files.some(({ path, source }) => path === "plugin.json" && source.endsWith("providers/agy/plugin.json")));
+    assert.equal(plan.files.filter(({ path }) => path.startsWith("skills/")).length, portableSkillCount);
+    assert.ok(plan.files.every(({ destination }) => destination.startsWith(expectedRoot + "/")));
   }
 });
 

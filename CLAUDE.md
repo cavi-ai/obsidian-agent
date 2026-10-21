@@ -4,7 +4,8 @@
 
 `obsidian-agent` is a cross-host plugin for grounded Obsidian workflows. The
 canonical `skills/` use the official Obsidian CLI 1.12.7+ and are shared by
-Claude, Codex, OpenCode, and AgentSkills-compatible hosts.
+Claude, Codex, Agy, OpenCode, OpenClaw, Hermes Agent, and AgentSkills-compatible
+hosts.
 
 The portable core requires only the Obsidian CLI. Skills marked
 `enhancedBy: companion-bridge` use Companion's `obsidian-vault` MCP tools when
