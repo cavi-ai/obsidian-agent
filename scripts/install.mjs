@@ -13,21 +13,27 @@ import { homedir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-export const HOSTS = ["claude", "codex", "opencode", "agentskills"];
+export const HOSTS = ["claude", "codex", "agy", "opencode", "openclaw", "hermes", "agentskills"];
 const SCOPES = ["user", "project"];
 const OWNERSHIP_FILE = ".obsidian-agent-install.json";
 
 const USER_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: ["plugins", "obsidian-agent"],
+  agy: [".gemini", "config", "plugins", "obsidian-agent"],
   opencode: [".config", "opencode"],
+  openclaw: [".openclaw"],
+  hermes: [".hermes"],
   agentskills: [".agents"],
 };
 
 const PROJECT_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: ["plugins", "obsidian-agent"],
+  agy: [".agents", "plugins", "obsidian-agent"],
   opencode: [".opencode"],
+  openclaw: [],
+  hermes: [".hermes"],
   agentskills: [".agents"],
 };
 
@@ -41,7 +47,13 @@ const HOST_ARTIFACTS = {
     [".codex-plugin/plugin.json", ".codex-plugin/plugin.json"],
     ["providers/codex/README.md", "providers/codex/README.md"],
   ],
+  agy: [
+    ["providers/agy/plugin.json", "plugin.json"],
+    ["providers/agy/README.md", "README.md"],
+  ],
   opencode: [["providers/opencode/README.md", "obsidian-agent/README.md"]],
+  openclaw: [["providers/openclaw/README.md", "obsidian-agent/README.md"]],
+  hermes: [["providers/hermes/README.md", "obsidian-agent/README.md"]],
   agentskills: [["providers/agentskills/README.md", "obsidian-agent/README.md"]],
 };
 

@@ -22,9 +22,21 @@
       "distribution": "marketplace",
       "direct_install": false
     },
+    "agy": {
+      "native": true,
+      "artifact": "providers/agy"
+    },
     "opencode": {
       "native": true,
       "artifact": "providers/opencode"
+    },
+    "openclaw": {
+      "native": true,
+      "artifact": "providers/openclaw"
+    },
+    "hermes": {
+      "native": true,
+      "artifact": "providers/hermes"
     },
     "agentskills": {
       "native": false,

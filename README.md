@@ -28,7 +28,10 @@ Obsidian, enables its CLI setting, or changes a vault.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
 | Codex | Native marketplace plugin carrying the portable skills | Ask Codex to use an `obsidian-agent` skill |
+| Agy | Native plugin carrying the portable skills | Ask Agy to use an `obsidian-agent` skill |
 | OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
+| OpenClaw | Native user/workspace skills | Ask OpenClaw to use an `obsidian-agent` skill |
+| Hermes Agent | Native user/project skills | Ask Hermes to use an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | Use the host's normal skill invocation |
 
 All hosts receive the capabilities marked `portable: true` in
@@ -45,14 +48,17 @@ Claude can install the native package from its marketplace:
 /plugin install obsidian-agent@obsidian-agent
 ```
 
-For OpenCode, AgentSkills-compatible hosts, or Codex package staging, clone
-this repository and preview
-the host-specific installation. Project scope defaults to the current
-directory; pass `--project /absolute/path` to target another project.
+For Agy, OpenCode, OpenClaw, Hermes Agent, AgentSkills-compatible hosts, or
+Codex package staging, clone this repository and preview the host-specific
+installation. Project scope defaults to the current directory; pass
+`--project /absolute/path` to target another project.
 
 ```sh
+node scripts/install.mjs --host agy --scope user
 node scripts/install.mjs --host codex --scope user
 node scripts/install.mjs --host opencode --scope project --project /path/to/project
+node scripts/install.mjs --host openclaw --scope user
+node scripts/install.mjs --host hermes --scope user
 node scripts/install.mjs --host agentskills --scope project
 ```
 
@@ -82,9 +88,17 @@ The installer copies only the selected provider metadata, Claude command shims
 when applicable, and canonical portable skills. It refuses to overwrite files
 that are not listed in its `.obsidian-agent-install.json` ownership record.
 
-OpenCode installs each skill at
-`~/.config/opencode/skills/<name>/SKILL.md` (user) or
-`.opencode/skills/<name>/SKILL.md` (project).
+Agy receives a native plugin (`plugin.json` and `skills/`) at
+`~/.gemini/config/plugins/obsidian-agent` (user) or
+`.agents/plugins/obsidian-agent` (project). The other hosts receive one
+`skills/<name>/SKILL.md` per portable skill under their skill root:
+
+| Host | User root | Project root |
+| --- | --- | --- |
+| OpenCode | `~/.config/opencode` | `.opencode` |
+| OpenClaw | `~/.openclaw` | the workspace root |
+| Hermes Agent | `~/.hermes` | `.hermes` |
+| AgentSkills | `~/.agents` | `.agents` |
 
 To recover or uninstall, inspect that ownership record under the printed
 destination root and remove only its listed files. Keep the record until the

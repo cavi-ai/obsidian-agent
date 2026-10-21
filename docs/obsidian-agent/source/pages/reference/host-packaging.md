@@ -10,7 +10,10 @@ shared `skills/` directory.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin | Carries the portable skills plus thin compatibility commands for the Claude-only workflows. |
 | Codex | Self-contained marketplace package | `.codex-plugin/plugin.json`, `./skills/`, and exactly the portable skills. Staged, not activated. |
+| Agy | Native plugin | `plugin.json` and `skills/` at `~/.gemini/config/plugins/obsidian-agent` (user) or `.agents/plugins/obsidian-agent` (project). |
 | OpenCode | User or project skills | Portable skills installed into the OpenCode skill roots. |
+| OpenClaw | User or workspace skills | Portable skills installed under `~/.openclaw/skills` or the workspace `skills/`. |
+| Hermes Agent | User or project skills | Portable skills installed under `~/.hermes/skills` or `.hermes/skills`. |
 | AgentSkills hosts | Portable `SKILL.md` files | The lowest-common-denominator package; invoked through the host's normal skill mechanism. |
 
 ## Staging with the installer
