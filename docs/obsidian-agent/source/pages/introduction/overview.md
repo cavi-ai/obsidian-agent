@@ -1,7 +1,7 @@
 # Obsidian Agent overview
 
 Obsidian Agent is a portable set of grounded Obsidian workflows for agent hosts.
-It gives Claude, Codex, Gemini, OpenCode, and AgentSkills-compatible hosts one
+It gives Claude, Codex, OpenCode, and AgentSkills-compatible hosts one
 canonical capability registry — vault synthesis, connection finding, note
 hygiene, drafting, project tracking, and evidence-backed advisor passes — so the
 same workflow behaves the same way on every host.

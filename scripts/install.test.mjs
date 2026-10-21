@@ -13,7 +13,7 @@ import {
 } from "./install.mjs";
 
 const root = resolve(import.meta.dirname, "..");
-const expectedHosts = ["claude", "codex", "gemini", "opencode", "agentskills"];
+const expectedHosts = ["claude", "codex", "opencode", "agentskills"];
 
 // Cross-check: the plan is built from the filesystem, so the count comes from the registry.
 const portableSkillCount = JSON.parse(readFileSync(join(root, "capabilities.json"), "utf8"))
@@ -49,16 +49,12 @@ test("all provider manifests use the universal identity and no MCP configuration
     ".claude-plugin/plugin.json",
     ".claude-plugin/marketplace.json",
     ".codex-plugin/plugin.json",
-    "gemini-extension.json",
     "plugin.json",
   ]) {
     const text = readFileSync(join(root, path), "utf8");
     assert.match(text, /obsidian-agent/);
     assert.doesNotMatch(text, /mcpServers|\.mcp\.json|Companion MCP/i);
   }
-  assert.deepEqual(Object.keys(JSON.parse(readFileSync(join(root, "gemini-extension.json"), "utf8"))).sort(), [
-    "description", "name", "version",
-  ]);
 });
 
 test("Codex manifest follows the canonical plugin ingestion contract", () => {
@@ -120,13 +116,11 @@ test("dry-run plans stay under the selected user or project host root", () => {
   }
 });
 
-test("OpenCode and Gemini plans use their exact native skill discovery roots", () => {
+test("OpenCode plans use its exact native skill discovery roots", () => {
   const sandbox = mkdtempSync(join(tmpdir(), "obsidian-agent-native-roots-"));
   const cases = [
     ["opencode", "user", join(sandbox, "home", ".config", "opencode")],
     ["opencode", "project", join(sandbox, "project", ".opencode")],
-    ["gemini", "user", join(sandbox, "home", ".gemini")],
-    ["gemini", "project", join(sandbox, "project", ".gemini")],
   ];
   for (const [host, scope, expectedRoot] of cases) {
     const plan = buildInstallPlan(root, {

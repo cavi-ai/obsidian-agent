@@ -13,7 +13,7 @@ const ROOT_CONFIGURATION_DIRECTORIES = new Set([".claude-plugin", ".github"]);
 // Portability scanning is intentionally limited to the repository's JSON manifests.
 // Host-owned YAML/TOML configuration belongs under a declared providers/<host> root.
 const CONFIGURATION_EXTENSIONS = new Set([".json"]);
-const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "gemini", "opencode"]);
+const SUPPORTED_PROVIDERS = new Set(["agentskills", "claude", "codex", "opencode"]);
 const PROVIDER_PATH_FIELDS = ["artifact", "source"];
 const OBSIDIAN_CLI_EXAMPLE = /\bobsidian\s+[^\n`]*/gi;
 const COMPANION_BRIDGE_HEADING = "## Companion bridge (optional)";

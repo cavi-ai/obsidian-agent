@@ -7,7 +7,6 @@ const SEMVER = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/u;
 
 // plugin.json is the one version; every other manifest restates it and must agree.
 const RESTATED = [
-  ["gemini-extension.json", (json) => json.version],
   [".claude-plugin/plugin.json", (json) => json.version],
   [".codex-plugin/plugin.json", (json) => json.version],
   ["docs/obsidian-agent/source/navigation.json", (json) => json.version],

@@ -4,7 +4,7 @@
 
 `obsidian-agent` is a cross-host plugin for grounded Obsidian workflows. The
 canonical `skills/` use the official Obsidian CLI 1.12.7+ and are shared by
-Claude, Codex, Gemini CLI, OpenCode, and AgentSkills-compatible hosts.
+Claude, Codex, OpenCode, and AgentSkills-compatible hosts.
 
 The portable core requires only the Obsidian CLI. Skills marked
 `enhancedBy: companion-bridge` use Companion's `obsidian-vault` MCP tools when
@@ -17,8 +17,7 @@ and is not part of this repository's runtime topology.
 - `skills/` — canonical workflow and safety instructions.
 - `capabilities.json` — capability registry and portability classification.
 - `commands/` — thin Claude compatibility delegates.
-- `.claude-plugin/`, `.codex-plugin/`, and `gemini-extension.json` — native host
-  metadata.
+- `.claude-plugin/` and `.codex-plugin/` — native host metadata.
 - `providers/` — isolated provider adapters with no copied workflow logic.
 - `bridges/` — optional bridge tool contracts (e.g. `companion-bridge.json`)
   that a skill's steps may use when the host already has them; never a

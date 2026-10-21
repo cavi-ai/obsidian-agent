@@ -23,15 +23,6 @@ Install the native plugin from the CAVI marketplace:
 
 Claude also keeps thin compatibility commands for the Claude-only workflows.
 
-## Gemini CLI
-
-Install the repository directly as a native extension. Gemini's extension loader
-discovers the root `skills/` directory:
-
-```sh
-gemini extensions install https://github.com/cavi-ai/obsidian-agent
-```
-
 ## Codex, OpenCode, and AgentSkills
 
 Clone the repository and stage a host-specific package with the installer. Every
@@ -40,8 +31,7 @@ content-bound plan, and changes nothing until you pass `--confirm`:
 
 ```sh
 node scripts/install.mjs --host codex --scope user
-node scripts/install.mjs --host gemini --scope project --project /path/to/project
-node scripts/install.mjs --host opencode --scope user
+node scripts/install.mjs --host opencode --scope project --project /path/to/project
 node scripts/install.mjs --host agentskills --scope project
 ```
 

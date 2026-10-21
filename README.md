@@ -28,7 +28,6 @@ Obsidian, enables its CLI setting, or changes a vault.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
 | Codex | Native marketplace plugin carrying the portable skills | Ask Codex to use an `obsidian-agent` skill |
-| Gemini CLI | Native extension or user/workspace skills | Ask Gemini to activate an `obsidian-agent` skill |
 | OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | Use the host's normal skill invocation |
 
@@ -46,22 +45,14 @@ Claude can install the native package from its marketplace:
 /plugin install obsidian-agent@obsidian-agent
 ```
 
-Gemini CLI can install the repository directly as a native extension. Its
-official extension loader discovers the root `skills/` directory:
-
-```sh
-gemini extensions install https://github.com/cavi-ai/obsidian-agent
-```
-
-For OpenCode, AgentSkills-compatible hosts, a direct Gemini user/workspace
-skill installation, or Codex package staging, clone this repository and preview
+For OpenCode, AgentSkills-compatible hosts, or Codex package staging, clone
+this repository and preview
 the host-specific installation. Project scope defaults to the current
 directory; pass `--project /absolute/path` to target another project.
 
 ```sh
 node scripts/install.mjs --host codex --scope user
-node scripts/install.mjs --host gemini --scope project --project /path/to/project
-node scripts/install.mjs --host opencode --scope user
+node scripts/install.mjs --host opencode --scope project --project /path/to/project
 node scripts/install.mjs --host agentskills --scope project
 ```
 
@@ -93,8 +84,7 @@ that are not listed in its `.obsidian-agent-install.json` ownership record.
 
 OpenCode installs each skill at
 `~/.config/opencode/skills/<name>/SKILL.md` (user) or
-`.opencode/skills/<name>/SKILL.md` (project). Gemini direct installs use
-`~/.gemini/skills/<name>/SKILL.md` or `.gemini/skills/<name>/SKILL.md`.
+`.opencode/skills/<name>/SKILL.md` (project).
 
 To recover or uninstall, inspect that ownership record under the printed
 destination root and remove only its listed files. Keep the record until the
