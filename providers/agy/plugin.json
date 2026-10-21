@@ -1,6 +1,6 @@
 {
   "name": "obsidian-agent",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Portable, CLI-powered Obsidian vault workflows for Agy.",
   "author": {
     "name": "Sasan Sotoodehfar",
