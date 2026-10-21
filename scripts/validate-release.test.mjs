@@ -20,6 +20,7 @@ test("covers every manifest that carries a version", async () => {
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
     "docs/obsidian-agent/source/navigation.json",
+    "providers/agy/plugin.json",
   ]);
 });
 

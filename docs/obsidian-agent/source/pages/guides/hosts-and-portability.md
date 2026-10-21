@@ -10,7 +10,10 @@ must not fork workflow behavior or introduce host-specific vault semantics.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin plus thin compatibility commands | `/obsidian-agent:<command>` |
 | Codex | Native marketplace plugin carrying the portable skills | Ask Codex to use an `obsidian-agent` skill |
+| Agy | Native plugin carrying the portable skills | Ask Agy to use an `obsidian-agent` skill |
 | OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
+| OpenClaw | Native user/workspace skills | Ask OpenClaw to use an `obsidian-agent` skill |
+| Hermes Agent | Native user/project skills | Ask Hermes to use an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | The host's normal skill invocation |
 
 ## Portable and non-portable capabilities

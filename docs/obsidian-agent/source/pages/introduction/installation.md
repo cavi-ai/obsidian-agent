@@ -23,7 +23,7 @@ Install the native plugin from the CAVI marketplace:
 
 Claude also keeps thin compatibility commands for the Claude-only workflows.
 
-## Codex, OpenCode, and AgentSkills
+## Codex, Agy, OpenCode, OpenClaw, Hermes Agent, and AgentSkills
 
 Clone the repository and stage a host-specific package with the installer. Every
 command is a **dry run** by default — it prints every destination and a
@@ -31,9 +31,15 @@ content-bound plan, and changes nothing until you pass `--confirm`:
 
 ```sh
 node scripts/install.mjs --host codex --scope user
+node scripts/install.mjs --host agy --scope user
 node scripts/install.mjs --host opencode --scope project --project /path/to/project
+node scripts/install.mjs --host openclaw --scope user
+node scripts/install.mjs --host hermes --scope user
 node scripts/install.mjs --host agentskills --scope project
 ```
+
+Agy receives a native plugin at `~/.gemini/config/plugins/obsidian-agent`
+(user) or `.agents/plugins/obsidian-agent` (project).
 
 Project scope defaults to the current directory; pass `--project /absolute/path`
 to target another project. For Codex, the installer stages a self-contained

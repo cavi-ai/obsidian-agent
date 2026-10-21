@@ -9,6 +9,7 @@ const SEMVER = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$/u;
 const RESTATED = [
   [".claude-plugin/plugin.json", (json) => json.version],
   [".codex-plugin/plugin.json", (json) => json.version],
+  ["providers/agy/plugin.json", (json) => json.version],
   ["docs/obsidian-agent/source/navigation.json", (json) => json.version],
   [".claude-plugin/marketplace.json", (json) => json.plugins.map((entry) => entry.version)],
 ];

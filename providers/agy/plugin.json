@@ -1,0 +1,10 @@
+{
+  "name": "obsidian-agent",
+  "version": "0.2.0",
+  "description": "Portable, CLI-powered Obsidian vault workflows for Agy.",
+  "author": {
+    "name": "Sasan Sotoodehfar",
+    "organization": "CAVI AI",
+    "organization_url": "https://cavi-ai.xyz"
+  }
+}
