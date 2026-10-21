@@ -10,7 +10,6 @@ must not fork workflow behavior or introduce host-specific vault semantics.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin plus thin compatibility commands | `/obsidian-agent:<command>` |
 | Codex | Native marketplace plugin carrying the portable skills | Ask Codex to use an `obsidian-agent` skill |
-| Gemini CLI | Native extension, or user/workspace skills | Ask Gemini to activate an `obsidian-agent` skill |
 | OpenCode | Native user/project skills | Ask OpenCode to load an `obsidian-agent` skill |
 | AgentSkills hosts | Portable `SKILL.md` files | The host's normal skill invocation |
 

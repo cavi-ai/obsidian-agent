@@ -20,14 +20,13 @@ test("covers every manifest that carries a version", async () => {
     ".claude-plugin/plugin.json",
     ".codex-plugin/plugin.json",
     "docs/obsidian-agent/source/navigation.json",
-    "gemini-extension.json",
   ]);
 });
 
 test("rejects a manifest that drifts from plugin.json, naming the file", async () => {
   const { version } = await repo();
-  const drifted = { version, restated: [{ file: "gemini-extension.json", version: "9.9.9" }] };
-  assert.match(validateReleaseIdentity(drifted, `v${version}`).join("\n"), /gemini-extension\.json version 9\.9\.9/);
+  const drifted = { version, restated: [{ file: ".codex-plugin/plugin.json", version: "9.9.9" }] };
+  assert.match(validateReleaseIdentity(drifted, `v${version}`).join("\n"), /\.codex-plugin\/plugin\.json version 9\.9\.9/);
 });
 
 test("rejects a tag that does not match the canonical version", async () => {

@@ -13,14 +13,13 @@ import { homedir } from "node:os";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-export const HOSTS = ["claude", "codex", "gemini", "opencode", "agentskills"];
+export const HOSTS = ["claude", "codex", "opencode", "agentskills"];
 const SCOPES = ["user", "project"];
 const OWNERSHIP_FILE = ".obsidian-agent-install.json";
 
 const USER_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: ["plugins", "obsidian-agent"],
-  gemini: [".gemini"],
   opencode: [".config", "opencode"],
   agentskills: [".agents"],
 };
@@ -28,7 +27,6 @@ const USER_ROOTS = {
 const PROJECT_ROOTS = {
   claude: [".claude", "plugins", "obsidian-agent"],
   codex: ["plugins", "obsidian-agent"],
-  gemini: [".gemini"],
   opencode: [".opencode"],
   agentskills: [".agents"],
 };
@@ -43,7 +41,6 @@ const HOST_ARTIFACTS = {
     [".codex-plugin/plugin.json", ".codex-plugin/plugin.json"],
     ["providers/codex/README.md", "providers/codex/README.md"],
   ],
-  gemini: [["providers/gemini/README.md", "obsidian-agent/README.md"]],
   opencode: [["providers/opencode/README.md", "obsidian-agent/README.md"]],
   agentskills: [["providers/agentskills/README.md", "obsidian-agent/README.md"]],
 };

@@ -21,7 +21,7 @@ node scripts/install.mjs --host <host> --scope <scope> [--project <path>] [--con
 
 | Flag | Values | Meaning |
 | --- | --- | --- |
-| `--host` | `claude`, `codex`, `gemini`, `opencode`, `agentskills` | Target host to stage. Required. |
+| `--host` | `claude`, `codex`, `opencode`, `agentskills` | Target host to stage. Required. |
 | `--scope` | `user`, `project` | Install for the user, or stage into a project. Required. |
 | `--project` | absolute path | Project root for `--scope project`. Defaults to the current directory. |
 | `--confirm` | — | Apply the plan. Without it the command is a dry run. |

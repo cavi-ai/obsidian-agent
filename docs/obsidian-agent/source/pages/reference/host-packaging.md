@@ -10,7 +10,6 @@ shared `skills/` directory.
 | --- | --- | --- |
 | Claude Code | Native Claude plugin | Carries the portable skills plus thin compatibility commands for the Claude-only workflows. |
 | Codex | Self-contained marketplace package | `.codex-plugin/plugin.json`, `./skills/`, and exactly the portable skills. Staged, not activated. |
-| Gemini CLI | Native extension | Gemini's loader discovers the root `skills/` directory. |
 | OpenCode | User or project skills | Portable skills installed into the OpenCode skill roots. |
 | AgentSkills hosts | Portable `SKILL.md` files | The lowest-common-denominator package; invoked through the host's normal skill mechanism. |
 

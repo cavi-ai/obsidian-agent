@@ -311,12 +311,13 @@ test("reports loose files outside declared provider directories", () => {
 
 test("reports unsupported provider keys and missing declared roots deterministically", () => {
   const root = fixture({
-    "plugin.json": JSON.stringify({ providers: { custom: {}, gemini: {} } }),
+    "plugin.json": JSON.stringify({ providers: { custom: {}, gemini: {}, opencode: {} } }),
   });
 
   assert.deepEqual(validatePortability(root), [
     'plugin.json: provider "custom" is unsupported',
-    "providers/gemini: declared provider directory does not exist",
+    'plugin.json: provider "gemini" is unsupported',
+    "providers/opencode: declared provider directory does not exist",
   ]);
 });
 
@@ -386,13 +387,13 @@ test("allows provider symlinks contained by their declared adapter root", () => 
 
 test("rejects dangling provider symlinks", () => {
   const root = fixture({
-    "plugin.json": JSON.stringify({ providers: { gemini: { source: "providers/gemini/current" } } }),
-    "providers/gemini/adapter.md": "declared\n",
+    "plugin.json": JSON.stringify({ providers: { opencode: { source: "providers/opencode/current" } } }),
+    "providers/opencode/adapter.md": "declared\n",
   });
-  symlinkSync("missing", join(root, "providers", "gemini", "current"));
+  symlinkSync("missing", join(root, "providers", "opencode", "current"));
 
   assert.deepEqual(validatePortability(root), [
-    "providers/gemini/current: dangling symbolic links are not allowed in provider adapters",
+    "providers/opencode/current: dangling symbolic links are not allowed in provider adapters",
   ]);
 });
 

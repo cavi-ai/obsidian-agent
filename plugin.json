@@ -22,10 +22,6 @@
       "distribution": "marketplace",
       "direct_install": false
     },
-    "gemini": {
-      "native": true,
-      "artifact": "providers/gemini"
-    },
     "opencode": {
       "native": true,
       "artifact": "providers/opencode"
