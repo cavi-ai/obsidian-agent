@@ -125,7 +125,7 @@ jobs:
             gh release upload "$TAG" "$DIRECTORY/$ARTIFACT" "$DIRECTORY/$ARTIFACT.sha256" --repo "$GITHUB_REPOSITORY"
           fi
 
-      - name: Dispatch required cavi-home ingestion
+      - name: Dispatch release consumers
         if: ${{ env.DRY_RUN != 'true' }}
         env:
           GH_TOKEN: ${{ secrets.CONSUMER_DISPATCH_TOKEN }}
@@ -135,4 +135,7 @@ jobs:
             echo "::error::CONSUMER_DISPATCH_TOKEN is required"
             exit 1
           fi
-          jq -n --argjson payload "$(cat "$ENVELOPE")" '{event_type:"cavi-oss-release",client_payload:$payload}' | gh api --method POST /repos/cavi-ai/cavi-home/dispatches --input -
+          BODY="$(jq -n --argjson payload "$(cat "$ENVELOPE")" '{event_type:"cavi-oss-release",client_payload:$payload}')"
+          for CONSUMER in cavi-ai/cavi-home cavi-ai/plugins; do
+            printf '%s' "$BODY" | gh api --method POST "/repos/$CONSUMER/dispatches" --input -
+          done
