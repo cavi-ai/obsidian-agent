@@ -24,6 +24,13 @@ Obsidian, enables its CLI setting, or changes a vault.
 
 ## Host support
 
+This README describes the current source, version **0.3.0**. The
+[CAVI catalog](https://github.com/cavi-ai/plugins/blob/main/releases.json) currently
+pins [v0.1.0](https://github.com/cavi-ai/obsidian-agent/releases/tag/v0.1.0), whose
+catalog packages cover Claude, Codex, OpenCode and AgentSkills. Choose the source
+or released package deliberately; the source support table below does not expand
+an older installed package's capabilities.
+
 | Host | Package | Invocation |
 | --- | --- | --- |
 | Claude Code | Native Claude plugin and compatibility commands | `/obsidian-agent:<command>` |
@@ -105,6 +112,21 @@ destination root and remove only its listed files. Keep the record until the
 last owned file is removed. Vault content and Obsidian settings are never part
 of an install plan.
 
+## Try a read-only source comparison
+
+Choose two existing source notes in a vault you own. Ask your host to use
+`source-digest`, naming the vault and both note paths:
+
+> Compare these two source notes. Return a Markdown table of their claims,
+> supporting evidence and limitations, linking every row to the note you read.
+> Explain agreement and conflict. Do not edit or create vault files.
+
+The [source-digest skill](skills/source-digest/SKILL.md) reads the vault's source
+convention and the selected notes. Look for a comparison table with `[[note]]`
+links and explicit gaps; the result depends on the notes and model. CLI setup
+alone does not establish a successful comparison. Companion's MCP bridge is
+optional for this workflow.
+
 ## CLI and write safety
 
 When a vault must be selected, workflows use the official global-option order:
@@ -146,6 +168,11 @@ CAVI Home. Maintainers can exercise the complete
 artifact path with the `Publish product documentation` workflow in dry-run mode;
 non-dry-run delivery requires `CONSUMER_DISPATCH_TOKEN`.
 
-## Credits
+## Help
 
-The repository retains its existing third-party attributions in `NOTICE`.
+[Report a bug](https://github.com/cavi-ai/obsidian-agent/issues) with the host,
+installed package version, Obsidian version and a small reproducible example.
+Use sample notes rather than private vault contents. The validation commands
+above describe the checks for a focused pull request.
+
+For vulnerabilities, follow the [organization security policy](https://github.com/cavi-ai/.github/blob/main/SECURITY.md).
